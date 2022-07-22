@@ -1,51 +1,20 @@
-import { BottomNavigation, BottomNavigationAction, Paper } from '@mui/material'
 import React from 'react'
-import { IoMdHome } from 'react-icons/io'
-import { IoPerson, IoPodium } from 'react-icons/io5'
-import MainMenu from '../main_menu/MainMenu'
-import MenuHeader from './MenuHeader'
 
-import { useNavigate } from 'react-router-dom'
 
-const BottomNavbar = () => {
-    const navigate = useNavigate()
+import MenuHeader from '../navigation/MenuHeader'
 
-    return (
-        <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: '1000' }} elevation={3}>
-            <BottomNavigation
-                showLabels
-                className='bg-orange-500'
-    
-            >
-                <BottomNavigationAction
-                    className='text-white'
-                    label='Home'
-                    icon={<IoMdHome />}
-                    onClick={() => navigate('/home', { replace: true })}
-                />
-    
-                <BottomNavigationAction className='text-white' label='Ranking' icon={<IoPodium />} />
-                <BottomNavigationAction className='text-white' label='Perfil' icon={<IoPerson />} />
-            </BottomNavigation>
-        </Paper>
-    )
-}
+import BottomNavbar from 'components/navigation/BottomNavbar'
+import DrawerMenu from 'components/navigation/DrawerMenu'
 
 const MenuWrapper = (Component) => {
 
-
-
     return () => {
         return (
-            <div className='bg-gradient-to-b from-blue-400 min-h-screen to-indigo-500'>
-                <div className="pb-[5rem] mx-auto">
+            <div className='bg-gradient-to-b from-blue-400 min-h-screen min-w-[100vw] to-indigo-500 max-w-[100vw]' style={{display: 'table'}}>
+                <div className="max-w-[100vw]" style={{display: 'table-cell', verticalAlign: 'middle'}}>
                     <MenuHeader />
-
-                    <MainMenu />
-
+                    <DrawerMenu />
                     <Component />
-
-
                     <BottomNavbar/>
                 </div>
             </div>

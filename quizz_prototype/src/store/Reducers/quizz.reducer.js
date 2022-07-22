@@ -1,25 +1,25 @@
 import { actionTypes } from "../Actions/quizz.action"
 
 const initialState = {
-    gameMode: '',
-    quizzCategory: '',
-    numQuestions: 0,
-    questionTime: 60,
-    dificulty: '',
     creatingNewQuizz: false,
     upLoadingNewQuizz: false,
-    uploadNewQuizzSuccess: false,
-    questions: [
-        
-    ],
+    success: false,
     newQuizz: {
-      category: '',
+      category: {
+        name: '',
+        id: 0
+      },
       title: '',
       description: '',
       createWithfile: false,
       image: '',
       question_file: ''
     },
+    quizz: [],
+    quizz_list : {
+      data: []
+    },
+    token: '',
     errors: [],
 }
 
@@ -28,11 +28,29 @@ const quizzReducer = (state = initialState, { type, payload }) => {
 
   case actionTypes.CHANGE:
     return payload === 'clear' ? initialState : { ...state, ...payload }
+
+  case actionTypes.SUCCESS:
+    return {...state, success: payload}
   
   case actionTypes.ERROR:
     return {
       ...state,
       errors: payload
+    }
+
+  case actionTypes.INDEX:
+    return {
+      ...state,
+      quizz_list: payload
+    }
+  
+  case actionTypes.DESTROY:
+    return {
+      ...state,
+      quizz_list: {
+        ...state.quizz_list,
+        data: state.quizz_list.data.filter(q => q.id !== payload)
+      }
     }
 
   default:

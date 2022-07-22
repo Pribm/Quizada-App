@@ -2,7 +2,7 @@ export const actionTypes = {
     CHANGE: 'CHANGE_CONFIRM'
 }
 
-export const change = (payload) => ({
+export const changeConfirm = (payload) => ({
   type: actionTypes.CHANGE,
   payload
 })

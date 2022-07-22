@@ -13,6 +13,8 @@ export const HttpAuth = axios.create({
     baseURL: process.env.REACT_APP_API_URL
 })
 
+
+
 HttpAuth.interceptors.request.use(
     async (config) => {
         config.headers.authorization = 'Bearer ' + await localStorage.getItem('access_token')

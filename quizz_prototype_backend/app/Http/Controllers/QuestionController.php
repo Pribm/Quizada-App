@@ -11,47 +11,51 @@ use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use App\Models\Quizz;
+
+use Dirape\Token\Token;
+use Illuminate\Support\Facades\Storage;
 
 
 class QuestionController extends Controller
 {
     private $auth_user;
-    public function __construct(){
+    public function __construct()
+    {
         $this->auth_user = Auth()->guard('api')->user();
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $questions = Question::inRandomOrder()->limit(10)->get();
+        
+        if (!isset($request->random_questions)) {
 
-        $questions->transform(function($question, $key) {
-
-            $answers = [
-                $question->answer_1,
-                $question->answer_2,
-                $question->answer_3,
-                $question->answer_4,
-                $question->answer_5,
-            ];
-
-            shuffle($answers);
-
-            $temp= array();
-            foreach($answers as $index => $value){
-                if($value == 'nda') {
-                    array_push($temp, $value);
-                    unset ($answers[$index]);
+            $questions = Question::with('category')
+                ->where('user_id', $this->auth_user->id)
+                ->where(function ($q) use ($request) {
+                if ($request->category_id || $request->category_id != 0) {
+                    return $q->where('category_id', $request->category_id);
                 }
-            }
-            $result = array_merge($answers, $temp);
-
-            return [
-                'question' => $question->question,
-                'correct_answer' => $question->correct_answer,
-                'question_comment' => $question->question_comment,
-                'answers' => $result
-                ];
-            });
+            })
+                ->where(function ($q) use ($request) {
+                if ($request->question || $request->question != '') {
+                    return $q->where('question', 'like', '%' . $request->question . '%');
+                }
+            })
+                ->orderBy('created_at', 'DESC')
+                ->Paginate($request->per_page);
+        }
+        else {
+            $questions = Question::where(function ($q) use ($request) {
+                if (isset($request->category_id) && $request->category_id != 0) {
+                    return $q->where('user_id', 1)->where('category_id', $request->category_id);
+                }
+                return $q->where('user_id', 1);
+            })
+                ->inRandomOrder()
+                ->limit($request->limit ? $request->limit : null)
+                ->get();
+        }
 
         return $questions;
     }
@@ -60,27 +64,83 @@ class QuestionController extends Controller
     public function store(Request $request)
     {
 
-        if($request->hasFile('question_file')){
-            return $this->uploadCSVFile($request);
+        $quizz_image_path = null;
+        $file_questions_array = $request->questions ? array_map(function($q){return json_decode($q, true);}, $request->questions) : null;
+
+        if ($request->hasFile('image')) {
+            $request->validate(['image' => ['max:512', 'mimes:jpg,jpeg,png']]);
+
+            $path = 'quizz/images';
+            $image_url = Storage::disk('local')->put($path, $request->file('image'));
+            $quizz_image_path = basename($image_url);
         }
 
-        return response()->json(['error' => 'The request is incorrect'], 400);
+        if ($request->hasFile('question_file')) {
+            $rules = [
+                'category_id' => 'required|integer',
+            ];
+
+            $request->validate($rules);
+
+            $file_questions_array = $this->uploadCSVFile($request);
+        }
+
+        if($request->createQuizz){
+            $quizz = Quizz::create([
+                'user_id' => $this->auth_user->id,
+                'image' => $quizz_image_path,
+                'token' => (new Token())->Unique('quizz', 'token', 6),
+                'category_id' => $request->category_id,
+                'title' => $request->title,
+                'description' => $request->description,
+            ]);
+        }
+
+        foreach ($file_questions_array as $key => $question) {
+            $question_image_path = '';
+            if($request->hasFile('question_image_'.$key)){
+                $path = 'questions/'.$this->auth_user->id.'/images';
+                $image_url = Storage::disk('local')->put($path, $request->file('question_image_'.$key));
+                $question_image_path = basename($image_url);
+            }
+
+            $question_model = new Question();
+
+            $question_model->fill(array_merge($question, ['image' => $question_image_path]));
+
+
+            $question = Question::firstOrCreate(['question' => $question['question'], 'user_id' => $this->auth_user->id], $question_model->toArray());
+            if($request->createQuizz){
+                DB::table('quizz_question')->insert([
+                    'question_id' => $question->id,
+                    'quizz_id' => $quizz->id,
+                    'created_at' => date('Y-m-d H:m:s'),
+                    'updated_at' => date('Y-m-d H:m:s'),
+                ]);
+            }
+        }
+
+        if($request->createQuizz){
+            return response()->json(['success' => 'Suas questões foram adicionadas com sucesso à base de dados', 'token' => $quizz->token]);
+        }
+        return response()->json(['success' => 'Suas questões foram adicionadas com sucesso à base de dados']);
     }
 
 
     public function update(Request $request, $id)
     {
-        //
+    //
     }
 
 
     public function destroy($id)
     {
-        //
+    //
     }
 
 
-    private function uploadCSVFile($request){
+    private function uploadCSVFile($request)
+    {
 
         $rules = [
             'question_file' => 'file|mimes:csv,txt,xls,xlsx'
@@ -91,16 +151,14 @@ class QuestionController extends Controller
         $file = $request->file('question_file');
 
         //Se o arquivo for um CSV válido
-        if ($file->getMimeType() === "text/plain" && ($open = fopen($file, "r")) !== FALSE)
-        {
-            while (($data = fgetcsv($open, 1000, ",")) !== FALSE)
-            {
-              $questions[] = $data;
+        if ($file->getMimeType() === "text/plain" && ($open = fopen($file, "r")) !== FALSE) {
+            while (($data = fgetcsv($open, 1000, ",")) !== FALSE) {
+                $questions[] = $data;
             }
             fclose($open);
-        }else{
+        }
+        else {
             //Carrega a planilha do excel
-
             $spreadSheet = IOFactory::load($file);
             $questions = $spreadSheet->getActiveSheet()->toArray();
         }
@@ -108,29 +166,29 @@ class QuestionController extends Controller
 
         $header = $questions[0];
 
-        $csv_questions_array = array_map(function($question, $index) use ($header){
+        $csv_questions_array = array_map(function ($question, $index) use ($header) {
 
             $assoc_array = [];
 
             foreach ($question as $key => $question_column) {
-                if(count($question) === 9){
+                if (count($question) === 9) {
                     $assoc_array[$header[$key]] = $question[$key];
 
-                    if($key === 6 && is_numeric($question[$key])){
+                    if ($key === 6 && is_numeric($question[$key])) {
                         $assoc_array[$header[$key]] = $question[(int)$question[$key]];
 
                     }
                 }
             }
             return $assoc_array;
-        },$questions, array_keys($questions));
+        }, $questions, array_keys($questions));
 
         //Drop que csv header
         array_shift($csv_questions_array);
 
         //Filter the invalid questions
-        $csv_questions_array = array_filter($csv_questions_array, function($csv_question){
-            if(count($csv_question) === 9){
+        $csv_questions_array = array_filter($csv_questions_array, function ($csv_question) {
+            if (count($csv_question) === 9) {
                 return $csv_question;
             }
         });
@@ -138,31 +196,12 @@ class QuestionController extends Controller
         $csv_questions_array = array_unique($csv_questions_array, SORT_REGULAR);
 
         //Add authenticated user and category to question array
-        $csv_questions_array = array_map(function($question){
+        $csv_questions_array = array_map(function ($question) use ($request) {
             $question['user_id'] = $this->auth_user->id;
+            $question['category_id'] = $request->category_id;
             return $question;
         }, $csv_questions_array);
 
-        $csv_validation_rules = [
-            'questions.*.question' => 'unique:questions'
-        ];
-
-        $validation = Validator::make(['questions' => $csv_questions_array], $csv_validation_rules);
-
-        if($validation->fails()){
-            $errors = [];
-            foreach ($validation->errors()->toArray() as $key => $error) {
-                $i = explode('.',$key)[1];
-                $error = 'A pergunta: "'.$csv_questions_array[$i]['question']. '" já existe no banco de dados';
-                $errors[] = $error;
-            }
-
-            return response()->json(['errors' => $errors]);
-        }
-
-        dd($csv_questions_array);
-        $questions = Question::insert($csv_questions_array);
-
-        return response()->json(['success' => 'Seu Arquivo foi adicionado com sucesso à base de dados']);
+        return $csv_questions_array;
     }
 }

@@ -1,99 +1,88 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 
 import Question from './Question'
 import Result from './Result'
-import Answers from './Answers'
 
 import {useDispatch, useSelector} from 'react-redux'
-import { change } from 'store/Actions/quizz.action'
-import { HttpAuth } from 'config/Http'
+
+import { index } from 'store/Actions/categories.action'
+import { answerQuestion, change } from 'store/Actions/game.action'
+import {change as changeTimer} from 'store/Actions/timer.action'
+
+import QuizzRules from './QuizzRules'
 
 const Quizz = () => {
 
-    const [currentQuestion, setCurrentQuestion] = useState(0)
-
-    const [answer, setAnswer] = useState('')
-    const [correctAnswers, setCorrectAnswers] = useState([])
-    const [wrongAnswers, setWrongAnswers] = useState([])
-
-    const [showresults, setShowResults] = useState(false)
-    const [viewAnswers, setViewAnswers] = useState(false)
-
-    const [isLoading, setLoading] = useState(true)
-
     const dispatch = useDispatch()
 
-    const {questions} = useSelector(state => state.quizzReducer)
+    const { 
+        questions,
+        quizz: {
+            answer,
+            withTime,
+            scoreModifier,
+            currentQuestion,
+            quizzCreated,
+            quizzComplete
+        },
+    } = useSelector(state => state.gameReducer)
+
+    const {remainingTime} = useSelector(state => state.timerReducer)
 
     useEffect(() => {
-        getQuestions()
-
-        return () => setLoading(true)
+        dispatch(index())
         // eslint-disable-next-line react-hooks/exhaustive-deps
+        return () => dispatch(change('clear'))
     }, [])
 
-    const getQuestions = () => {
-        HttpAuth.get('question/list').then(res => {
-            setLoading(false)
-            dispatch(change({questions: res.data}))
-        })
-    }
+    const handleAnswer = () => { 
+        //End of the game
+        let withTimeScore = withTime ? Math.round(remainingTime * scoreModifier) + 1 : 1
+        let timeUpScore = withTime && remainingTime <= 0 ? 0 : withTimeScore
+        let score = withTime ? withTimeScore : timeUpScore
 
-    const handleAnswer = () => {
+        dispatch(answerQuestion({
+            question: questions[currentQuestion].question,
+            correct_answer: questions[currentQuestion].correct_answer,
+            answer: answer,
+            score: score,
+            remainingTime,
+            scoreModifier
+        }))
 
-        if(answer === questions[currentQuestion].correct_answer){
-            setCorrectAnswers([...correctAnswers, {question: questions[currentQuestion].question, answer: answer}])
-        }else{
-            setWrongAnswers([...wrongAnswers, {question: questions[currentQuestion].question, answer: answer}])
-        }
+        dispatch(change({ currentQuestion: currentQuestion + 1 }))
         
-
-        if (answer === '') {
-            return alert('you must provide at least a answer')
+        if(withTime){
+            dispatch(changeTimer({resetTimer: true}))
         }
 
-        if (currentQuestion + 1 > questions.length - 1) {
-            setShowResults(true)
-            return
+        if(currentQuestion+1 === questions.length){
+            dispatch(change({ quizzComplete: true, answer: '' }))
         }
-        setAnswer('')
-        setCurrentQuestion(currentQuestion + 1)
     }
 
-        const handleRestart = () => {
-            getQuestions()
-            setCurrentQuestion(0)
-            setCorrectAnswers([])
-            setWrongAnswers([])
-            setShowResults(false)
-            setViewAnswers(false)
-        }
+    const handleRestart = () => {
+        console.log('restart')
+    }
 
     return (
-
-        <div className='quizz'>
-            {questions.length > 0 &&
+        <>
+            {
+                !quizzCreated ?
+                <QuizzRules />
+                :
+                questions.length > 0 &&
                 <div className="quizz__container">
-                    {(!showresults && !viewAnswers) &&
-                        <Question
-                        isLoading={isLoading}
-                        questions={questions}
-                        currentQuestion={currentQuestion}
-                        setAnswer={setAnswer}
-                        handleAnswer={handleAnswer}
-                    />
-                    }
-
-                    {showresults && 
-                    <Result restart={handleRestart} correctAnswers={correctAnswers} setViewAnswers={setViewAnswers} viewAnswers={viewAnswers} setShowResults={setShowResults}/>
-                    }
-
-                    {(viewAnswers === true) &&
-                        <Answers correct={correctAnswers} wrong={wrongAnswers} setShowResults={setShowResults} setViewAnswers={setViewAnswers}/>
+                    {(!quizzComplete) ?
+                        <Question handleAnswer={handleAnswer}/>
+                        :
+                        <Result
+                        totalQuestions={questions.length}
+                        restart={handleRestart}/>
                     }
                 </div>
             }
-        </div>
+        </>
     )
 }
 

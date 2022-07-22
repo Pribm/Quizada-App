@@ -11,7 +11,9 @@ class Question extends Model
 
     protected $table = 'questions';
 
-    protected $hidden = ['id', 'created_at', 'updated_at'];
+    protected $casts = ['questions' => 'json'];
+
+    protected $hidden = [ 'created_at', 'updated_at', 'pivot'];
 
     protected $guarded = ['id'];
     protected $fillable = [
@@ -25,5 +27,18 @@ class Question extends Model
         'question_comment',
         'user_id',
         'category_id',
+        'image'
     ];
+
+    public function quizzes(){
+        return $this->belongsToMany(Quizz::class, 'quizz_question', 'question_id', 'quizz_id');
+    }
+
+    public function category(){
+        return $this->belongsTo(Categories::class, 'category_id');
+    }
+
+    public function user(){
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

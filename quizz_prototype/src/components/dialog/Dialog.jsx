@@ -3,7 +3,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogContentText, Dialog
 
 const CustomDialog = (props) => {
 
-    const {dialogTitle, dialogContentText, dialogBody, handleClose, actionButtonText, handleConfirm, open } = props
+    const {dialogTitle, dialogContentText, children, handleClose, actionButtonText, handleConfirm, open } = props
     
 
   return (
@@ -16,7 +16,7 @@ const CustomDialog = (props) => {
                 {dialogContentText}
             </DialogContentText>
             <div>
-                {dialogBody}
+                {children}
             </div>
         </DialogContent>
         <DialogActions>

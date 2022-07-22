@@ -29,9 +29,9 @@ export const error = (payload) => ({
 })
 
 
-
 export const index = payload => dispatch => {
-    return HttpAuth.get('question/categories', {params: new URLSearchParams({name: payload})}).then(res => dispatch(indexResponse(res.data.categories)))
+    return HttpAuth.get('question/categories', {params: payload})
+    .then(res => dispatch(indexResponse(res.data)))
 }
 
 export const create = payload => dispatch => {
@@ -40,7 +40,8 @@ export const create = payload => dispatch => {
         dispatch(changeLoading({open: false}))
         if(typeof res !== 'undefined'){
             if(res.data.success){
-                dispatch(success(res.data.success))
+                dispatch(change({createNewCategory: false, category: res.data.success}))
+                return res.data.success;
             }
             if(res.data.errors){
                 dispatch(error(res.data.errors))

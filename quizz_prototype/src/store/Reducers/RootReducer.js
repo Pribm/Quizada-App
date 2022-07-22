@@ -6,6 +6,11 @@ import mainMenuReducer from "./mainMenu.reducer"
 import quizzReducer from "./quizz.reducer"
 import confirmReducer from "./confirm.reducer"
 import categoriesReducer from "./categories.reducer"
+import userReducer from "./user.reducer"
+import questionsReducer from "./questions.reducer"
+import gameReducer from "./game.reducer"
+import timerReducer from "./timer.reducer"
+import friendsReducer from "./friends.reducer"
 
 const rootReducer = combineReducers({
     loadingReducer,
@@ -14,7 +19,12 @@ const rootReducer = combineReducers({
     mainMenuReducer,
     quizzReducer,
     confirmReducer,
-    categoriesReducer
+    categoriesReducer,
+    userReducer,
+    questionsReducer,
+    gameReducer,
+    timerReducer,
+    friendsReducer
 })
 
 export default rootReducer

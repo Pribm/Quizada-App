@@ -5,17 +5,18 @@ const initialState = {
     category: {},
     categories: [],
     errors: {},
+    createNewCategory: false
 }
 
-export default (state = initialState, { type, payload }) => {
+const categoriesReducer = (state = initialState, { type, payload }) => {
     switch (type) {
 
         case actionsTypes.CHANGE:
-            return payload === 'clear' ? initialState : { ...state, category: payload }
+            return payload === 'clear' ? initialState : { ...state, ...payload }
 
 
         case actionsTypes.INDEX:
-            return { ...state, categories: payload.data }
+            return { ...state, categories: payload }
         
         case actionsTypes.ERROR:
             return {...state, errors: payload}
@@ -28,3 +29,5 @@ export default (state = initialState, { type, payload }) => {
             return state
     }
 }
+
+export default categoriesReducer

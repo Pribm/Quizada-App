@@ -1,10 +1,15 @@
-import axios from "axios"
-import { HttpAuth } from "config/Http"
+import { Http, HttpAuth } from "config/Http"
+import { changeAlert } from "./alert.action"
+import { changeConfirm } from "./confirm.action"
+import { changeLoading } from "./loading.action"
 
 export const actionTypes = {
     CHANGE : 'CHANGE_QUIZZ',
     ERROR: 'QUIZZ_ERROR',
-    CREATE: 'CREATE_QUIZZ'
+    SUCCESS: 'QUIZZ_SUCCESS',
+    INDEX: 'QUIZZ_INDEX',
+    CREATE: 'QUIZZ_CREATE',
+    DESTROY: 'QUIZZ_DESTROY',
 }
 
 export const change = (payload) => {
@@ -19,16 +24,53 @@ export const error = (payload) => ({
   payload
 })
 
+export const success = payload => ({
+    type: actionTypes.SUCCESS,
+    payload
+})
 
-export const createQuizzResponse = payload => (
-    {
-        type: actionTypes.CREATE,
-        payload
-    }
-)
+const indexResponse = (payload) => ({
+  type: actionTypes.INDEX,
+  payload
+})
 
+
+
+export const index = () => dispatch => {
+   return HttpAuth.get('quizz').then(res => dispatch(indexResponse(res.data)))
+}
+
+export const create = payload => dispatch => {
+    dispatch(changeLoading({open: true}))
+
+    HttpAuth.post('quizz', payload).then(res => {
+        dispatch(changeLoading({open: false}))
+        if(res.data.success){
+            dispatch(change({token: res.data.quizz.token}))
+            dispatch(success(true))
+        }
+
+        if(res.data.error){
+            dispatch(changeAlert({open: true, msg: res.data.error, class: 'error'}))
+        }
+    })
+}
+
+
+
+export const destroy = id => dispatch => {
+    dispatch(changeLoading({open: true}))
+    HttpAuth.delete(`quizz/${id}`).then(res => {
+        dispatch(changeLoading({open: false}))
+        if(res.data.success){
+            dispatch(index())
+            dispatch(changeConfirm({open: false}))
+        }
+    })
+}
+ 
 export const uploadQuizzFile =  (payload) => dispatch => {
-    dispatch(change({upLoadingNewQuizz: true}))
+
     let formdata = new FormData()
 
     Object.entries(payload).forEach(async (element, i, array) => {
@@ -44,21 +86,25 @@ export const uploadQuizzFile =  (payload) => dispatch => {
         formdata.append(element[0], file)
         
         if(i === (array.length - 1)){
-            for(let d of formdata.entries()){
-                console.log('key:', d[0], 'value: ', d[1])
-            }
+            
+            // Object.entries(formdata).forEach(d => console.log(d[0], d[1]))
+
            HttpAuth.post('question/upload', formdata).then(res => {
-                dispatch(change({upLoadingNewQuizz: false}))
                 
                 if(res.data.errors){
                     dispatch(error(res.data.errors))
+                }
+
+                if(res.data.success){
+                    dispatch(change({token: res.data.token}))
+                    dispatch(success(true))
                 }
            })
         }
     })
 
     
-    
+   
 
     
 }
@@ -69,20 +115,3 @@ const getFileFromBlob = async (blob) => {
     return blobFile
 }
 
-// Object.entries(payload).forEach(element => {
-        
-//     if(/(blob*)/.test(element[1])){
-//         let file = async () => {
-//             let el = await fetch(element[1])
-//             let blob = await el.blob()
-//             return blob
-//         }
-//         formdata.append(element[0], file())
-
-//         console.log(file())
-//     }else{
-//         formdata.append(element[0], element[1])
-//     }
-// });
-
-// HttpAuth.post('question/upload',formdata).then(res => {})

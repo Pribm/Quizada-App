@@ -17,8 +17,8 @@ class CategoriesSeeder extends Seeder
     public function run()
     {
         $categories = [
-            ['name' => 'Filmes e Séries', 'image' => 'quizz_categories/filmes_e_series.jpg', 'user_id' => 1],
             ['name' => 'Conhecimentos gerais', 'image' => 'quizz_categories/conhecimentos_gerais.jpg', 'user_id' => 1],
+            ['name' => 'Filmes e Séries', 'image' => 'quizz_categories/filmes_e_series.jpg', 'user_id' => 1],
             ['name' => 'Matemática', 'image' => 'quizz_categories/matematica.jpg', 'user_id' => 1],
             ['name' => 'Ciência', 'image' => 'quizz_categories/ciencia.jpg', 'user_id' => 1],
             ['name' => 'Literatura', 'image' => 'quizz_categories/literatura.jpg', 'user_id' => 1],

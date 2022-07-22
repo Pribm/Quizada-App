@@ -27,7 +27,7 @@ const SnackAlert = () => {
         onClose={() => dispatch(changeAlert({open:false}))}
         anchorOrigin={{horizontal: 'center', vertical: 'bottom'}}
         TransitionComponent={SlideTransition}
-        autoHideDuration={2000}
+        autoHideDuration={state.autoHideDuration}
     >
         <Alert severity={state.class}>{state.msg}</Alert>
     </Snackbar>

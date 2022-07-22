@@ -2,29 +2,44 @@ import MenuWrapper from 'components/wrappers/MenuWrapper'
 import React, { useRef, useState } from 'react'
 
 import { FcOpenedFolder, FcIdea,FcCheckmark, FcHighPriority } from 'react-icons/fc'
+import {IoMdReturnLeft} from 'react-icons/io'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { change, uploadQuizzFile } from 'store/Actions/quizz.action'
+import { change as changeCategory } from 'store/Actions/categories.action'
 
 import Lottie from 'lottie-react'
-import { UploadFile, Waiting } from 'assets'
+import { Waiting } from 'assets'
+import { Button } from '@mui/material'
+import { useNavigate } from 'react-router-dom'
+
 
 const CreateQuizzStep_2 = () => {
 
-    const { newQuizz, upLoadingNewQuizz, uploadNewQuizzSuccess, errors } = useSelector(state => state.quizzReducer)
+
+    React.useEffect(() => {
+        return () => {
+            dispatch(changeCategory('clear'))
+        }
+    }, [])
+
+    
+    const { newQuizz } = useSelector(state => state.quizzReducer)
     const dispatch = useDispatch()
 
+    const navigate = useNavigate()
+    
     const [prepareUpload, setPrepareUpload] = useState(false)
-
     const fileInput = useRef(null)
-
+    
     const handleUploadQuestions = e => {
-        dispatch(change({ newQuizz: { ...newQuizz, question_file: URL.createObjectURL(e.target.files[0]) } }))
+        dispatch(change({ newQuizz: { ...newQuizz, createQuizz: true, question_file: URL.createObjectURL(e.target.files[0]) } }))
         setPrepareUpload(true)
     }
-
+    
     return (
         <div className='flex flex-col items-center min-h-[75vh] md:w-[30vw] md:mx-auto'>
+            
             {
                 !prepareUpload ?
                 <>
@@ -39,9 +54,9 @@ const CreateQuizzStep_2 = () => {
                             </div>
                         </div>
 
-
                         <div
-                            className='h-[120px] w-[280px] md:w-[380px] mb-auto text-sky-500 flex items-center text-2xl px-4 bg-white rounded-xl cursor-pointer hover:bg-orange-500 hover:text-white'>
+                            onClick={() => navigate('/questions/create', {replace: true, state: {createQuizz: true}})}
+                            className='h-[120px] w-[280px] md:w-[380px] text-sky-500 flex items-center text-2xl px-4 bg-white rounded-xl cursor-pointer hover:bg-orange-500 hover:text-white'>
                             <FcIdea size={80} className={'mr-4'} />
                             Criar Questões Manualmente
                         </div>
@@ -50,10 +65,10 @@ const CreateQuizzStep_2 = () => {
                             type="file"
                             className='hidden'
                             ref={fileInput} />
+                            <Button className='bg-white mb-auto mt-2' onClick={() => dispatch(change({creatingNewQuizz: false}))}><IoMdReturnLeft className='mr-2'/> Voltar </Button>
                     </>
                     :
-                    (!upLoadingNewQuizz && !uploadNewQuizzSuccess && errors.length === 0) ?
-                    <div className='flex flex-col px-4 mt-auto mb-auto'>
+                    <div className='flex flex-col px-4 items-center mt-auto mb-auto'>
                         <Lottie animationData={Waiting}/>
                         <h1 className='text-3xl text-white text-center'>Tem certeza que este é o arquivo correto?</h1>
                         <div
@@ -70,11 +85,6 @@ const CreateQuizzStep_2 = () => {
                             Prefiro escolher outro
                         </div>
                     </div>
-                    :
-                    errors.length === 0 ?
-                    <Lottie animationData={UploadFile} initialSegment={[0,80]}/>
-                    :
-                    <div>show errors</div>
             }
         </div>
     )

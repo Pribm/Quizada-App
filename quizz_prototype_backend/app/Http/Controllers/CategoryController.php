@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Categories;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use App\Models\Question;
 
 class CategoryController extends Controller
 {
@@ -17,11 +18,19 @@ class CategoryController extends Controller
 
     public function index(Request $request)
     {
-        $categories = Categories::where('name', 'like', '%'.$request->name.'%')
-        ->where('user_id', $this->auth_user->id)
-        ->where('user_id', 1)
-        ->simplePaginate(10);
-        return response()->json(compact('categories'));
+        //Return selected categories or admin registered questions categories
+        if($request->get_registered_categories == true){
+            $categories = Categories::where('name', 'like', '%'.$request->name.'%')
+            ->where(function($q) {
+                return $q->where('user_id', $this->auth_user->id)->orWhere('user_id', 1);
+            })
+            ->get();
+            return response()->json($categories);
+        }
+
+        $categories = Question::where('user_id', $this->auth_user->id)->orWhere('user_id', 1)->groupBy('category_id')->get(['category_id']);
+        $categories = Categories::whereIn('id', $categories->pluck('category_id'))->get();
+        return $categories;
     }
 
     public function store(Request $request)

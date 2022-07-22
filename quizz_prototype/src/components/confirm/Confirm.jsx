@@ -2,13 +2,13 @@ import { Modal, Paper } from '@mui/material'
 import React from 'react'
 
 import {useSelector, useDispatch} from 'react-redux'
-import { change } from '../../store/Actions/confirm.action'
+import { changeConfirm } from '../../store/Actions/confirm.action'
 
 
 
-export const Confirm = ({confirmAction = () => console.log('confirm')}) => {
+export const Confirm = () => {
     const dispatch = useDispatch()
-    const {open,title, msg} = useSelector(state => state.confirmReducer)
+    const {open,title, msg, confirmAction} = useSelector(state => state.confirmReducer)
 
   return (
     <Modal open={open}>
@@ -23,7 +23,7 @@ export const Confirm = ({confirmAction = () => console.log('confirm')}) => {
                     Confirmar
                 </button>
                 <button
-                onClick={() => dispatch(change({open: false}))}
+                onClick={() => dispatch(changeConfirm({open: false}))}
                 className='bg-red-600 px-4 py-2 text-white mr-2 rounded-md flex-1'>
                     Cancelar
                 </button>

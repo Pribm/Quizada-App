@@ -1,4 +1,4 @@
-import { Http } from "../../config/Http"
+import { Http, HttpAuth } from "../../config/Http"
 import { changeAlert } from "./alert.action"
 import { changeLoading } from "./loading.action"
 
@@ -26,7 +26,30 @@ export const error = (payload) => ({
 export const logout = () => {
     localStorage.removeItem('access_token')
     localStorage.removeItem('user_profile_data')
+    localStorage.removeItem('social_access_token')
     window.location.replace('/')
+}
+
+export const register = data => dispatch => {
+    
+    dispatch(changeLoading({open: true}))
+    HttpAuth.post('user/register', data).then(res => {
+        dispatch(changeLoading({open: false}))
+        if(typeof res !== 'undefined'){
+            if(res.data.success){
+                localStorage.setItem('access_token', res.data.access_token)
+                dispatch(changeAlert({
+                    open:true,
+                    msg: res.data.success,
+                    class: 'success'
+                }))
+            }
+
+            if(res.status === 422) {
+                dispatch(error(res.data.errors))
+            }
+        }
+    })
 }
 
 export const login = credentials => dispatch => {
@@ -64,6 +87,64 @@ export const login = credentials => dispatch => {
                 dispatch(changeAlert({ open: true, msg: error.response.data.message, class: 'error' }))
             }
         }
+    })
+}
+
+export const socialLogin = payload => dispatch => {
+    let loginData = {}
+
+    dispatch(changeLoading({open: true, msg: 'Carregando dados do usuário...'}))
+
+    loginData = {
+        grant_type: 'social',
+        client_id: process.env.REACT_APP_OAUTH_CLIENT_ID,
+        client_secret: process.env.REACT_APP_OAUTH_CLIENT_SECRET,
+        provider: payload.provider,
+        access_token: payload.access_token
+    }
+
+    return Http.post('oauth/token', loginData).then(res => {
+        dispatch(changeLoading({open: false}))
+
+        if (typeof res !== 'undefined') {
+            if (res.data.access_token) {
+                localStorage.setItem('access_token', res.data.access_token)
+                localStorage.setItem('social_access_token', payload.access_token)
+                dispatch(success(true))
+            }
+        }
+    })
+    .catch(error => {
+        dispatch(changeLoading({ open: false }))
+        if (typeof error.response !== 'undefined') {
+            if (error.response.status === 401 || error.response.status === 400) {
+                dispatch(changeAlert({ open: true, msg: 'Email ou senha incorretos ', class: 'error' }))
+            } else {
+                dispatch(changeAlert({ open: true, msg: error.response.data.message, class: 'error' }))
+            }
+        }
+    })
+}
+
+export const forgotPassword = email => dispatch => {
+    return HttpAuth.post('user/forgot-password', {email}).then(res => {
+        if(res.status === 200){
+            dispatch(changeAlert({open:true, msg: res.data.message, class: 'success'}))
+        }else{
+            dispatch(error(res.data.errors))
+        }
+        return res.status
+    })
+}
+
+export const resetPassword = data => dispatch => {
+    return HttpAuth.post('user/reset-password', data).then(res => {
+        if(res.status === 200){
+            dispatch(changeAlert({open:true, msg: res.data.success, class: 'success'}))
+        }else{
+            dispatch(changeAlert({open: true, msg:res.data.errors, class: 'error'}))
+        }
+        return res.status
     })
 }
 

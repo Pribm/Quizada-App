@@ -27,7 +27,7 @@ const authReducer = (state = initialState, { type, payload }) => {
       return { ...state, success: payload }
 
     case actionTypes.ERROR:
-      return { ...state, errors: { ...state.errors, ...payload } }
+      return { ...state, errors: payload }
 
     default:
       return state

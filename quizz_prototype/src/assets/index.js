@@ -1,4 +1,6 @@
 import bgLogin from './bg_quizzada_login_psd.jpg'
+import bgRegister from './bg_quizzada_register_psd.jpg'
+
 import logo from './logo_Prancheta 1.svg'
 import PlayAlone from './play_alone.json'
 import BackGroundMenuCard from './background-menu-card.json'
@@ -17,6 +19,7 @@ import UploadFile from './upload_file.json'
 export {
     bgLogin,
     logo,
+    bgRegister,
     PlayAlone,
     BackGroundMenuCard,
     Battle,

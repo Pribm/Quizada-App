@@ -1,0 +1,101 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\User;
+
+class FriendsController extends Controller
+{
+    private $auth_user;
+
+    public function __construct(){
+        $this->auth_user = auth('api')->user();
+    }
+
+    public function index(Request $request)
+    {
+        if($request->showQuizzRequests){
+            $quizz_requests = $this->auth_user->pendingQuizzInvitation()->withCount('questions')->orderBy('updated_at', 'Desc')->paginate(10);
+            return $quizz_requests;
+        }
+
+        if($request->showUnfollowedUsers){
+            $followable_users = $this->auth_user->followableUsers()->whereDoesntHave('friendsFrom')->whereDoesntHave('friendsTo')->orderBy('updated_at', 'Desc')->paginate(10);
+            return $followable_users;
+        }
+
+        if($request->showFriendshipRequests){
+            $friendship_requests = $this->auth_user->pendingFriendsFrom()->orderBy('updated_at', 'Desc')->paginate(10);
+            return $friendship_requests;
+        }
+
+        if($request->showUserFriendshipRequests){
+            $friendship_requests = $this->auth_user->pendingFriendsTo()->orderBy('updated_at', 'Desc')->paginate(10);
+            return $friendship_requests;
+        }
+
+        if($request->showFriendsList){
+            $friends_list = $this->auth_user->acceptedFriendsFrom()->orderBy('updated_at', 'Desc')->paginate(10);
+            return $friends_list;
+        }
+
+        return response()->json(['message' => 'No data returned, you must pass a url parameter',
+        'possible_parameters' => [
+            'showQuizzRequests=boolean',
+            'showUnfollowedUsers=boolean',
+            'showFriendshipRequests=boolean',
+            'showUserFriendshipRequests=boolean',
+            'showFriendsList=boolean'
+        ]]);
+    }
+
+
+    public function store(Request $request)
+    {
+        //
+    }
+
+    public function show($id)
+    {
+        //
+    }
+
+
+    public function update(Request $request, $id)
+    {
+        $friendship_request_exists = $this->auth_user->friendsTo()->where('friend_id', $id)->exists();
+
+        if(!$friendship_request_exists){
+            //Send a friendship request
+            $this->auth_user->friendsTo()->attach($id);
+            return $this->auth_user->friendsTo()->where('friend_id', $id)->first();
+        }
+
+        //Revoke a invitation
+        $this->auth_user->friendsTo()->detach($id);
+        return User::find($id);
+    }
+
+    public function invitationConfirm(Request $request, $id){
+
+        $request->validate([
+            'accept_invitation' => 'required'
+        ]);
+
+        if($request->accept_invitation === true){
+            $this->auth_user->pendingFriendsFrom()->updateExistingPivot($id,['accepted' => true]);
+            return ['accepted' => true, 'user' => User::find($id)];
+        }
+        //Revoke a invitation
+        $this->auth_user->friendsFrom()->detach($id);
+        return ['accepted' => false, 'user' => User::find($id)];
+
+    }
+
+
+    public function destroy($id)
+    {
+        //
+    }
+}

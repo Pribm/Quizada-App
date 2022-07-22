@@ -3,7 +3,8 @@ import { actionTypes } from "../Actions/alert.action"
 const initialState = {
     open: false,
     msg: 'Sucesso!',
-    class: 'success'
+    class: 'success',
+    autoHideDuration: 2000
 }
 
 const alertReducer = (state = initialState, { type, payload }) => {

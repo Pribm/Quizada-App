@@ -6,6 +6,10 @@ use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvid
 use Illuminate\Support\Facades\Gate;
 use Laravel\Passport\Passport;
 
+use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Support\Facades\Route;
+
 class AuthServiceProvider extends ServiceProvider
 {
     /**
@@ -26,8 +30,19 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
+        VerifyEmail::toMailUsing(function ($notifiable, $url) {
+
+            $spaUrl = env('APP_VIEW_URL')."?verify_email=".$url;
+
+            return (new MailMessage)
+                ->view('email.verification', ['url' => $spaUrl])
+                ->subject('Verifique seu endereço de Email')
+                ->line('Clique no botão abaixo para verificar seu endereço de email');
+        });
+
         if (! $this->app->routesAreCached()) {
-            Passport::routes();
+
+                Passport::routes();
         }
     }
 }
