@@ -14,6 +14,9 @@ use App\Http\Controllers\FriendsController;
 use App\Http\Controllers\PaymentController;
 
 
+header('Access-Control-Allow-Origin:  *');
+header('Access-Control-Allow-Methods:  POST, GET, OPTIONS, PUT, PATCH, DELETE');
+header('Access-Control-Allow-Headers: Accept, Content-Type, X-Auth-Token, Origin, Authorization');
 
 /*
 |--------------------------------------------------------------------------
@@ -33,8 +36,7 @@ Route::prefix('user')->group(function(){
     Route::post('forgot-password', [ForgotPasswordController::class, 'forgot']);
     Route::post('reset-password', [ForgotPasswordController::class, 'reset']);
 
-    Route::apiResource('/friends',FriendsController::class);
-    Route::post('/friends/invitation-confirm/{id}', [FriendsController::class, 'invitationConfirm']);
+
 });
 
 Route::get('email/verify/{id}', [EmailVerificationController::class, 'verify'])->name('verification.verify');
@@ -55,6 +57,8 @@ Route::middleware(['auth:api', 'verified'])->prefix('user')->group(function () {
     Route::get('/', [UserController::class, 'index']);
     Route::get('ranking', [UserController::class, 'ranking']);
     Route::put('/', [UserController::class, 'update']);
+    Route::apiResource('/friends',FriendsController::class);
+    Route::post('/friends/invitation-confirm/{id}', [FriendsController::class, 'invitationConfirm']);
 });
 
 Route::get('/quizz/export/{id}', [QuizzController::class, 'export'])->middleware(['auth:api', 'verified']);
