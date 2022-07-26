@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['https://localhost:3000'],
+    'allowed_origins' => [env('APP_VIEW_URL'),],
 
     'allowed_origins_patterns' => [],
 
