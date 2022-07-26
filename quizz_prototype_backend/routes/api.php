@@ -31,7 +31,7 @@ Route::prefix('user')->group(function(){
     Route::post('forgot-password', [ForgotPasswordController::class, 'forgot']);
     Route::post('reset-password', [ForgotPasswordController::class, 'reset']);
 
-
+    Route::get('test', function() {return 'teste';});
 });
 
 Route::get('email/verify/{id}', [EmailVerificationController::class, 'verify'])->name('verification.verify');
