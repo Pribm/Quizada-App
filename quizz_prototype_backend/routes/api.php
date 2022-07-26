@@ -25,7 +25,7 @@ use App\Http\Controllers\PaymentController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-//Route::post('webscrapping', [webScrapperController::class, 'scrapQuizz']);
+Route::post('webscrapping', [webScrapperController::class, 'scrapQuizz']);
 
 //User register
 Route::prefix('user')->group(function(){
