@@ -14,7 +14,7 @@ use App\Http\Controllers\ImageController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
+Route::get('/', function() {return 'published';});
 Route::get('/thumbnail/{path}/{img}', [ImageController::class, 'thumb']);
 
 
