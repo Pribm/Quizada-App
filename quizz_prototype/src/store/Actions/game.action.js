@@ -5,6 +5,7 @@ export const actionTypes = {
     CHANGE: 'GAME_CHANGE',
     CREATE: 'GAME_CREATE',
     ANSWER: 'GAME_ANSWER',
+    RESTART_GAME: 'GAME_RESTART'
 }
 
 export const change = (payload) => ({
@@ -45,6 +46,12 @@ export const finishGame = payload => dispatch => {
     }
   })
 }
+
+export const restartGame = (payload) => ({
+  type: actionTypes.RESTART_GAME,
+  payload
+})
+
 
 
 

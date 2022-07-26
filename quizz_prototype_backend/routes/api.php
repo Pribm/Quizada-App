@@ -11,6 +11,7 @@ use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\webScrapperController;
 use App\Http\Controllers\FriendsController;
+use App\Http\Controllers\PaymentController;
 
 
 
@@ -24,7 +25,7 @@ use App\Http\Controllers\FriendsController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::post('webscrapping', [webScrapperController::class, 'scrapQuizz']);
+//Route::post('webscrapping', [webScrapperController::class, 'scrapQuizz']);
 
 //User register
 Route::prefix('user')->group(function(){
@@ -42,18 +43,23 @@ Route::get('email/resend', [EmailVerificationController::class, 'resend'])->name
 Route::middleware(['auth:api', 'verified'])->prefix('question')->group(function () {
     Route::post('/upload', [QuestionController::class, 'store']);
     Route::get('/list', [QuestionController::class, 'index']);
+    Route::delete('/', [QuestionController::class, 'destroy']);
 
     //get parameters = name,
     Route::apiResource('/categories', CategoryController::class);
 });
 
+Route::post('/process_payment', [PaymentController::class, 'pix']);
+
 Route::middleware(['auth:api', 'verified'])->prefix('user')->group(function () {
     Route::get('/', [UserController::class, 'index']);
+    Route::get('ranking', [UserController::class, 'ranking']);
     Route::put('/', [UserController::class, 'update']);
 });
 
 Route::get('/quizz/export/{id}', [QuizzController::class, 'export'])->middleware(['auth:api', 'verified']);
 Route::post('/quizz/score', [QuizzController::class, 'storeScore'])->middleware(['auth:api', 'verified']);
+Route::get('/quizz/ranking/{id}', [QuizzController::class, 'ranking'])->middleware(['auth:api', 'verified']);
 Route::put('/quizz/accept/{id}', [QuizzController::class, 'acceptQuizz'])->middleware(['auth:api', 'verified']);
 Route::get('/quizz/make-invitation/{token}/{guest_user}', [QuizzController::class, 'sendToken'])->middleware(['auth:api', 'verified']);
 Route::apiResource('/quizz', QuizzController::class)->middleware(['auth:api', 'verified']);

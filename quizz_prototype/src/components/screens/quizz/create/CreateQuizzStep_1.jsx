@@ -4,13 +4,14 @@ import MenuWrapper from 'components/wrappers/MenuWrapper'
 import Lottie from 'lottie-react'
 import { UploadSpaceship } from 'assets'
 
-import { InputBase, ButtonBase, TextField } from '@mui/material'
+import { InputBase, ButtonBase, TextField, Fab } from '@mui/material'
 
 import Dialog from 'components/dialog/Dialog'
 
 import {AiFillPlusCircle, AiOutlineSearch} from 'react-icons/ai'
 
 import {useDispatch, useSelector} from 'react-redux'
+import {change as changeRules} from 'store/Actions/rules.action'
 import { change, create as createQuizz } from 'store/Actions/quizz.action'
 import {change as changeCategory, create} from 'store/Actions/categories.action'
 import { index } from 'store/Actions/categories.action'
@@ -19,6 +20,8 @@ import { index } from 'store/Actions/categories.action'
 import {useFormik} from 'formik'
 import { createQuizzSchema } from './schemas/createQuizzSchema'
 import { FcImageFile, FcPlus } from 'react-icons/fc'
+import { BsFileRuled } from 'react-icons/bs'
+import { MdClose } from 'react-icons/md'
 
 const CreateQuizz = () => {
 
@@ -45,6 +48,7 @@ const CreateQuizz = () => {
     const dispatch = useDispatch()
     const {newQuizz: {image, category: quizzCategory}, newQuizz, quizz} = useSelector(state => state.quizzReducer)
     const {categories, errors: categoryErrors, createNewCategory, category: selectedCategory} = useSelector(state => state.categoriesReducer)
+    const {rules} = useSelector(state => state.rulesReducer)
 
     const {values, errors, touched, handleChange, handleBlur, handleSubmit, setFieldValue} = useFormik({
         initialValues: {
@@ -73,8 +77,11 @@ const CreateQuizz = () => {
             fd.append('title', values.title)
             fd.append('description', values.description)
             quizz.forEach((q,i) => fd.append(`questions[${i}]`, q))
+
+            Object.keys(rules).forEach((rule) => {
+                fd.append(rule, rules[rule])
+            })
             
-    
             if(imageInputRef.current.files.length > 0){
                 fd.append('image', imageInputRef.current.files[0])
             }
@@ -88,12 +95,10 @@ const CreateQuizz = () => {
     const categoryInput = useRef(null)
 
     const createNewQuizz = (values) => {
-        const {category, ...rest} = {newQuizz}
-
         dispatch(change({
             creatingNewQuizz: true,
             newQuizz: {
-                ...rest,
+                ...rules,
                 category_id: quizzCategory.id,
                 title: values.title,
                 image: image,
@@ -123,12 +128,16 @@ const CreateQuizz = () => {
 
   return (
     <div className='flex flex-col items-center min-h-[75vh] md:w-[30vw] md:mx-auto'>
+        <Fab color="primary" aria-label="add" variant="extended" className='fixed bottom-[90px] left-4' onClick={() => dispatch(changeRules({open: true}))}>
+            <BsFileRuled className='mr-2'/>
+            Regras
+          </Fab>
         <div
         onClick={() => {
             imageInputRef.current.click()
             setShowSearchResults(false)
         }}
-        className="p-4 mt-4 w-[250px] h-[250px] rounded-lg cursor-pointer"
+        className="p-4 mt-4 w-[200px] h-[200px] rounded-lg cursor-pointer"
         style={{border: 'dashed white 1px'}}>
             {
                 !image ?
@@ -147,6 +156,7 @@ const CreateQuizz = () => {
         <div className='mt-4 w-[100%] px-4 relative'>
             <h2 className='text-xl text-center text-white'>Categoria do quizz</h2>
             <InputBase
+            autoComplete='off'
             inputRef={categoryInput}
             fullWidth
             value={values.category}
@@ -226,14 +236,18 @@ const CreateQuizz = () => {
             dialogContentText='Ainda não temos a categoria que você selecionou na nossa base de dados, por favor cadastre.'
             actionButtonText='Confirmar'
             handleConfirm={handleCreateCategory}
-            handleClose={() => dispatch(changeCategory({createNewCategory: false}))}
+            handleClose={() => {
+                dispatch(changeCategory({createNewCategory: false}))
+                setCategoryThumbnail('')
+            }}
         >
-            <div className='w-[100%] flex justify-center'>
+            <div className='w-[100%] flex flex-col justify-center items-center '>
                 <div
                 onClick={() => categoryImageRef.current.click()}
                 className='w-[120px] h-[120px] rounded-2xl flex justify-center items-center mb-4 relative cursor-pointer'
                 style={{border: 'dashed #ccc 1px'}}
                 >
+                
                     {
                         !categoryThumbnail ?
                         <>
@@ -244,9 +258,19 @@ const CreateQuizz = () => {
                             <FcPlus size={30} className='absolute right-[-10px] bottom-[-10px]'/>
                         </>
                         :
+                       <>
+                        <MdClose
+                        className='bg-red-500 text-white rounded-full top-2 right-2 z-10 absolute'
+                        onClick={() => {
+                            setCategoryThumbnail('')
+                            categoryImageRef.current.value = ''
+                        }}
+                        />
                         <img src={categoryThumbnail} alt="category_thumb"  className='w-[100%] h-[100%] rounded-2xl object-cover'/>
+                       </>
                     }
                 </div>
+                {categoryErrors.image && <label className='text-red-500'>{categoryErrors.image[0]}</label>}
             </div>
             <TextField
             label='imagem'

@@ -3,7 +3,7 @@ import { HttpAuth } from "config/Http"
 export const actionTypes = {
     CHANGE: 'CHANGE_FRIENDS',
     INDEX: 'INDEX_FRIENDS',
-    ALL_FRIENDS: 'ALL_FRIENDS',
+    ALL_FRIENDS: 'GET_FRIENDS',
     FRIENDSHIP_REQUESTS: 'FRIENDSHIP_REQUESTS',
     QUIZZ_REQUESTS: 'QUIZZ_REQUESTS',
     USER_FRIENDSHIP_REQUESTS: 'USER_FRIENDSHIP_REQUESTS',
@@ -63,8 +63,8 @@ const acceptQuizzResponse = payload => ({
 })
 
 export const index = (payload, isLoadMore) => dispatch => {
-    HttpAuth.get('/user/friends', {params: {...payload}}).then(res => {
-        dispatch(change({isLoading: false}))
+    return HttpAuth.get('/user/friends', {params: {...payload}}).then(res => {
+
         if(res.status === 200){
             if(Object.keys(payload)[0] === 'showUnfollowedUsers'){
               dispatch(showUnfollowedUsersResponse(res.data, isLoadMore))

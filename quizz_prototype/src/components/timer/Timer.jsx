@@ -3,7 +3,7 @@ import { useTimer } from 'use-timer';
 import { useSelector, useDispatch } from 'react-redux';
 import { change } from 'store/Actions/timer.action';
 
-const Timer = ({initialTime}) => {
+const Timer = ({initialTime, timerText}) => {
 
     const dispatch = useDispatch()
     const {endTime, resetTimer} = useSelector(state => state.timerReducer)
@@ -33,9 +33,9 @@ const Timer = ({initialTime}) => {
     <div
     className='text-center'
     >
-        <h4>Tempo por questão</h4>
+        <h4>{timerText}</h4>
         {status === 'RUNNING'}
-        <h4 className='text-2xl'>{timerHookState}</h4>
+        <h4 className='text-2xl'>{`${Math.floor(timerHookState/60)}:${timerHookState - Math.floor(timerHookState/60) * 60}`}</h4>
     </div>
   )
 }

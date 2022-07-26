@@ -18,6 +18,8 @@ import CreateQuestions from "components/screens/Questions/create/CreateQuestions
 import { Forgot } from "components/screens/Login/ForgotPassword";
 import { PasswordReset } from "components/screens/Login/PasswordReset";
 import Friends from "components/screens/friends/Friends";
+import Finished from "components/screens/quizz/finished/Finished";
+import Donate from "components/screens/donate/Donate";
 
 
   const routes = () => (
@@ -31,12 +33,14 @@ import Friends from "components/screens/friends/Friends";
 
                 <Route element={<ProtectedRoutes/>}>
                   <Route path="home" element={<Home/>}/>
+                  <Route path="donate" element={<Donate/>}/>
                   <Route path="friends" element={<Friends/>}/>
                   
                   <Route path='quizz'>
                     <Route index element={<Quizz/>}/>
                     <Route path='list' element={<ListQuizz/>}/>
                     <Route path='create' element={<CreateQuizz/>}/>
+                    <Route path='finished' element={<Finished/>}/>
                   </Route>
 
                   <Route path='ranking'>

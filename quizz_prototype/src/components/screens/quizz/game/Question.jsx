@@ -21,7 +21,8 @@ const Question = ({handleAnswer }) => {
 
   const dispatch = useDispatch();
 
-  const {quizz: {time_per_question, user_id, withTime, currentQuestion}, questions} = useSelector(state => state.gameReducer)
+
+  const {quizz: {time_per_question, user_id, withTime, currentQuestion, count_time}, questions} = useSelector(state => state.gameReducer)
   const {user} = useSelector(state => state.userReducer)
   const {remainingTime} = useSelector(state => state.timerReducer)
 
@@ -58,7 +59,10 @@ const Question = ({handleAnswer }) => {
             }/>
             <div className='h-[40px] ml-12 md:ml-0'>
 
-            {withTime ? <Timer initialTime={time_per_question}/> : ''}
+            {withTime ? <Timer
+            initialTime={count_time !== "minutes" ? time_per_question : time_per_question*60}
+            timerText={count_time !== "minutes" ? "Tempo Por questão" : "Tempo total do quizz"}
+            /> : ''}
             </div>
             <div className='flex items-center rounded-full bg-white text-blue-500'>
               <Lottie animationData={AwardMedal} initialSegment={[40,100]} className='h-[40px]'/>

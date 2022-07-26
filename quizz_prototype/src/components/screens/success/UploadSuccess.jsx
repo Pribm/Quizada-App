@@ -6,11 +6,13 @@ import Lottie from 'lottie-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { UploadFile } from 'assets'
 import { changeAlert } from 'store/Actions/alert.action'
-import { IoMdCopy } from 'react-icons/io'
-import ReturnToHomeButton from 'components/buttons/ReturnToHomeButton'
+import { IoMdCopy, IoMdHome } from 'react-icons/io'
+
 import { change } from 'store/Actions/quizz.action'
+import {change as changeGame} from 'store/Actions/game.action'
 
 import { useNavigate } from 'react-router-dom'
+import { Button } from '@mui/material'
 
 const UploadSuccess = () => {
 
@@ -47,7 +49,16 @@ const UploadSuccess = () => {
                         </div>
 
                         <div className='mt-2'>
-                            <ReturnToHomeButton bgColor={'white'} />
+                            <Button
+                                onClick={() => {
+                                    dispatch(changeGame("clear"))
+                                    navigate('/home', {replace: true})
+                                }}
+
+                            >
+                                <IoMdHome className='mr-2' />
+                                Voltar à tela principal
+                            </Button>
                         </div>
                     </div>
                 </>

@@ -9,6 +9,8 @@ import { index } from 'store/Actions/categories.action'
 import { answerQuestion, change } from 'store/Actions/game.action'
 import {change as changeTimer} from 'store/Actions/timer.action'
 
+import { useNavigate } from 'react-router-dom'
+
 import QuizzRules from './QuizzRules'
 
 const Quizz = () => {
@@ -23,7 +25,8 @@ const Quizz = () => {
             scoreModifier,
             currentQuestion,
             quizzCreated,
-            quizzComplete
+            quizzComplete,
+            count_time
         },
     } = useSelector(state => state.gameReducer)
 
@@ -52,7 +55,7 @@ const Quizz = () => {
 
         dispatch(change({ currentQuestion: currentQuestion + 1 }))
         
-        if(withTime){
+        if(withTime && count_time !== 'minutes'){
             dispatch(changeTimer({resetTimer: true}))
         }
 
@@ -62,7 +65,7 @@ const Quizz = () => {
     }
 
     const handleRestart = () => {
-        console.log('restart')
+        dispatch(change({quizzCreated: false, quizzComplete: false}))
     }
 
     return (

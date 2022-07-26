@@ -18,6 +18,8 @@ const CreateQuestions = () => {
     const navigate = useNavigate()
     const location = useLocation()
     const {success} = useSelector(state => state.questionsReducer)
+    
+    const {newQuizz}= useSelector(state => state.quizzReducer)
 
     const [questionsList, setQuestionsList] = useState([])
     const [currQuestion, setCurrQuestion] = useState(0)
@@ -82,6 +84,9 @@ const CreateQuestions = () => {
             formData.append(`questions[${i}]`, JSON.stringify(questionObj))
         })
 
+        Object.keys(newQuizz).forEach((rule) => {
+            formData.append(rule, newQuizz[rule])
+        })
        dispatch(store(formData))
     }
 
@@ -240,12 +245,15 @@ const CreateQuestions = () => {
                     <Button
                     onClick={() => handleQuestionList('decrease')}
                     >
+                        
                         <HiChevronLeft size={20}/>
+                        VOLTAR
                     </Button>
                 }
                 <Button
                 onClick={() => handleQuestionList('increase')}
                 className='ml-auto'>
+                    Confirmar
                     <HiChevronRight
                     size={20}/>
                 </Button>

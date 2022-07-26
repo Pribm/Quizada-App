@@ -6,22 +6,27 @@ const initialState = {
     },
     friendsList: {
       current_page: 1,
+      last_page: 1,
       data: []
     },
     yourFriends: {
       current_page: 1,
+      last_page: 1,
       data: []
     },
     friendship_requests: {
       current_page: 1,
+      last_page: 1,
       data: []
     },
     user_friendship_requests: {
       current_page: 1,
+      last_page: 1,
       data: []
     },
     user_quizz_requests: {
       current_page: 1,
+      last_page: 1,
       data: []
     },
     isLoading: true,

@@ -6,11 +6,19 @@ use App\Http\Requests\webScrapperRequest;
 use Carbon\Carbon;
 use App\Models\Question;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Categories;
 
 class webScrapperController extends Controller
 {
     public function scrapQuizz(webScrapperRequest $request)
     {
+
+        $category_id = 1;
+
+        if($request->category){
+            $category_id = Categories::firstOrCreate(['name' => $request->category, 'user_id' => 1]);
+            $category_id = $category_id->id;
+        }
 
         //Seed from todamateria quizzes
         $url = $request->input('url');
@@ -31,6 +39,7 @@ class webScrapperController extends Controller
             preg_match($regex_correct_answer, $match, $correct_answer);
             preg_match($regex_image, $match, $image_src);
 
+
             if (count($question) == 0 || count($answers) == 0 || count($correct_answer) == 0) {
                 continue;
             }
@@ -39,6 +48,7 @@ class webScrapperController extends Controller
             $answers = html_entity_decode($answers[0]);
             $answers = strip_tags($answers);
             $answers = explode("\n", preg_filter('/([A-z]\)\s)(.*?)/', '', $answers));
+
 
             if (count($correct_answer) > 0) {
                 $correct_answer = ord(strtoupper($correct_answer[0])) - ord('A');
@@ -72,11 +82,12 @@ class webScrapperController extends Controller
                     'answer_4' => $answers[3],
                     'answer_5' => $answers[4],
                     'correct_answer' => $correct_answer,
-                    'category_id' => 1,
+                    'category_id' => $category_id,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                     'image' => $question_image_path
                 ]);
+
             } catch (\Throwable $th) {
                 //throw $th;
             }

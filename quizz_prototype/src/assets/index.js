@@ -16,6 +16,8 @@ import Waiting from './waiting.json'
 
 import UploadFile from './upload_file.json'
 
+
+
 export {
     bgLogin,
     logo,
@@ -29,5 +31,5 @@ export {
     AwardMedal,
     UploadSpaceship,
     Waiting,
-    UploadFile
+    UploadFile,
 }

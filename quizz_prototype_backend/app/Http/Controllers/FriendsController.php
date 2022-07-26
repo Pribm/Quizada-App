@@ -36,7 +36,12 @@ class FriendsController extends Controller
         }
 
         if($request->showFriendsList){
-            $friends_list = $this->auth_user->acceptedFriendsFrom()->orderBy('updated_at', 'Desc')->paginate(10);
+            $friends_list = $this->auth_user
+            ->acceptedFriendsTo()
+            ->where('name','LIKE', '%'.$request->search.'%')
+            ->where('email','LIKE', '%'.$request->search.'%')
+            ->orderBy('updated_at', 'ASC')
+            ->paginate(20);
             return $friends_list;
         }
 

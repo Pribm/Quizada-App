@@ -11,6 +11,7 @@ import questionsReducer from "./questions.reducer"
 import gameReducer from "./game.reducer"
 import timerReducer from "./timer.reducer"
 import friendsReducer from "./friends.reducer"
+import rulesReducer from "./rules.reducer"
 
 const rootReducer = combineReducers({
     loadingReducer,
@@ -24,7 +25,8 @@ const rootReducer = combineReducers({
     questionsReducer,
     gameReducer,
     timerReducer,
-    friendsReducer
+    friendsReducer,
+    rulesReducer
 })
 
 export default rootReducer

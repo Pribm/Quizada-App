@@ -48,7 +48,7 @@ const MenuHeader = () => {
     };
 
     return (
-        <Box sx={{ flexGrow: 1 }}>
+        <Box sx={{ flexGrow: 1 }} className='mb-[80px]'>
             <AppBar position='fixed'>
                 <Toolbar>
                     <RiMenu2Fill className='mr-auto text-white cursor-pointer' size={30} onClick={() => dispatch(change({open: true}))}/>

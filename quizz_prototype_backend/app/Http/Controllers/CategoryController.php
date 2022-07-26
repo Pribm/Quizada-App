@@ -18,6 +18,8 @@ class CategoryController extends Controller
 
     public function index(Request $request)
     {
+
+
         //Return selected categories or admin registered questions categories
         if($request->get_registered_categories == true){
             $categories = Categories::where('name', 'like', '%'.$request->name.'%')
@@ -28,7 +30,7 @@ class CategoryController extends Controller
             return response()->json($categories);
         }
 
-        $categories = Question::where('user_id', $this->auth_user->id)->orWhere('user_id', 1)->groupBy('category_id')->get(['category_id']);
+        $categories = Question::where('user_id', 1)->groupBy('category_id')->get(['category_id']);
         $categories = Categories::whereIn('id', $categories->pluck('category_id'))->get();
         return $categories;
     }

@@ -3,9 +3,36 @@ import { HiEye } from 'react-icons/hi'
 import { RiEditLine } from 'react-icons/ri'
 import { IoPerson, IoPodium } from 'react-icons/io5'
 import { FaUserFriends } from 'react-icons/fa'
+import { BsCardChecklist } from 'react-icons/bs'
+
+import {Battle, Endurance, Tournment, PlayAlone} from 'assets'
 
 import { change as changeQuizz } from 'store/Actions/quizz.action'
 
+const cards = [
+    {
+        title: 'Desafio',
+        subtitle: 'Jogue Sozinho',
+        image: PlayAlone,
+    },
+    {
+        title: 'Duelo',
+        subtitle: 'Jogue contra um amigo',
+        image: Battle,
+        loop: false,
+    },
+    {
+        title: 'Torneio',
+        subtitle: 'Jogue contra outras Pessoas',
+        image: Tournment
+    },
+    {
+        title: 'Resistência',
+        subtitle: 'Mais perguntas em menos tempo',
+        image: Endurance,
+        loop: true
+    },
+]
 
 const drawerLinks = [
     {
@@ -32,6 +59,11 @@ const drawerLinks = [
         linkTo: '/questions',
 
     },
+    {
+        text: 'Quizzes Concluídos',
+        icon: <BsCardChecklist/>,
+        linkTo: '/quizz/finished'
+    }
 ]
 
 const bottomNavbarLinks = [
@@ -59,5 +91,6 @@ const bottomNavbarLinks = [
 
 export {
     drawerLinks,
-    bottomNavbarLinks
+    bottomNavbarLinks,
+    cards
 }

@@ -27,7 +27,7 @@ class QuestionController extends Controller
 
     public function index(Request $request)
     {
-        
+
         if (!isset($request->random_questions)) {
 
             $questions = Question::with('category')
@@ -93,6 +93,11 @@ class QuestionController extends Controller
                 'category_id' => $request->category_id,
                 'title' => $request->title,
                 'description' => $request->description,
+                'withTime' => (bool)$request->withTime,
+                'time_per_question' => $request->time_per_question,
+                'count_time' => $request->count_time+1,
+                'shuffle_answers' => (bool)$request->shuffle_answers,
+                'shuffle_questions' => (bool)$request->shuffle_questions,
             ]);
         }
 
@@ -133,9 +138,21 @@ class QuestionController extends Controller
     }
 
 
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-    //
+
+        $rules = [
+            'question' => 'array|required',
+            'question.*' => 'integer'
+        ];
+
+        $request->validate($rules);
+
+        $deleted_questions = $this->auth_user->questions()->whereIn('id', $request->question)->pluck('id');
+        if($this->auth_user->questions()->whereIn('id', $request->question)->delete()){
+            return response()->json(['success' => 'suas questões foram deletadas com sucesso da nossa base de dados', 'deleted_ids' => $deleted_questions]);
+        }
+        return response()->json(['errors' => 'estas questões não podem ser deletadas, pois não existem mais no banco de dados ou pertencem à outro usuário.']);
     }
 
 

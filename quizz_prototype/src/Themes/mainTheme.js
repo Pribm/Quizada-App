@@ -1,4 +1,4 @@
-import { orange, red } from '@mui/material/colors';
+import { green, orange, red } from '@mui/material/colors';
 import {createTheme}  from '@mui/material/styles';
 
 const mainTheme = createTheme({
@@ -14,7 +14,13 @@ const mainTheme = createTheme({
         error: {
             main: `${red[600]} !important`,
             dark: `${red[700]} !important`
-        }
+        },
+        success: {
+            main: `${green[500]} !important`,
+            dark: `${green[600]} !important`,
+            light: '#08bcff !important',
+            contrastText: '#ffffff !important',
+        },
     },
     components: {
         MuiButton: {
@@ -22,7 +28,14 @@ const mainTheme = createTheme({
                 {
                     props: {variant: 'contained'},
                 },
-            ]
+            ],
+            styleOverrides: {
+                root: {
+                    "&.Mui-disabled": {
+                        "backgroundColor": "#ccc !important"
+                    }
+                }
+            }
         },
     }
 })

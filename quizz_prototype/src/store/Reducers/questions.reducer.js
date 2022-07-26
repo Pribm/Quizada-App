@@ -2,7 +2,9 @@ import { actionTypes } from "store/Actions/questions.action"
 
 const initialState = {
     question: {},
-    questions: [],
+    questions: {
+        data: []
+    },
     success: false,
 }
 
@@ -17,6 +19,12 @@ const questionsReducer = (state = initialState, { type, payload }) => {
         
         case actionTypes.SUCCESS:
             return {...state, success: payload}
+        
+        case actionTypes.DESTROY:
+            return {...state, questions: {
+                ...state.questions,
+                data: state.questions.data.filter(q => !payload.includes(q.id))
+            }}
 
         default:
             return state

@@ -20,7 +20,10 @@ class Quizz extends Model
         'category_id',
         'withTime',
         'time_per_question',
-        'total_time'
+        'total_time',
+        'count_time',
+        'shuffle_answers',
+        'shuffle_questions'
     ];
 
     protected $hidden = [ 'created_at', 'updated_at', 'pivot'];
@@ -33,7 +36,7 @@ class Quizz extends Model
     public function invitation()
     {
         return $this->belongsToMany(User::class, 'quizz_invitation', 'quizz_id', 'user_id')
-        ->withPivot(['invitation_accepted', 'quizz_complete'])
+        ->withPivot(['invitation_accepted', 'quizz_complete', 'score'])
         ->withTimestamps();
     }
 

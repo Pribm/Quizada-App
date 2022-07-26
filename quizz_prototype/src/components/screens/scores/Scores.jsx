@@ -1,12 +1,18 @@
 import { Avatar, Button, Typography } from '@mui/material'
 import MenuWrapper from 'components/wrappers/MenuWrapper'
 import React from 'react'
-import { useSelector } from 'react-redux'
+import { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { ranking } from 'store/Actions/user.action'
 
 const Scores = () => {
 
+  const dispatch = useDispatch()
   const {user, users} = useSelector(state => state.userReducer)
 
+  useEffect(() => {
+    dispatch(ranking())
+  }, [])
 
   return (
     <div className='container flex justify-center flex-col items-center fixed bottom-0 right-[50%] translate-x-[50%] max-w-[768px]' style={{height: 'calc(100vh - 85px)'}}>

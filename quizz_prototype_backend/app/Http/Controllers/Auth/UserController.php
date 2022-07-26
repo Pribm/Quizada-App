@@ -25,41 +25,45 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
-        //See if user have a password or not
-        $user = array_merge($this->auth_user->with('score')->first()->toArray(),
-        (!$this->auth_user->password || $this->auth_user->password === '')
-        ?
-        ['password_is_null' => true]
-            :
-        ['password_is_null' => false]
-        );
+        return $this->auth_user;
+    }
 
-        $countUsers = User::count() < 99 ? User::count() : 100;
+    public function ranking(Request $request)
+    {
+         //See if user have a password or not
+         $user = array_merge($this->auth_user->with('score')->first()->toArray(),
+         (!$this->auth_user->password || $this->auth_user->password === '')
+         ?
+         ['password_is_null' => true]
+             :
+         ['password_is_null' => false]
+         );
+
+         $countUsers = User::count() < 99 ? User::count() : 100;
 
 
-        $query = "WITH MyTable AS
-        (
-            SELECT users.*, score.score,
+         $query = "WITH MyTable AS
+         (
+             SELECT users.*, score.score,
 
-            RANK() OVER (ORDER BY score.score DESC ) AS 'Ranking'
-            FROM users
-            JOIN
-            score
-            ON
-            users.id = score.user_id
-        )
-        SELECT id, name, nickname, email, avatar,custom_avatar, Ranking, score, email_verified_at
-        FROM MyTable
-        WHERE id LIKE ?
-        LIMIT ?
-        ";
+             RANK() OVER (ORDER BY score.score DESC ) AS 'Ranking'
+             FROM users
+             JOIN
+             score
+             ON
+             users.id = score.user_id
+         )
+         SELECT id, name, nickname, email, avatar,custom_avatar, Ranking, score, email_verified_at
+         FROM MyTable
+         WHERE id LIKE ?
+         LIMIT ?
+         ";
 
-        $user = DB::select($query, [$this->auth_user->id, $countUsers])[0];
+         $user = DB::select($query, [$this->auth_user->id, $countUsers])[0];
 
-        $users = ['data' => DB::select($query, ['%' , $countUsers])];
+         $users = ['data' => DB::select($query, ['%' , $countUsers])];
 
-        return compact('user', 'users');
-
+         return compact('user', 'users');
     }
 
     public function update(Request $request)

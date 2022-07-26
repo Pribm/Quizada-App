@@ -9,13 +9,17 @@ import { VscDebugRestart } from 'react-icons/vsc'
 import { useDispatch, useSelector } from 'react-redux'
 
 import AnswersTable from './AnswersTable'
-import ReturnToHomeButton from 'components/buttons/ReturnToHomeButton'
-import { finishGame } from 'store/Actions/game.action'
 
-const Result = ({ restart, totalQuestions }) => {
+import { change, finishGame, restartGame } from 'store/Actions/game.action'
+import { Button } from '@mui/material'
+import { IoMdHome } from 'react-icons/io'
+import { useNavigate } from 'react-router-dom'
+
+const Result = ({ totalQuestions }) => {
 
     const {quizz, quizz: {withTime}, correctAnswers} = useSelector(state => state.gameReducer)
     const dispatch = useDispatch()
+    const navigate = useNavigate()
 
     let totalStars = Math.ceil(((correctAnswers.length * 5) / totalQuestions))
     let totalStarFrames = (correctAnswers.length !== 0) ? Math.ceil(((correctAnswers.length * 5) / totalQuestions)) * 15 : 15
@@ -24,9 +28,10 @@ const Result = ({ restart, totalQuestions }) => {
         let score = 0;
 
         if(withTime){
-            score = correctAnswers.reduce((prev,curr) => prev.score+curr.score)
-        }else{
             score = correctAnswers.reduce((prev,curr) => prev+curr.score,0)
+
+        }else{
+            score = JSON.parse(JSON.stringify(correctAnswers)).reduce((prev,curr) => prev+curr.score,0)
         }
         dispatch(
             finishGame(
@@ -59,16 +64,25 @@ const Result = ({ restart, totalQuestions }) => {
                         <Lottie animationData={fiveStars} className='h-[60px] absolute bottom-5' initialSegment={[0, totalStarFrames]} loop={false} />
                     </div>
                     <div className='rounded-[25px 25px 0 0] bg-white flex-1 rounded-t-3xl p-4 flex flex-col justify-center items-center md:h-[500px] md:rounded-xl'>
-                        <h1 className='text-3xl text-sky-500'>Results:</h1>
+                        <h1 className='text-3xl text-sky-500'>Resultado:</h1>
                         <h2 className='text-xl text-orange-500 mb-auto'>{correctAnswers.length} respostas corretas</h2>
                         <div className='mb-auto'>
-                            <div onClick={restart} className='flex flex-col justify-center items-center'>
+                            <div onClick={() => dispatch(restartGame())} className='flex flex-col justify-center items-center cursor-pointer'>
                                 <VscDebugRestart className='text-white bg-gradient-to-b from-blue-500 to-sky-400 p-[1.2rem] rounded-full h-[6rem] w-[6rem]' />
-                                <h5 className='text-sky-500'>Jogar Novamente</h5>
+                                <h5 className='text-sky-500'>Jogar Outro Quizz</h5>
                             </div>
                         </div>
 
-                        <ReturnToHomeButton/>
+                        <Button
+                            onClick={() => {
+                                dispatch(change("clear"))
+                                navigate('/home', {replace: true})
+                            }}
+
+                        >
+                            <IoMdHome className='mr-2' />
+                            Voltar à tela principal
+                        </Button>
                     </div>
                 </div>
                 <div className='bg-white md:mb-auto md:mt-4 flex-1 md:flex-grow-0'>

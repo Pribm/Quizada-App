@@ -4,6 +4,7 @@ import { Drawer, Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText
 import { HiX } from 'react-icons/hi'
 
 import {IoMdLogOut} from 'react-icons/io'
+import {BiDonateHeart} from 'react-icons/bi'
 
 import {useSelector, useDispatch} from 'react-redux'
 import { logo } from '../../assets'
@@ -53,10 +54,19 @@ const DrawerMenu = () => {
                 }
             </List>
 
+            <Link
+            to='/donate'
+            className='mx-auto mt-auto mb-4 flex text-orange-600 hover:bg-orange-600 hover:text-white'
+            color='secondary'
+            style={{border :'solid orange 1px', padding: '15px', borderRadius: '10px'}}
+            >
+                <BiDonateHeart size={25} className='mr-4'/>
+                Colabore com as melhorias do app
+            </Link>
             <Button
             variant='contained'
             onClick={() => dispatch(logout())}
-            className='mx-4 mt-auto mb-4'
+            className='mx-4 mt-2 mb-4'
             >
                 <IoMdLogOut size={25} className='mr-4'/>
                 Logout

@@ -1,4 +1,4 @@
-import { Http, HttpAuth } from "config/Http"
+import {  HttpAuth } from "config/Http"
 import { changeAlert } from "./alert.action"
 import { changeConfirm } from "./confirm.action"
 import { changeLoading } from "./loading.action"
@@ -56,7 +56,19 @@ export const create = payload => dispatch => {
     })
 }
 
+export const makeInvitation = (token, id) => dispatch => {
+    dispatch(changeLoading({open: true}))
+    HttpAuth.get(`quizz/make-invitation/${token}/${id}`).then(res => {
+        dispatch(changeLoading({open: false}))
+        if(res.data.success){
+            dispatch(changeAlert({open: true, msg: res.data.success, class: 'success', autoHideDuration: 4000}))
+        }
 
+        if(res.data.error){
+            dispatch(changeAlert({open: true, msg: res.data.error, class: 'error', autoHideDuration: 4000}))
+        }
+    })
+}
 
 export const destroy = id => dispatch => {
     dispatch(changeLoading({open: true}))
@@ -70,7 +82,7 @@ export const destroy = id => dispatch => {
 }
  
 export const uploadQuizzFile =  (payload) => dispatch => {
-
+    //console.log('quizz_action:', payload)
     let formdata = new FormData()
 
     Object.entries(payload).forEach(async (element, i, array) => {

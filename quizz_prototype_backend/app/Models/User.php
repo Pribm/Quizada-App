@@ -75,11 +75,15 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function quizzInvitationAccepted(){
         return $this->belongsToMany(Quizz::class, 'quizz_invitation', 'user_id', 'quizz_id')
-        ->withPivot('invitation_accepted')
-        ->with('user')
+        ->withPivot('quizz_complete')
+        ->with(['user'])
         ->wherePivot('quizz_complete', false)
         ->wherePivot('invitation_accepted', true)
         ->withTimestamps();
+    }
+
+    public function quizzComplete(){
+        return $this->belongsToMany(Quizz::class, 'quizz_invitation', 'user_id', 'quizz_id');
     }
 
     public function pendingQuizzInvitation(){
