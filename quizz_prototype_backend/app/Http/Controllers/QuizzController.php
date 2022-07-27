@@ -124,7 +124,10 @@ class QuizzController extends Controller
         //Só pode enviar token se for o seu
         $quizz = $this->auth_user->quizzOwner()->where('token', $token)->first();
 
-        $guest_user = $this->auth_user->friends()->find($guest_user);
+        $guest_user = User::where('id', $guest_user)
+        ->whereHas('friends',function($q){
+            $q->where('id', $this->auth_user->id);
+        })->first();
 
         if(!$guest_user){
             return response()->json(['error' => 'Você só pode enviar um quizz caso tenha esta pessoa na sua lista de amigos.'], 400);
