@@ -2,13 +2,14 @@ import * as React from 'react';
 import MenuWrapper from 'components/wrappers/MenuWrapper';
 import { useDispatch, useSelector } from 'react-redux';
 import { index } from 'store/Actions/friends.action';
-import { Avatar, CircularProgress, Paper, TextField, Grid } from '@mui/material';
+import { Avatar, CircularProgress, Paper, TextField, Grid, Button } from '@mui/material';
 import { getUserThumbnail } from 'utils/getThumbnails';
 import { SearchBox } from 'components/searchBox/SearchBox';
 import { IoSend } from 'react-icons/io5';
 import { makeInvitation } from 'store/Actions/quizz.action';
 import { useState } from 'react';
 import { changeLoading } from 'store/Actions/loading.action';
+import { RiUserUnfollowFill } from 'react-icons/ri';
 
 
 const Friends = () => {
@@ -94,6 +95,12 @@ const Friends = () => {
                               />)
                           }}
                         />
+                        <Button
+                        className='mt-2'
+                        >
+                          <RiUserUnfollowFill className='mr-2'/>
+                          Deixar de Seguir
+                        </Button>
                       </Paper>
                     ))
                     :

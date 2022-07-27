@@ -56,9 +56,9 @@ const DrawerMenu = () => {
 
             <Link
             to='/donate'
-            className='mx-auto mt-auto mb-4 flex text-orange-600 hover:bg-orange-600 hover:text-white'
+            className='mx-4 mt-auto mb-4 flex items-center text-orange-600 hover:bg-orange-600 text-sm hover:text-white'
             color='secondary'
-            style={{border :'solid orange 1px', padding: '15px', borderRadius: '10px'}}
+            style={{border :'solid orange 1px', padding: '8px', borderRadius: '10px'}}
             >
                 <BiDonateHeart size={25} className='mr-4'/>
                 Colabore com as melhorias do app
