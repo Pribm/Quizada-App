@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class FriendsController extends Controller
 {
@@ -15,6 +16,7 @@ class FriendsController extends Controller
 
     public function index(Request $request)
     {
+
         if($request->showQuizzRequests){
             $quizz_requests = $this->auth_user->pendingQuizzInvitation()->withCount('questions')->orderBy('updated_at', 'Desc')->paginate(10);
             return $quizz_requests;
@@ -36,12 +38,13 @@ class FriendsController extends Controller
         }
 
         if($request->showFriendsList){
-            $friends_list = $this->auth_user
-            ->acceptedFriendsTo()
-            ->where('name','LIKE', '%'.$request->search.'%')
-            ->where('email','LIKE', '%'.$request->search.'%')
-            ->orderBy('updated_at', 'ASC')
-            ->paginate(20);
+            $friends_list = User::where(function($q) use ($request){
+                $q->where("name",'LIKE',"%".$request->search."%")->orWhere("email",'LIKE',"%".$request->search."%");
+            })
+            ->whereHas('friends',function($q){
+                $q->where('id', $this->auth_user->id);
+            })->paginate(10);
+
             return $friends_list;
         }
 

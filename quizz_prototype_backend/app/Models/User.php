@@ -106,6 +106,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function friends()
     {
+        //return $this->mergedRelationWithModel(User::class, 'friends_view');
         return $this->mergedRelationWithModel(User::class, 'friends_view');
     }
 

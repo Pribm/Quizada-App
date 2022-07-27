@@ -15,7 +15,7 @@ import { change, login, socialLogin } from '../../../store/Actions/auth.action'
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { changeAlert } from 'store/Actions/alert.action';
-import PrivacyPolicies from 'components/privacy_policy/privacy_policies';
+import PrivacyPolicies from 'components/privacy_policy/PrivacyPolicies';
 
 
 

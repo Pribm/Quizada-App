@@ -27,28 +27,28 @@ const Home = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
-    const {friendsList: {current_page}, friendsList} = useSelector(state => state.friendsReducer)
-    const {quizzInvitations} = useSelector(state => state.userReducer)
-    const { quizz:{quizzCreated} } = useSelector(state => state.gameReducer)
-    
+    const { friendsList: { current_page }, friendsList } = useSelector(state => state.friendsReducer)
+    const { quizzInvitations } = useSelector(state => state.userReducer)
+    const { quizz: { quizzCreated } } = useSelector(state => state.gameReducer)
+
 
     useEffect(() => {
-        dispatch(index({showUnfollowedUsers: true}, false))
+        dispatch(index({ showUnfollowedUsers: true }, false))
         dispatch(getQuizzInvitations({}, false))
     }, [])
 
     useEffect(() => {
-        if(quizzCreated){
-          navigate('/quizz', {replace: true})
+        if (quizzCreated) {
+            navigate('/quizz', { replace: true })
         }
-      }, [quizzCreated])
+    }, [quizzCreated])
 
     const handleLoadMore = () => {
-        dispatch(index({showUnfollowedUsers: true, page: current_page+1}, true))
+        dispatch(index({ showUnfollowedUsers: true, page: current_page + 1 }, true))
     }
 
     const handleLoadMoreQuizzSolicitations = () => {
-        dispatch(getQuizzInvitations({page: quizzInvitations.current_page+1}, true))
+        dispatch(getQuizzInvitations({ page: quizzInvitations.current_page + 1 }, true))
     }
 
     return (
@@ -58,15 +58,15 @@ const Home = () => {
                 <Grid container spacing={2} className='md:h-[60vh] '>
                     <Grid item xs={12} md={8} className='flex flex-col h-[100%]'>
                         <div className='flex justify-between overflow-scroll h-[50%] ml-4 md:m-0 mb-4 hideVerticalScroll pb-4'>
-                        {
-                            cards.map((card, i) => (
-                                <div
-                                    key={'card_' + i}
-                                    onClick={() => {
-                                        dispatch(change(card.quizz))
-                                        navigate('/quizz', { replace: true })
-                                    }}
-                                    className={`
+                            {
+                                cards.map((card, i) => (
+                                    <div
+                                        key={'card_' + i}
+                                        onClick={() => {
+                                            dispatch(change(card.quizz))
+                                            navigate('/quizz', { replace: true })
+                                        }}
+                                        className={`
                                     relative
                                     max-w-[180px]
                                     min-h-[100%]
@@ -88,53 +88,55 @@ const Home = () => {
                                     transition-transform
                                     ease-in
                                     `}>
-                                    <div className="flex flex-col">
-                                        <h2 className='z-10'>{card.title}</h2>
-                                        <h3 className='z-10 bg-blue-400 rounded-md p-2 text-white'>{card.subtitle}</h3>
+                                        <div className="flex flex-col">
+                                            <h2 className='z-10'>{card.title}</h2>
+                                            <h3 className='z-10 bg-blue-400 rounded-md p-2 text-white'>{card.subtitle}</h3>
+                                        </div>
+                                        <Lottie loop={card.loop} animationData={card.image} size={100} className='z-10 mt-auto mb-auto w-[100%]' />
+                                        <Lottie animationData={BackGroundMenuCard} className='z-0 w-[140%] top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] absolute' />
                                     </div>
-                                    <Lottie loop={card.loop} animationData={card.image} size={100} className='z-10 mt-auto mb-auto w-[100%]' />
-                                    <Lottie animationData={BackGroundMenuCard} className='z-0 w-[140%] top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] absolute' />
-                                </div>
-                            )
-                            )
-                        }
-                        </div>
-                        <InfiniteScroll
-                        className='md:mr-4 md:ml-0 mx-4 h-[450px] overflow-y-scroll hideScroll'
-                        handleLoadMore={handleLoadMoreQuizzSolicitations}
-                        title='Quizzes Pendentes'
-                        current_page={quizzInvitations.current_page}
-                        last_page={quizzInvitations.last_page}
-                        >
-                            {
-                                quizzInvitations.data.length > 0 ?
-                                quizzInvitations.data.map((quizz, i) => (
-                                <React.Fragment key={'quizz_solicitation'+i}>
-                                    <HorizontalQuizzCard props={{ ...quizz, dispatch}}/>
-                                </React.Fragment>
-                                ))
-                                :
-                                    <Paper className='flex flex-col items-center p-4 w-[100%]'>
-                                        <FcFolder size={100} />
-                                        <h1 className='text-center'>Você não possui nenhum quizz pendende, gostaria de criar um e enviar à um amigo?</h1>
-                                        <Button
-                                            onClick={() => navigate('/quizz/create', { replace: true })}
-                                            variant='contained'
-                                            className='mt-2'>
-                                            Sim, por favor!
-                                        </Button>
-                                    </Paper>
+                                )
+                                )
                             }
-                        </InfiniteScroll>
+                        </div>
+                        <div className='px-4'>
+                            <InfiniteScroll
+                                className='md:mr-4 md:ml-0 h-[450px] overflow-y-scroll hideScroll'
+                                handleLoadMore={handleLoadMoreQuizzSolicitations}
+                                title='Quizzes Pendentes'
+                                current_page={quizzInvitations.current_page}
+                                last_page={quizzInvitations.last_page}
+                            >
+                                {
+                                    quizzInvitations.data.length > 0 ?
+                                        quizzInvitations.data.map((quizz, i) => (
+                                            <React.Fragment key={'quizz_solicitation' + i}>
+                                                <HorizontalQuizzCard props={{ ...quizz, dispatch }} />
+                                            </React.Fragment>
+                                        ))
+                                        :
+                                        <Paper className='flex flex-col items-center p-4 w-[100%]'>
+                                            <FcFolder size={100} />
+                                            <h1 className='text-center'>Você não possui nenhum quizz pendende, gostaria de criar um e enviar à um amigo?</h1>
+                                            <Button
+                                                onClick={() => navigate('/quizz/create', { replace: true })}
+                                                variant='contained'
+                                                className='mt-2'>
+                                                Sim, por favor!
+                                            </Button>
+                                        </Paper>
+                                }
+                            </InfiniteScroll>
+                        </div>
                     </Grid>
 
                     <Grid item xs={12} md={4} className='md:h-[100%] '>
                         <InfiniteScroll
-                        handleLoadMore={handleLoadMore}
-                        className={' mb-[55px] md:min-h-[100%]'}
-                        title='Adicionar Amigos'
-                        current_page={friendsList.current_page}
-                        last_page={friendsList.last_page}
+                            handleLoadMore={handleLoadMore}
+                            className={' mb-[55px] md:min-h-[100%]'}
+                            title='Adicionar Amigos'
+                            current_page={friendsList.current_page}
+                            last_page={friendsList.last_page}
                         >
                             {
                                 friendsList?.data.map((friend, i) => (
