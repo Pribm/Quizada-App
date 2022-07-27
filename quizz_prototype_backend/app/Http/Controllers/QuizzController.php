@@ -87,7 +87,7 @@ class QuizzController extends Controller
             $quizz->user_id = $this->auth_user->id;
 
             $questions = Question::whereHas('user', function ($q) {
-                $q->where('role_id', 1);
+                $q->where('role_id', env('ADMIN_ROLE_ID'));
             })
                 ->where(function ($q) use ($request) {
                 if (isset($request->category_id) && $request->category_id !== 0) {
