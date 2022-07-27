@@ -15,6 +15,7 @@ import { change, login, socialLogin } from '../../../store/Actions/auth.action'
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { changeAlert } from 'store/Actions/alert.action';
+import PrivacyPolicies from 'components/privacy_policy/privacy_policies';
 
 
 
@@ -165,6 +166,8 @@ const Login = () => {
                   icon={<IoLogoFacebook size={40} className='mx-2 text-blue-600 cursor-pointer'/>}
                   textButton=''
                 />
+
+                <PrivacyPolicies/>
               </div>
             </div>
           </div>
