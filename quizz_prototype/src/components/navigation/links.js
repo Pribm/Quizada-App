@@ -72,11 +72,11 @@ const bottomNavbarLinks = [
         icon: <IoMdHome/>,
         linkTo: '/home'
     },
-    {
-        label: 'Ranking',
-        icon: <IoPodium />,
-        linkTo: '/ranking'
-    },
+    // {
+    //     label: 'Ranking',
+    //     icon: <IoPodium />,
+    //     linkTo: '/ranking'
+    // },
     {
         label: 'Amigos',
         icon: <FaUserFriends/>,

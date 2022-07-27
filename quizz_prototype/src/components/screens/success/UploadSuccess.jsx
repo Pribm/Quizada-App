@@ -13,6 +13,7 @@ import {change as changeGame} from 'store/Actions/game.action'
 
 import { useNavigate } from 'react-router-dom'
 import { Button } from '@mui/material'
+import { BiPencil } from 'react-icons/bi'
 
 const UploadSuccess = () => {
 
@@ -58,6 +59,16 @@ const UploadSuccess = () => {
                             >
                                 <IoMdHome className='mr-2' />
                                 Voltar à tela principal
+                            </Button>
+                            <Button
+                                onClick={() => {
+                                    dispatch(changeGame("clear"))
+                                    navigate('/quizz/list', {replace: true})
+                                }}
+
+                            >
+                                <BiPencil className='mr-2' />
+                                Ver Lista de Quizzes
                             </Button>
                         </div>
                     </div>

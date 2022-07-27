@@ -57,7 +57,7 @@ const Home = () => {
                 <h1 className='text-white logo-font md:text-[2rem] text-center md:bg-transparent mb-4 bg-blue-800 rounded-xl py-4 mx-4'>Escolha seu modo de Jogo</h1>
                 <Grid container spacing={2} className='md:h-[60vh] '>
                     <Grid item xs={12} md={8} className='flex flex-col h-[100%]'>
-                        <div className='flex justify-between overflow-scroll h-[50%] ml-4 md:m-0 mb-4 hideVerticalScroll pb-4'>
+                        <div className='flex justify-between overflow-scroll min-h-[210px] h-[50%] ml-4 md:m-0 mb-4 hideVerticalScroll pb-4'>
                             {
                                 cards.map((card, i) => (
                                     <div
@@ -99,9 +99,9 @@ const Home = () => {
                                 )
                             }
                         </div>
-                        <div className='px-4'>
+                        <div className='md:pr-4 md:pt-4 h-[450px]'>
                             <InfiniteScroll
-                                className='md:mr-4 md:ml-0 h-[450px] overflow-y-scroll hideScroll'
+                                className='h-[100%] overflow-y-scroll hideScroll'
                                 handleLoadMore={handleLoadMoreQuizzSolicitations}
                                 title='Quizzes Pendentes'
                                 current_page={quizzInvitations.current_page}

@@ -49,17 +49,17 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export const SearchBox = (props) => {
+    const {searchHandler, ...rest} = props
     return (
         <Search>
             <SearchIconWrapper
-            onClick={props.onSearch}
-
+                onClick={() => searchHandler()}
             >
               <FaSearch className='text-white'/>
             </SearchIconWrapper>
             <StyledInputBase
               inputProps={{ 'aria-label': 'search' }}
-              {...props}
+              {...rest}
             />
         </Search>
     )

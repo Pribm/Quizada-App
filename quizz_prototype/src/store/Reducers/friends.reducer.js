@@ -90,6 +90,13 @@ const friendsReducer = (state = initialState, { type, payload, isLoadMore}) => {
       }
     }
 
+    case actionTypes.UNFOLLOW:
+      return { ...state, yourFriends: {
+        ...state.yourFriends,
+        data: state.yourFriends.data.filter(el => el.id !== payload.id)
+      }
+    }
+
     case actionTypes.ACCEPT:
       return { ...state, friendship_requests: {
         ...state.friendship_requests,

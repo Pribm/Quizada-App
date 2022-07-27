@@ -12,8 +12,8 @@ import QuizzCard from 'components/quizzCard/QuizzCard'
 
 const IndexQuestions = () => {
 
-  const dispatch = useDispatch()
   const navigate = useNavigate()
+  const dispatch = useDispatch()
   const { quizz_list } = useSelector(state => state.quizzReducer)
   const { quizz:{quizzCreated} } = useSelector(state => state.gameReducer)
 
@@ -32,7 +32,7 @@ const IndexQuestions = () => {
   }, [quizzCreated])
 
   return (
-    <div className='container md:w-[60vw] mx-[auto] p-4 flex flex-wrap justify-center'>
+    <div className='md:container md:w-[60vw] w-auto mx-[auto] md:p-4 flex flex-wrap justify-center'>
       {!isLoading ?
         quizz_list.data?.length > 0 ?
           quizz_list.data?.map((quizz, i) => <QuizzCard props={{ ...quizz, dispatch }} key={'quizz_card' + i} />)

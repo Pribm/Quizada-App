@@ -16,6 +16,7 @@ const NumberField = React.forwardRef(function NumberField(props, ref) {
             {...other}
             allowLeadingZeros={false}
             getInputRef={ref}
+            
             onValueChange={(values) => {
                 onChange({
                     target: {
@@ -85,7 +86,7 @@ const Rules = () => {
                     <FormControlLabel
                         control={
                             <Switch checked={Boolean(rules.withTime)} onChange={() => {
-                                dispatch(change({ rules: { ...rules, withTime: !rules.withTime, count_time: rules.withTime ? 0 : 1 } }))
+                                dispatch(change({ rules: { ...rules, withTime: !rules.withTime, count_time: rules.withTime ? 0 : 1, time_per_question: rules.withTime ? 0 : 30 } }))
                             }} />
                         }
                         label="Deseja que as questões tenham tempo?"

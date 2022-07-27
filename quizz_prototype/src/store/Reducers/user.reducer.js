@@ -10,6 +10,9 @@ const initialState = {
       last_page: 1,
       data: []
     },
+    quizzComplete: {
+      data: [],
+    },
     errors: []
 }
 
@@ -48,6 +51,15 @@ const userReducer = (state = initialState, { type, payload, isLoadMore }) => {
             payload
 
     return {...state, quizzInvitations: payload}
+
+    case actionTypes.GET_QUIZZ_COMPLETE:
+          payload = isLoadMore ? {
+            ...payload, data: state.quizzComplete.data.concat(payload.data),
+            }
+            : 
+            payload
+
+    return {...state, quizzComplete: payload}
     
     case actionTypes.ERRORS:
       return {...state, errors: payload}

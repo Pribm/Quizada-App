@@ -9,6 +9,7 @@ export const actionTypes = {
     QUIZZ_REQUESTS: 'QUIZZ_REQUESTS',
     USER_FRIENDSHIP_REQUESTS: 'USER_FRIENDSHIP_REQUESTS',
     ADD: 'ADD_FRIEND',
+    UNFOLLOW: 'UNFOLLOW_FRIEND',
     ACCEPT: 'ACCEPT_FRIEND',
     ACCEPT_QUIZZ: 'ACCEPT_FRIEND_QUIZZ'
 }
@@ -53,6 +54,11 @@ const addFriendResponse = (payload) => ({
   payload
 })
 
+const unfollowFriendResponse = (payload) => ({
+  type: actionTypes.UNFOLLOW,
+  payload
+})
+
 const acceptFriendResponse = (payload) => ({
   type: actionTypes.ACCEPT,
   payload
@@ -89,6 +95,12 @@ export const index = (payload, isLoadMore) => dispatch => {
 export const addFriend = (id, payload) => dispatch => {
   HttpAuth.put('/user/friends/'+id, payload).then(res => {
     dispatch(addFriendResponse(res.data))
+  })
+}
+
+export const unfollowFriend = (id, payload) => dispatch => {
+  HttpAuth.put('/user/friends/'+id, payload).then(res => {
+    dispatch(unfollowFriendResponse(res.data))
   })
 }
 

@@ -27,7 +27,9 @@ const quizzReducer = (state = initialState, { type, payload }) => {
   switch (type) {
 
   case actionTypes.CHANGE:
-    return payload === 'clear' ? initialState : { ...state, ...payload }
+    return payload === 'clear' ? initialState : { ...state, ...payload, newQuizz: {
+      ...state.newQuizz, ...payload.newQuizz
+    } }
 
   case actionTypes.SUCCESS:
     return {...state, success: payload}

@@ -82,6 +82,7 @@ class FriendsController extends Controller
 
         //Revoke a invitation
         $this->auth_user->friendsTo()->detach($id);
+        $this->auth_user->friendsFrom()->detach($id);
         return User::find($id);
     }
 

@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { changeAlert } from 'store/Actions/alert.action'
 import { store, success as questionsSuccess } from 'store/Actions/questions.action'
+import { change } from 'store/Actions/quizz.action'
 
 import { questionFormSchema } from './validation/questionFormValidation'
 
@@ -19,7 +20,7 @@ const CreateQuestions = () => {
     const location = useLocation()
     const {success} = useSelector(state => state.questionsReducer)
     
-    const {newQuizz}= useSelector(state => state.quizzReducer)
+    const {newQuizz, creatingNewQuizz}= useSelector(state => state.quizzReducer)
 
     const [questionsList, setQuestionsList] = useState([])
     const [currQuestion, setCurrQuestion] = useState(0)
@@ -36,9 +37,14 @@ const CreateQuestions = () => {
 
     useEffect(() => {
         if(success){
-            navigate('/questions', {replace:true})
+            if(creatingNewQuizz){
+                dispatch(change({creatingNewQuizz: false}))
+                navigate('/quizz/list', {replace:true})
+            }else{
+                navigate('/questions', {replace:true})
+            }
         }
-
+        
         return () => dispatch(questionsSuccess(false))
     }, [success])
 

@@ -23,7 +23,7 @@ const QuizzCard = ({ props }) => (
           image={props.image ? getQuizzThumbnail(props.image) : logo}
           alt="logo"
           height="140px"
-          className='h-[350px]'
+          className='md:h-[350px]'
         />
         <CardContent>
           <Typography  variant='h5' component={'div'}>

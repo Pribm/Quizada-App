@@ -1,7 +1,7 @@
 import * as React from 'react';
 import MenuWrapper from 'components/wrappers/MenuWrapper';
 import { useDispatch, useSelector } from 'react-redux';
-import { index } from 'store/Actions/friends.action';
+import { index, unfollowFriend } from 'store/Actions/friends.action';
 import { Avatar, CircularProgress, Paper, TextField, Grid, Button } from '@mui/material';
 import { getUserThumbnail } from 'utils/getThumbnails';
 import { SearchBox } from 'components/searchBox/SearchBox';
@@ -10,6 +10,7 @@ import { makeInvitation } from 'store/Actions/quizz.action';
 import { useState } from 'react';
 import { changeLoading } from 'store/Actions/loading.action';
 import { RiUserUnfollowFill } from 'react-icons/ri';
+import { FcFolder } from 'react-icons/fc';
 
 
 const Friends = () => {
@@ -28,7 +29,7 @@ const Friends = () => {
 
   React.useEffect(() => {
     if (isSearching) {
-      handleSearching()
+      handlesearching()
     }
   }, [isSearching])
 
@@ -45,7 +46,7 @@ const Friends = () => {
     setTokenState(result)
   }
 
-  const handleSearching = () => {
+  const handlesearching = () => {
     setSearching(true)
     dispatch(changeLoading({ open: true, text: 'Procurando Usuário...' }))
     dispatch(index({ showFriendsList: true, search: search })).then(() => {
@@ -67,45 +68,54 @@ const Friends = () => {
                 <SearchBox
                   value={search}
                   onChange={e => setSearch(e.target.value)}
-                  onSearch={() => handleSearching()}
+                  searchHandler={handlesearching}
                 />
               </div>
             </div>
             <div className='p-4'>
               {
                 <>
-                  {yourFriends.data.length > 0 ?
-                    yourFriends.data.map((friend, i) => (
-                      <Paper key={'your_friend_' + i} className='min-h-[100px] flex flex-col items-center mb-4 py-4' elevation={2}>
-                        <Avatar src={friend.avatar ? getUserThumbnail(friend.avatar, friend.id) : ''} alt={friend.name} className='mr-4' />
-                        <p>{friend.name}</p>
-                        <p className='text-sm'>{friend.email}</p>
-                        <TextField
-                          className='mt-2'
-                          label='Enviar Token'
-                          size='small'
-                          onChange={e => handleInputToken(e, friend.id)}
-                          value={friend.token || ''}
-                          InputProps={{
-                            endAdornment: (
-                              <IoSend
-                                size={20}
-                                className='text-blue-500 cursor-pointer'
-                                onClick={() => dispatch(makeInvitation(tokenState[i].token, friend.id))}
-                              />)
-                          }}
-                        />
-                        <Button
-                        className='mt-2'
-                        >
-                          <RiUserUnfollowFill className='mr-2'/>
-                          Deixar de Seguir
-                        </Button>
-                      </Paper>
-                    ))
+                  {
+                    yourFriends.data.length === 0 ?
+                    <Paper className='min-h-[100px] flex flex-col items-center mb-4 py-4 px-4' elevation={2}>
+                      <FcFolder size={60}/>
+                      <h4 className='text-sm text-center'>Você ainda não possui nenhum amigo para enviar um quizz. Adicione um amigo para começar.</h4>
+                    </Paper>
                     :
-                    <div className='flex justify-center'><CircularProgress /></div>
-                    }
+                    yourFriends.data.length > 0 ?
+                      yourFriends.data.map((friend, i) => (
+                        <Paper key={'your_friend_' + i} className='min-h-[100px] flex flex-col items-center mb-4 py-4' elevation={2}>
+                          <Avatar src={friend.avatar ? getUserThumbnail(friend.avatar, friend.id) : ''} alt={friend.name} className='mr-4' />
+                          <p>{friend.name}</p>
+                          <p className='text-sm'>{friend.email}</p>
+                          <TextField
+                            className='mt-2'
+                            label='Enviar Token'
+                            size='small'
+                            onChange={e => handleInputToken(e, friend.id)}
+                            value={friend.token || ''}
+                            InputProps={{
+                              endAdornment: (
+                                <IoSend
+                                  size={20}
+                                  className='text-blue-500 cursor-pointer'
+                                  onClick={() => dispatch(makeInvitation(tokenState[i].token, friend.id))}
+                                />)
+                            }}
+                          />
+                          <Button
+                          className='mt-2'
+                          onClick={() => dispatch(unfollowFriend(friend.id))}
+                          >
+                            <RiUserUnfollowFill className='mr-2'/>
+                            Deixar de Seguir
+                          </Button>
+                        </Paper>
+                      ))
+                      :
+                      <div className='flex justify-center'><CircularProgress /></div>
+                      
+                  }
                 </>
               }
             </div>
