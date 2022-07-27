@@ -123,7 +123,8 @@ class QuizzController extends Controller
     public function sendToken($token, $guest_user){
         //Só pode enviar token se for o seu
         $quizz = $this->auth_user->quizzOwner()->where('token', $token)->first();
-        $guest_user = $this->auth_user->acceptedFriendsFrom()->find($guest_user);
+
+        $guest_user = $this->auth_user->friends()->find($guest_user);
 
         if(!$guest_user){
             return response()->json(['error' => 'Você só pode enviar um quizz caso tenha esta pessoa na sua lista de amigos.'], 400);
