@@ -23,7 +23,7 @@ class FriendsController extends Controller
         }
 
         if($request->showUnfollowedUsers){
-            $followable_users = $this->auth_user->followableUsers()->whereDoesntHave('friendsFrom')->whereDoesntHave('friendsTo')->orderBy('updated_at', 'Desc')->paginate(10);
+            $followable_users = $this->auth_user->followableUsers()->orderBy('updated_at', 'Desc')->paginate(10);
             return $followable_users;
         }
 
