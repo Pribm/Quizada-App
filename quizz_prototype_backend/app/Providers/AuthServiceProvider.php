@@ -31,7 +31,7 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         VerifyEmail::toMailUsing(function ($notifiable, $url) {
-            $url_https = str_replace(['http://', 'https://'],'',$url);
+            $url_https = str_replace(['http://'],'https://',$url);
             $spaUrl = env('APP_VIEW_URL')."?verify_email=".$url_https;
 
             return (new MailMessage)
