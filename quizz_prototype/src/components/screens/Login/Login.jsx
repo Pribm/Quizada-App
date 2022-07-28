@@ -143,7 +143,7 @@ const Login = () => {
               </Link>
             </div>
 
-            <div className='text-center'>
+            {/* <div className='text-center'>
               Ou fazer login com
               <div className="flex justify-center items-center mt-5 mb-5 md:mt-0">
                 <GoogleLogin
@@ -169,7 +169,7 @@ const Login = () => {
 
               </div>
               <PrivacyPolicies />
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

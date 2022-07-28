@@ -129,7 +129,7 @@ const Update = () => {
                       fullWidth />
                   </Grid>
 
-                  <Grid item xs={12}>
+                  {/* <Grid item xs={12}>
                     <TextField
                       value={values?.email || ''}
                       onChange={e => {
@@ -148,7 +148,7 @@ const Update = () => {
                       fullWidth
                       type={'email'}
                     />
-                  </Grid>
+                  </Grid> */}
 
                   <Typography className='text-center font-bold mt-4 mb-4'>
                     {user.password_is_null ? 'Criar nova senha' : 'Alteração de senha'}

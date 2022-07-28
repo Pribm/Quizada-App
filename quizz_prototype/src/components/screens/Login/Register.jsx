@@ -206,7 +206,7 @@ const Register = () => {
                 </Link>
             </div>
 
-            <div className='text-center mt-4'>
+            {/* <div className='text-center mt-4'>
               Ou registrar-se atrvés das redes sociais.
               <div className="flex justify-center items-center mt-5 mb-5 md:mt-0">
                 <GoogleLogin
@@ -230,7 +230,7 @@ const Register = () => {
                   textButton=''
                 />
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
