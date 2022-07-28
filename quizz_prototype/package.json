@@ -1,5 +1,6 @@
 {
   "name": "quizz_prototype",
+  "homepage": "https://quizzada-app.vercel.app",
   "version": "0.1.0",
   "private": false,
   "dependencies": {
