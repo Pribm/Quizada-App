@@ -105,12 +105,30 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     public function followableUsers(){
-        return User::whereDoesntHave('friends');
+        // return User::whereDoesntHave('friends', function($q){
+        //     $q->where('id','=',$this->id)
+        //     ->orWhere('laravel_foreign_key','=',$this->id);
+        // })
+        // ->whereDoesntHave('pendingFriendsTo')
+        // ->whereDoesntHave('pendingFriendsFrom')
+        // ->where('id', '!=', $this->id);
+        return $this
+        ->whereDoesntHave('pendingFriendsFrom', function($q){
+            $q->where('friends.user_id',$this->id);
+        })
+        ->whereDoesntHave('acceptedFriendsFrom', function($q){
+            $q->where('friends.user_id', $this->id);
+        })
+        ->whereDoesntHave('pendingFriendsTo', function($q){
+            $q->where('friends.friend_id',$this->id);
+        })
+        ->whereDoesntHave('acceptedFriendsTo', function($q){
+            $q->where('friends.friend_id', $this->id);
+        })->where('id','!=',$this->id);
     }
 
     public function friends()
     {
-        //return $this->mergedRelationWithModel(User::class, 'friends_view');
         return $this->mergedRelationWithModel(User::class, 'friends_view');
     }
 
