@@ -1,4 +1,4 @@
-import { AppBar, Avatar, Badge, Box, Button, IconButton, Menu, MenuItem, Toolbar, Tooltip, Typography } from '@mui/material'
+import { AppBar, Avatar, Badge, Box, Button, Chip, IconButton, Menu, MenuItem, Toolbar, Tooltip, Typography } from '@mui/material'
 import React from 'react'
 import { IoNotifications } from 'react-icons/io5'
 import { RiMenu2Fill } from 'react-icons/ri'
@@ -185,7 +185,7 @@ const MenuHeader = () => {
                     color="inherit"
                     disableTouchRipple
                     >
-                        <Avatar alt={`${user.name} avatar`} src={user.avatar} />
+                        <Avatar alt={`${user.nickname} avatar`} src={user.avatar} />
                     </IconButton>
                 </Toolbar>
             </AppBar>

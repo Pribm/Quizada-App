@@ -28,7 +28,7 @@ class EmailVerificationController extends Controller
     public function verify($user_id, Request $request) {
 
         if (!$request->hasValidSignature()) {
-            return response()->json(["message" => "Invalid/Expired url provided."], 401);
+            return response()->json(["message" => "A url do email é inválida ou expirou"], 401);
         }
 
         $user = User::findOrFail($user_id);
@@ -41,13 +41,23 @@ class EmailVerificationController extends Controller
         return response()->json(['message' => 'Seu email já foi verificado, faça seu login com suas credenciais!'], 401);;
     }
 
-    public function resend() {
-        if (auth()->user()->hasVerifiedEmail()) {
-            return response()->json(["msg" => "Email already verified."], 400);
+    public function resend(Request $request)
+    {
+
+        $request->validate(['email' => 'required|email']);
+
+        $user = User::where('email', $request->email)->first();
+
+        if ($user) {
+            if ($user->hasVerifiedEmail()) {
+                return response()->json(["message" => "Este email já foi verificado."], 400);
+            }
+
+            $user->sendEmailVerificationNotification();
+
+            return redirect(env('APP_VIEW_URL').'?message=Enviamos+um+novo+email+de+verificação+para+você,+cheque+sua+caixa+de+entrada');
         }
 
-        auth()->user()->sendEmailVerificationNotification();
-
-        return response()->json(["msg" => "Email verification link sent on your email id"]);
+        return response()->json(["message" => "Este email não está cadastrado."]);
     }
 }

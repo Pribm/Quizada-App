@@ -187,7 +187,7 @@ class UserController extends Controller
             $user->sendEmailVerificationNotification();
             return response()->json([
                 'success' => 'Enviamos um email para você, cheque sua caixa de mensagens ou a caixa de spam',
-                'access_token' => $user->createToken('auth-api')->accessToken
+               // 'access_token' => $user->createToken('auth-api')->accessToken
             ]);
         }
 

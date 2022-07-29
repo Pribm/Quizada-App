@@ -25,13 +25,14 @@ use App\Http\Controllers\PaymentController;
 */
 Route::post('webscrapping', [webScrapperController::class, 'scrapQuizz']);
 
+
+
 //User register
 Route::prefix('user')->group(function(){
     Route::post('register', [UserController::class, 'register']);
     Route::post('forgot-password', [ForgotPasswordController::class, 'forgot']);
     Route::post('reset-password', [ForgotPasswordController::class, 'reset']);
 
-    Route::get('test', function() {return 'teste';});
 });
 
 Route::get('email/verify/{id}', [EmailVerificationController::class, 'verify'])->name('verification.verify');

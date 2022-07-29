@@ -47,9 +47,14 @@ const Login = () => {
     let url = new URLSearchParams(location.search)
     let urlParams = Object.fromEntries(url.entries());
 
+    if(urlParams?.message){
+      dispatch(changeAlert({open: true, msg: urlParams?.message}))
+    }
+
     if (urlParams?.verify_email && urlParams?.signature) {
       axios.get(urlParams?.verify_email, { params: { signature: urlParams?.signature, hash: urlParams?.hash } })
-        .then(res => {
+      .then(res => {
+          console.log(res)
           if (res.status === 200 && res.data.success) {
             navigate('/home', { replace: true })
             dispatch(changeAlert({ open: true, msg: res.data.success, class: 'success' }))

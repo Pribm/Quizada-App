@@ -10,5 +10,8 @@ font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">
         <h1>Falta pouco para você Começar a criar seu quizz no Quizada!</h1>
         <h2>Este é um email de verificação, você não precisa responder, clique no botão abaixo para verificar se seu email é válido!</h2>
         <a href={{$url}} style="background-color: steelblue; text-decoration: none; color:white; padding: 5px; border-radius: 10px; margin-top: 20px;">Verifique seu E-mail</a>
+
+        <h3>Caso o link acima tenha expirado, envie novamente uma verificação.</h3>
+        <a href={{env('APP_URL').'api/email/resend?email='.$email}}>Clique Aqui.</a>
     </div>
 </div>

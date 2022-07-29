@@ -73,8 +73,6 @@ export const login = credentials => dispatch => {
             if (res.data.access_token) {
                 localStorage.setItem('access_token', res.data.access_token)
                 dispatch(success(true))
-
-
             }
         }
     })
@@ -82,7 +80,11 @@ export const login = credentials => dispatch => {
         dispatch(changeLoading({ open: false }))
         if (typeof error.response !== 'undefined') {
             if (error.response.status === 401 || error.response.status === 400) {
-                dispatch(changeAlert({ open: true, msg: 'Email ou senha incorretos ', class: 'error' }))
+                if(error.response.data.error === 'unverified_user'){
+                    dispatch(changeAlert({ open: true, msg: error.response.data.message, class: 'error' }))
+                }else{
+                    dispatch(changeAlert({ open: true, msg: 'Email ou senha incorretos ', class: 'error' }))
+                }
             } else {
                 dispatch(changeAlert({ open: true, msg: error.response.data.message, class: 'error' }))
             }

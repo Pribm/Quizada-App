@@ -9,6 +9,7 @@ use Laravel\Passport\Passport;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\CustomAccessTokenController;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -31,11 +32,11 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         VerifyEmail::toMailUsing(function ($notifiable, $url) {
-            $url_https = str_replace(['http://'],'https://',$url);
+            $url_https = (env('APP_ENV') === 'local') ? $url : str_replace(['http://'],'https://',$url);
             $spaUrl = env('APP_VIEW_URL')."?verify_email=".$url_https;
 
             return (new MailMessage)
-                ->view('email.verification', ['url' => $spaUrl])
+                ->view('email.verification', ['url' => $spaUrl, 'email' => $notifiable->email])
                 ->subject('Verifique seu endereço de Email')
                 ->line('Clique no botão abaixo para verificar seu endereço de email');
         });

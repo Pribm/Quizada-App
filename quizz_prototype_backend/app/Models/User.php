@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 use Staudenmeir\LaravelMergedRelations\Eloquent\HasMergedRelationships;
+use League\OAuth2\Server\Exception\OAuthServerException;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -53,6 +54,10 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function findForPassport($username)
     {
+        if(!$this->hasVerifiedEmail()){
+            throw new OAuthServerException('Seu email ainda não foi verificado, cheque sua caixa de entrada e se spam', '401', 'unverified_user');
+        }
+
         return $this->where('nickname', $username)->orWhere('email',$username)->first();
     }
 
@@ -105,13 +110,6 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     public function followableUsers(){
-        // return User::whereDoesntHave('friends', function($q){
-        //     $q->where('id','=',$this->id)
-        //     ->orWhere('laravel_foreign_key','=',$this->id);
-        // })
-        // ->whereDoesntHave('pendingFriendsTo')
-        // ->whereDoesntHave('pendingFriendsFrom')
-        // ->where('id', '!=', $this->id);
         return $this
         ->whereDoesntHave('pendingFriendsFrom', function($q){
             $q->where('friends.user_id',$this->id);
