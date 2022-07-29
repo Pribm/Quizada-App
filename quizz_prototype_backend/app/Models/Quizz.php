@@ -23,7 +23,8 @@ class Quizz extends Model
         'total_time',
         'count_time',
         'shuffle_answers',
-        'shuffle_questions'
+        'shuffle_questions',
+        'immediate_show_wrong_answers'
     ];
 
     protected $hidden = [ 'created_at', 'updated_at', 'pivot'];

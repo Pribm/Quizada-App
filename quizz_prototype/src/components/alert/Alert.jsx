@@ -29,7 +29,7 @@ const SnackAlert = () => {
         TransitionComponent={SlideTransition}
         autoHideDuration={state.autoHideDuration}
     >
-        <Alert severity={state.class}>{state.msg}</Alert>
+        <Alert severity={state.class} className='text-white'>{state.msg}</Alert>
     </Snackbar>
   )
 }

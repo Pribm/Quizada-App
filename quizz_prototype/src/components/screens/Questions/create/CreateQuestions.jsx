@@ -1,10 +1,10 @@
-import { Grid, Paper, Typography, TextField, FormControl, Button } from '@mui/material'
+import { Grid, Paper, Typography, TextField, FormControl, Button, Select, MenuItem, InputLabel } from '@mui/material'
 import CustomDialog from 'components/dialog/Dialog'
 import MenuWrapper from 'components/wrappers/MenuWrapper'
 import { useFormik } from 'formik'
 import React, { useRef, useState } from 'react'
 import { useEffect } from 'react'
-import { FcIdea, FcOpenedFolder,FcCheckmark, FcHighPriority } from 'react-icons/fc'
+import { FcIdea, FcOpenedFolder, FcCheckmark, FcHighPriority } from 'react-icons/fc'
 import { HiChevronLeft, HiChevronRight } from 'react-icons/hi'
 import { IoMdReturnLeft } from 'react-icons/io'
 import { IoImage } from 'react-icons/io5'
@@ -12,12 +12,13 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { changeAlert } from 'store/Actions/alert.action'
 import { store, success as questionsSuccess } from 'store/Actions/questions.action'
-import { change, uploadQuizzFile } from 'store/Actions/quizz.action'
+import { change } from 'store/Actions/quizz.action'
 
 import { questionFormSchema } from './validation/questionFormValidation'
 
 import Lottie from 'lottie-react'
 import { Waiting } from 'assets'
+import { HttpAuth } from 'config/Http'
 
 const CreateQuestions = () => {
 
@@ -34,6 +35,12 @@ const CreateQuestions = () => {
     const [createQuizz, setCreateQuizz] = useState(false)
     const [prepareUpload, setPrepareUpload] = useState(false)
 
+    const [showQuestionCreateDialog, setShowQuestionCreateDialog] = useState(false)
+
+    const [showCategoryDialog, setShowCategoryDialog] = useState(false)
+    const [selectedCategory, setSelectedCategory] = useState(0)
+    const [categories, setCategories] = useState([])
+    const [questionFile, setQuestionFile] = useState(null)
     const questionImageRef = useRef(null)
     const fileInput = useRef(null)
 
@@ -55,6 +62,19 @@ const CreateQuestions = () => {
 
         return () => dispatch(questionsSuccess(false))
     }, [success])
+
+    useEffect(() => {
+        
+        HttpAuth.get('question/categories?get_registered_categories=true').then(res => {
+            setCategories(res.data)
+        })
+
+        let url = new URLSearchParams(location.search)
+        let urlParams = Object.fromEntries(url.entries());
+        if (Boolean(urlParams.onlyquestions) === true) {
+            setShowQuestionCreateDialog(true)
+        }
+    }, [])
 
     const {
         values: {
@@ -134,207 +154,264 @@ const CreateQuestions = () => {
         }
     }
 
-    const handleUploadQuestions = e => {
-        dispatch(change({ newQuizz: { ...newQuizz, createQuizz: true, question_file: URL.createObjectURL(e.target.files[0]) } }))
-        setPrepareUpload(true)
+    const handleUploadQuestions = () => {
+
+        const fd = new FormData()
+        fd.append('question_file', questionFile)
+        fd.append('category_id', selectedCategory)
+
+        HttpAuth.post('question/upload', fd).then(res => navigate('/success/upload', {state: {
+                questionFileUploadSuccess: true
+            }
+        }))
     }
 
     return (
         <div className='container mx-auto p-4 text-center md:w-[60%]'>
-            <Typography className='text-3xl text-white mb-2'>
-                Criar Questões
-            </Typography>
-            <Grid component={Paper} padding={2} className='flex flex-col items-center'>
-                <Typography className='font-bold'>
-                    Questão #{String(currQuestion + 1).padStart(2, '0')}
-                </Typography>
-                <div
-                    onClick={() => {
-                        questionImageRef.current.click()
-                    }}
-                    className='w-[150px] overflow-hidden h-[150px] rounded-md flex justify-center items-center cursor-pointer' style={{ border: '#ccc dashed 2px' }}>
-                    {
-                        questionImageThumb ?
-                            <img src={questionImageThumb} alt="questionImage" className='w-[100%] h-[100%] object-cover' />
-                            :
-                            <IoImage size={40} color={'#ccc'} />
-                    }
-                </div>
-
-                <input
-                    onChange={e => {
-                        let tempImg = e.target.files[0] ? URL.createObjectURL(e.target.files[0]) : ''
-                        setQuestionImageThumb(tempImg)
-                        setFieldValue('image', e.target.files[0] ? e.target.files[0] : '')
-                    }}
-                    type="file"
-                    className='hidden'
-                    ref={questionImageRef} />
-                <FormControl fullWidth>
-                    <TextField
-                        label='Pergunta'
-                        rows={3}
-                        multiline
-                        margin='dense'
-                        value={question}
-                        id='question'
-                        onChange={e => {
-                            setFieldValue('question', e.target.value)
-                            if (errors.question) delete errors.question
-                        }}
-                        helperText={errors.question && errors.question}
-                        error={Boolean(errors.question)}
-                    />
-
-                    <TextField
-                        label='Resposta Correta'
-                        margin='dense'
-                        size='small'
-                        value={correct_answer}
-                        id='correct_answer'
-                        onChange={e => {
-                            setFieldValue('correct_answer', e.target.value)
-                            setFieldValue('answer_1', e.target.value)
-                            if (errors.correct_answer) delete errors.correct_answer;
-                        }}
-                        helperText={errors.correct_answer && errors.correct_answer}
-                        error={Boolean(errors.correct_answer)}
-                    />
-
-                    <TextField
-                        label='Resposta Incorreta #01'
-                        margin='dense'
-                        size='small'
-                        value={answer_2}
-                        id='answer_2'
-                        onChange={e => {
-                            setFieldValue('answer_2', e.target.value)
-                            if (errors.answer_2) delete errors.answer_2;
-                        }}
-                        helperText={errors.answer_2 && errors.answer_2}
-                        error={Boolean(errors.answer_2)}
-                    />
-
-                    <TextField
-                        label='Resposta Incorreta #02'
-                        margin='dense'
-                        size='small'
-                        value={answer_3}
-                        id='answer_3'
-                        onChange={e => {
-                            setFieldValue('answer_3', e.target.value)
-                            if (errors.answer_3) delete errors.answer_3;
-                        }}
-                        helperText={errors.answer_3 && errors.answer_3}
-                        error={Boolean(errors.answer_3)}
-                    />
-
-                    <TextField
-                        label='Resposta Incorreta #03'
-                        margin='dense'
-                        size='small'
-                        value={answer_4}
-                        id='answer_4'
-                        onChange={e => {
-                            setFieldValue('answer_4', e.target.value)
-                            if (errors.answer_4) delete errors.answer_4;
-                        }}
-                        helperText={errors.answer_4 && errors.answer_4}
-                        error={Boolean(errors.answer_4)}
-                    />
-
-                    <TextField
-                        label='Resposta Incorreta #04'
-                        margin='dense'
-                        size='small'
-                        value={answer_5}
-                        id='answer_5'
-                        onChange={e => {
-                            setFieldValue('answer_5', e.target.value)
-                            if (errors.answer_5) delete errors.answer_5;
-                        }}
-                        helperText={errors.answer_5 && errors.answer_5}
-                        error={Boolean(errors.answer_5)}
-                    />
-                </FormControl>
-
-                <div className='flex w-[100%] mt-2'>
-                    {
-                        ((questionsList.length > 0) && (currQuestion > 0)) &&
-                        <Button
-                            onClick={() => handleQuestionList('decrease')}
-                        >
-
-                            <HiChevronLeft size={20} />
-                            VOLTAR
-                        </Button>
-                    }
-                    <Button
-                        onClick={() => handleQuestionList('increase')}
-                        className='ml-auto'>
-                        Confirmar
-                        <HiChevronRight
-                            size={20} />
-                    </Button>
-                </div>
-            </Grid>
-            <Button
-                onClick={() => {
-                    if (questionsList.length > 0) {
-                        handleSubmitData()
-                        return
-                    }
-                    dispatch(changeAlert({ open: true, class: 'error', msg: 'Você precisa de pelo menos uma questão inclusa pra poder salvar no banco de dados.' }))
-                }}
-                variant='contained' color={'secondary'} className='mt-3'>
-                Salvar
-            </Button>
-            <CustomDialog open={true}>
-
-                {!prepareUpload ?
+            {
+                !showQuestionCreateDialog &&
                 <>
-                    <h1 className='text-4xl text-blue-500 px-4 text-center mt-auto mb-4 w-[380px]'>Como você irá criar suas perguntas?</h1>
-                    <div
-                        onClick={() => fileInput.current.click()}
-                        className='h-[120px] w-[280px] md:w-[380px]  mb-4 text-white flex items-center text-2xl px-4 bg-blue-600 rounded-xl cursor-pointer hover:bg-orange-500'>
-                        <FcOpenedFolder size={80} className={'mr-4'} />
-                        <div className="flex flex-col">
-                            <h2>Fazer Upload</h2>
-                            <h5 className='text-base'>Formatos Suportados: csv, xls, xlsx.</h5>
+                    <Typography className='text-3xl text-white mb-2'>
+                        Criar Questões
+                    </Typography>
+                    <Grid component={Paper} padding={2} className='flex flex-col items-center'>
+                        <Typography className='font-bold'>
+                            Questão #{String(currQuestion + 1).padStart(2, '0')}
+                        </Typography>
+                        <div
+                            onClick={() => {
+                                questionImageRef.current.click()
+                            }}
+                            className='w-[150px] overflow-hidden h-[150px] rounded-md flex justify-center items-center cursor-pointer' style={{ border: '#ccc dashed 2px' }}>
+                            {
+                                questionImageThumb ?
+                                    <img src={questionImageThumb} alt="questionImage" className='w-[100%] h-[100%] object-cover' />
+                                    :
+                                    <IoImage size={40} color={'#ccc'} />
+                            }
                         </div>
-                    </div>
 
-                    <div
-                        onClick={() => navigate('/questions/create', { replace: true, state: { createQuizz: true } })}
-                        className='h-[120px] w-[280px] md:w-[380px] text-sky-500 flex items-center text-2xl px-4 bg-white rounded-xl cursor-pointer hover:bg-orange-500 hover:text-white'>
-                        <FcIdea size={80} className={'mr-4'} />
-                        Criar Questões Manualmente
-                    </div>
-                    <input
-                        onChange={handleUploadQuestions}
-                        type="file"
-                        className='hidden'
-                        ref={fileInput} />
-                    <Button className='bg-white mb-auto mt-2' onClick={() => dispatch(change({ creatingNewQuizz: false }))}><IoMdReturnLeft className='mr-2' /> Voltar </Button>
+                        <input
+                            onChange={e => {
+                                let tempImg = e.target.files[0] ? URL.createObjectURL(e.target.files[0]) : ''
+                                setQuestionImageThumb(tempImg)
+                                setFieldValue('image', e.target.files[0] ? e.target.files[0] : '')
+                            }}
+                            type="file"
+                            className='hidden'
+                            ref={questionImageRef} />
+                        <FormControl fullWidth>
+                            <TextField
+                                label='Pergunta'
+                                rows={3}
+                                multiline
+                                margin='dense'
+                                value={question}
+                                id='question'
+                                onChange={e => {
+                                    setFieldValue('question', e.target.value)
+                                    if (errors.question) delete errors.question
+                                }}
+                                helperText={errors.question && errors.question}
+                                error={Boolean(errors.question)}
+                            />
+
+                            <TextField
+                                label='Resposta Correta'
+                                margin='dense'
+                                size='small'
+                                value={correct_answer}
+                                id='correct_answer'
+                                onChange={e => {
+                                    setFieldValue('correct_answer', e.target.value)
+                                    setFieldValue('answer_1', e.target.value)
+                                    if (errors.correct_answer) delete errors.correct_answer;
+                                }}
+                                helperText={errors.correct_answer && errors.correct_answer}
+                                error={Boolean(errors.correct_answer)}
+                            />
+
+                            <TextField
+                                label='Resposta Incorreta #01'
+                                margin='dense'
+                                size='small'
+                                value={answer_2}
+                                id='answer_2'
+                                onChange={e => {
+                                    setFieldValue('answer_2', e.target.value)
+                                    if (errors.answer_2) delete errors.answer_2;
+                                }}
+                                helperText={errors.answer_2 && errors.answer_2}
+                                error={Boolean(errors.answer_2)}
+                            />
+
+                            <TextField
+                                label='Resposta Incorreta #02'
+                                margin='dense'
+                                size='small'
+                                value={answer_3}
+                                id='answer_3'
+                                onChange={e => {
+                                    setFieldValue('answer_3', e.target.value)
+                                    if (errors.answer_3) delete errors.answer_3;
+                                }}
+                                helperText={errors.answer_3 && errors.answer_3}
+                                error={Boolean(errors.answer_3)}
+                            />
+
+                            <TextField
+                                label='Resposta Incorreta #03'
+                                margin='dense'
+                                size='small'
+                                value={answer_4}
+                                id='answer_4'
+                                onChange={e => {
+                                    setFieldValue('answer_4', e.target.value)
+                                    if (errors.answer_4) delete errors.answer_4;
+                                }}
+                                helperText={errors.answer_4 && errors.answer_4}
+                                error={Boolean(errors.answer_4)}
+                            />
+
+                            <TextField
+                                label='Resposta Incorreta #04'
+                                margin='dense'
+                                size='small'
+                                value={answer_5}
+                                id='answer_5'
+                                onChange={e => {
+                                    setFieldValue('answer_5', e.target.value)
+                                    if (errors.answer_5) delete errors.answer_5;
+                                }}
+                                helperText={errors.answer_5 && errors.answer_5}
+                                error={Boolean(errors.answer_5)}
+                            />
+                        </FormControl>
+
+                        <div className='flex w-[100%] mt-2'>
+                            {
+                                ((questionsList.length > 0) && (currQuestion > 0)) &&
+                                <Button
+                                    onClick={() => handleQuestionList('decrease')}
+                                >
+
+                                    <HiChevronLeft size={20} />
+                                    VOLTAR
+                                </Button>
+                            }
+                            <Button
+                                onClick={() => handleQuestionList('increase')}
+                                className='ml-auto'>
+                                Confirmar
+                                <HiChevronRight
+                                    size={20} />
+                            </Button>
+                        </div>
+                    </Grid>
+                    <Button
+                        onClick={() => {
+                            if (questionsList.length > 0) {
+                                handleSubmitData()
+                                return
+                            }
+                            dispatch(changeAlert({ open: true, class: 'error', msg: 'Você precisa de pelo menos uma questão inclusa pra poder salvar no banco de dados.' }))
+                        }}
+                        variant='contained' color={'secondary'} className='mt-3'>
+                        Salvar
+                    </Button>
                 </>
-                :
-                <div className='flex flex-col px-4 items-center mt-auto mb-auto'>
-                    <Lottie animationData={Waiting} />
-                    <h1 className='text-3xl text-blue-500 text-center'>Tem certeza que este é o arquivo correto?</h1>
-                    <div
-                        onClick={() => dispatch(uploadQuizzFile(newQuizz))}
-                        className='mt-4 md:w-[350px] md:h-[60px] text-sky-500 flex items-center justify-center text-2xl px-4 py-2 bg-white rounded-xl cursor-pointer hover:bg-orange-500 hover:text-white'>
-                        <FcCheckmark size={40} className={'mr-4'} />
-                        Absoluta!
-                    </div>
+            }
 
-                    <div
-                        onClick={() => dispatch(change({ creatingNewQuizz: false }))}
-                        className='mt-4 md:w-[350px] md:h-[60px] mb-auto text-sky-500 flex items-center justify-center text-2xl px-4 py-2 bg-white rounded-xl cursor-pointer hover:bg-orange-500 hover:text-white'>
-                        <FcHighPriority size={40} className={'mr-4'} />
-                        Prefiro escolher outro
-                    </div>
-                </div>}
+
+            <CustomDialog
+                open={showQuestionCreateDialog}
+                cancelButtonText={'Voltar para o menu Principal'}
+                handleClose={() => navigate('/home')}
+            >
+                {!prepareUpload ?
+                    <>
+                        <h1 className='text-4xl text-blue-500 px-4 text-center mt-auto mb-4 w-[380px]'>Como você irá criar suas perguntas?</h1>
+                        <div
+                            onClick={() => {
+                                fileInput.current.click()
+                            }}
+                            className='h-[120px] w-[280px] md:w-[380px]  mb-4 text-white flex items-center text-2xl px-4 bg-blue-600 rounded-xl cursor-pointer hover:bg-orange-500'>
+                            <FcOpenedFolder size={80} className={'mr-4'} />
+                            <div className="flex flex-col">
+                                <h2>Fazer Upload</h2>
+                                <h5 className='text-base'>Formatos Suportados: csv, xls, xlsx.</h5>
+                            </div>
+                        </div>
+
+                        <div
+                            onClick={() => {
+                                setShowQuestionCreateDialog(false)
+                            }}
+                            className='h-[120px] w-[280px] md:w-[380px] text-sky-500 flex items-center text-2xl px-4 bg-white rounded-xl cursor-pointer hover:bg-orange-500 hover:text-white'>
+                            <FcIdea size={80} className={'mr-4'} />
+                            Criar Questões Manualmente
+                        </div>
+                        <input
+                            onChange={e => {
+                                setPrepareUpload(true)
+                                setQuestionFile(e.target.files[0])
+                                setShowCategoryDialog(true)
+                            }}
+                            type="file"
+                            className='hidden'
+                            ref={fileInput} />
+                    </>
+                    :
+                    !showCategoryDialog &&
+                    <div className='flex flex-col px-4 items-center mt-auto mb-auto'>
+                        <Lottie animationData={Waiting} />
+                        <h1 className='text-3xl text-blue-500 text-center'>Tem certeza que este é o arquivo correto?</h1>
+                        <div
+                            onClick={() => handleUploadQuestions()}
+                            className='mt-4 md:w-[350px] md:h-[60px] text-sky-500 flex items-center justify-center text-2xl px-4 py-2 bg-white rounded-xl cursor-pointer hover:bg-orange-500 hover:text-white'>
+                            <FcCheckmark size={40} className={'mr-4'} />
+                            Absoluta!
+                        </div>
+
+                        <div
+                            onClick={() => dispatch(change({ creatingNewQuizz: false }))}
+                            className='mt-4 md:w-[350px] md:h-[60px] mb-auto text-sky-500 flex items-center justify-center text-2xl px-4 py-2 bg-white rounded-xl cursor-pointer hover:bg-orange-500 hover:text-white'>
+                            <FcHighPriority size={40} className={'mr-4'} />
+                            Prefiro escolher outro
+                        </div>
+                    </div>}
+            </CustomDialog>
+            <CustomDialog
+            open={showCategoryDialog}
+            dialogTitle={'Selecione uma categoria'}
+            dialogContentText={'Todas as questões serão criadas com a categoria selecionada'}
+            actionButtonText={'Salvar Categoria'}
+            handleConfirm={() => setShowCategoryDialog(false)}
+            >
+                <FormControl fullWidth className='mt-2'>
+                    <InputLabel id="category-label">Categoria</InputLabel>
+                    <Select
+                        labelId="category-label"
+                        size='small'
+                        label='Categoria'
+                        value={selectedCategory}
+                        onChange={e => setSelectedCategory(e.target.value)}
+                    >
+                            <MenuItem value={0}>
+                            -------------------------
+                            </MenuItem>
+                        {
+                            categories.map((category, key) => (
+                                <MenuItem
+                                key={'category_selector_'+key}
+                                value={category.id}
+                                >
+                                    {category.name}
+                                </MenuItem>
+                            ))
+                        }
+                    </Select>
+                </FormControl>
             </CustomDialog>
         </div>
     )

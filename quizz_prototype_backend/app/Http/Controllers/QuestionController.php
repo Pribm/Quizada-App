@@ -76,11 +76,13 @@ class QuestionController extends Controller
         }
 
         if ($request->hasFile('question_file')) {
-            $rules = [
-                'category_id' => 'required|integer',
-            ];
+            if($request->createQuizz){
+                $rules = [
+                    'category_id' => 'required|integer',
+                ];
 
-            $request->validate($rules);
+                $request->validate($rules);
+            }
 
             $file_questions_array = $this->uploadCSVFile($request);
         }
@@ -98,6 +100,7 @@ class QuestionController extends Controller
                 'count_time' => $request->count_time+1,
                 'shuffle_answers' => (bool)$request->shuffle_answers,
                 'shuffle_questions' => (bool)$request->shuffle_questions,
+                'immediate_show_wrong_answers' => (bool)$request->immediate_show_wrong_answers,
             ]);
         }
 

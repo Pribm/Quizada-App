@@ -77,7 +77,8 @@ class QuizzController extends Controller
             'total_time' =>  ($request->time_per_question * $request->limit),
             'count_time' => $request->count_time+1,
             'shuffle_answers' => (bool)$request->shuffle_answers,
-            'shuffle_questions' => (bool)$request->shuffle_questions
+            'shuffle_questions' => (bool)$request->shuffle_questions,
+            'immediate_show_wrong_answers' => (bool)$request->immediate_show_wrong_answers,
         ]);
 
 

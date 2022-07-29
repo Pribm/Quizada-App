@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 import { BackGroundMenuCard } from '../../../assets'
 import Lottie from 'lottie-react'
@@ -9,7 +9,7 @@ import { change } from '../../../store/Actions/quizz.action'
 
 import { useNavigate } from 'react-router-dom'
 
-import { Avatar, Button, Card, Grid, Paper } from '@mui/material'
+import { Avatar, Button, Card, CircularProgress, Grid, Paper } from '@mui/material'
 import { useEffect } from 'react'
 import { addFriend, index } from 'store/Actions/friends.action'
 
@@ -20,7 +20,9 @@ import HorizontalQuizzCard from 'components/quizzCard/HorizontalQuizzCard'
 import InfiniteScroll from 'components/infiniteScroll/InfiniteScroll'
 import { RiUserFollowFill } from 'react-icons/ri'
 import { HiUserAdd } from 'react-icons/hi'
-import { FcFolder } from 'react-icons/fc'
+import { FcConferenceCall, FcFolder } from 'react-icons/fc'
+import { SearchBox } from 'components/searchBox/SearchBox'
+import { changeLoading } from 'store/Actions/loading.action'
 
 const Home = () => {
 
@@ -31,9 +33,11 @@ const Home = () => {
     const { quizzInvitations } = useSelector(state => state.userReducer)
     const { quizz: { quizzCreated } } = useSelector(state => state.gameReducer)
 
+    const [loadingFriend, setLoadingFriend] = useState(true)
+    const [friendSearch, setFriendSearch] = useState('')
 
     useEffect(() => {
-        dispatch(index({ showUnfollowedUsers: true }, false))
+        dispatch(index({ showUnfollowedUsers: true }, false)).then(() => setLoadingFriend(false))
         dispatch(getQuizzInvitations({}, false))
     }, [])
 
@@ -49,6 +53,11 @@ const Home = () => {
 
     const handleLoadMoreQuizzSolicitations = () => {
         dispatch(getQuizzInvitations({ page: quizzInvitations.current_page + 1 }, true))
+    }
+
+    const handlesearching = () => {
+        dispatch(changeLoading({ open: true, text: 'Procurando Usuário...' }))
+        dispatch(index({ showUnfollowedUsers: true, search: friendSearch }, false)).then(() => dispatch(changeLoading({ open: false})))
     }
 
     return (
@@ -138,43 +147,67 @@ const Home = () => {
                             current_page={friendsList.current_page}
                             last_page={friendsList.last_page}
                         >
+                            <div className='bg-blue-500 p-4 sticky top-[55px] z-10'>
+                                <SearchBox
+                                className='pl-8'
+                                value={friendSearch}
+                                onChange={e => setFriendSearch(e.target.value)}
+                                searchHandler={handlesearching}
+                                />
+                            </div>
+                            
                             {
-                                friendsList?.data.map((friend, i) => (
-                                    <Card className='flex min-h-[100px] items-center p-4 mb-4' key={'home_screen_friend_' + i}>
-                                        <div>
-                                            <Avatar src={friend.avatar} alt={friend.name}>
-                                                {friend.name[0]}
-                                            </Avatar>
+                                <div className='p-4'>
+                                    {
+                                        friendsList.data.length > 0  ?
+                                        friendsList?.data.map((friend, i) => (
+                                            <Card className='flex min-h-[100px] items-center p-4 mb-4' key={'home_screen_friend_' + i}>
+                                                <div>
+                                                    <Avatar src={friend.avatar} alt={friend.name}>
+                                                        {friend.name[0]}
+                                                    </Avatar>
+                                                </div>
+        
+                                                <div className='ml-4 mr-auto'>
+                                                    <h3>
+                                                        {
+                                                            friend.name
+                                                        }
+                                                    </h3>
+                                                    <h4>
+                                                        {
+                                                            friend.email
+                                                        }
+                                                    </h4>
+                                                </div>
+                                                <Button onClick={() => dispatch(addFriend(friend.id))}>
+                                                    {
+                                                        ("pivot" in friend) ?
+                                                            <div className='text-sky-500 flex flex-col items-center '>
+                                                                <RiUserFollowFill size={25} />
+                                                                <h5 className='text-[.5rem]'>Solicitação enviada</h5>
+                                                            </div>
+                                                            :
+                                                            <div className='text-slate-500 flex flex-col items-center '>
+                                                                <HiUserAdd size={30} />
+                                                                <h5 className='text-[.5rem]'>Enviar Solicitação</h5>
+                                                            </div>
+                                                    }
+                                                </Button>
+                                            </Card>
+                                        ))
+                                        :
+                                        (loadingFriend ?
+                                        <div className='h-[400px] flex justify-center items-center'>
+                                            <CircularProgress/>
                                         </div>
-
-                                        <div className='ml-4 mr-auto'>
-                                            <h3>
-                                                {
-                                                    friend.name
-                                                }
-                                            </h3>
-                                            <h4>
-                                                {
-                                                    friend.email
-                                                }
-                                            </h4>
-                                        </div>
-                                        <Button onClick={() => dispatch(addFriend(friend.id))}>
-                                            {
-                                                ("pivot" in friend) ?
-                                                    <div className='text-sky-500 flex flex-col items-center '>
-                                                        <RiUserFollowFill size={25} />
-                                                        <h5 className='text-[.5rem]'>Solicitação enviada</h5>
-                                                    </div>
-                                                    :
-                                                    <div className='text-slate-500 flex flex-col items-center '>
-                                                        <HiUserAdd size={30} />
-                                                        <h5 className='text-[.5rem]'>Enviar Solicitação</h5>
-                                                    </div>
-                                            }
-                                        </Button>
-                                    </Card>
-                                ))
+                                        :
+                                        <Paper className='p-4 flex flex-col items-center'>
+                                            <FcConferenceCall size={50}/>
+                                            Nenhum Usuário Encontrado.
+                                        </Paper>)
+                                    }
+                                </div>
                             }
                         </InfiniteScroll>
                     </Grid>

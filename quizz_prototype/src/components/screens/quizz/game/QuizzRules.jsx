@@ -19,7 +19,8 @@ const QuizzRules = () => {
         category_id: 0,
         withTime: false,
         time_per_question: 0,
-        random_questions: true
+        random_questions: true,
+        immediate_show_wrong_answers: 0
     })
 
     const handleCreateQuizz = () => {
@@ -85,6 +86,18 @@ const QuizzRules = () => {
                             label="Deseja que as questões tenham tempo?"
                         />
                         <FormHelperText>A sua pontuação será baseada no tempo</FormHelperText>
+                    </FormGroup>
+
+                    <FormGroup className='mt-4'>
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                checked={Boolean(rules.immediate_show_wrong_answers)}
+                                onChange={() => setRules({ ...rules, immediate_show_wrong_answers: rules.immediate_show_wrong_answers ? false : true})} />
+                            }
+                            label="Mostrar a resposta Imediatamente?"
+                        />
+                        <FormHelperText>As suas respostas serão exibidas ao fim de cada quizz.</FormHelperText>
                     </FormGroup>
 
                     {

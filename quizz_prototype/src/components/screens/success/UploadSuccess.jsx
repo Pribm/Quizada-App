@@ -15,21 +15,15 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from '@mui/material'
 import { BiPencil } from 'react-icons/bi'
 
+import { useParams } from 'react-router-dom'
+
 const UploadSuccess = () => {
 
     const dispatch = useDispatch()
     const {token} = useSelector(state => state.quizzReducer)
 
     const navigate = useNavigate()
-
-    useEffect(() => {
-
-        if(token===''){
-            navigate('/home', {replace: true})
-        }
-
-        return () => dispatch(change('clear'))
-    }, [token])
+    const params = useParams()
 
     return (
         <div className='flex flex-col items-center min-h-[75vh] md:w-[30vw] md:mx-auto'>
@@ -37,20 +31,29 @@ const UploadSuccess = () => {
             {
                 <>
                     <div className='w-[80vw] md:w-[50vw] flex flex-col items-center justify-center mb-auto'>
-                        <h1 className='text-3xl text-white text-center bg-orange-500 p-2 rounded-xl'>Seu Quizz foi criado com sucesso!</h1>
-                        <h2 className='text-2xl text-white mt-2 text-center'>Compartilhe este quizz com seus amigos através desse Token</h2>
-                        <div
-                            onClick={() => {
-                                navigator.clipboard.writeText(token)
-                                dispatch(changeAlert({ open: true, msg: 'Token copiado para a área de transferência', class: 'success' }))
-                            }}
-                            className='text-center mt-4 bg-white text-3xl text-sky-600 flex items-center mx-auto p-5 px-10 rounded-xl cursor-pointer'>
-                            {token}
-                            <IoMdCopy className='ml-2' />
-                        </div>
+                        <h1 className='text-3xl text-white text-center bg-orange-500 p-2 rounded-xl'>
+                            {token ? 'Seu Quizz foi criado com sucesso!' : 'Suas questões foram criadas com sucesso'}
+                        </h1>
+                        <h2 className='text-2xl text-white mt-2 text-center'>
+                            {token ? 'Compartilhe este quizz com seus amigos através desse Token' : 'Você pode selecioná-las e criar um novo quizz'}
+                        </h2>
+                        {
+                            token &&
+                            <div
+                                onClick={() => {
+                                    navigator.clipboard.writeText(token)
+                                    dispatch(changeAlert({ open: true, msg: 'Token copiado para a área de transferência', class: 'success' }))
+                                }}
+                                className='text-center mt-4 bg-white text-3xl text-sky-600 flex items-center mx-auto p-5 px-10 rounded-xl cursor-pointer'>
+                                {token}
+                                <IoMdCopy className='ml-2' />
+                            </div>
+                        }
 
-                        <div className='mt-2'>
+                        <div className='mt-2 flex flex-col'>
                             <Button
+                                className='my-4'
+                                variant='contained'
                                 onClick={() => {
                                     dispatch(changeGame("clear"))
                                     navigate('/home', {replace: true})
@@ -61,14 +64,20 @@ const UploadSuccess = () => {
                                 Voltar à tela principal
                             </Button>
                             <Button
+                                variant='contained'
+                                color='secondary'
                                 onClick={() => {
                                     dispatch(changeGame("clear"))
-                                    navigate('/quizz/list', {replace: true})
+                                    if(token){
+                                        navigate('/quizz/list', {replace: true})
+                                    }else{
+                                        navigate('/questions/list', {replace: true})
+                                    }
                                 }}
 
                             >
                                 <BiPencil className='mr-2' />
-                                Ver Lista de Quizzes
+                                {token ? 'Ver Lista de Quizzes' : 'Ver Lista de Questões'}
                             </Button>
                         </div>
                     </div>

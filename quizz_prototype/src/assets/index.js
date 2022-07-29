@@ -15,6 +15,8 @@ import UploadSpaceship from './foguete_upload.json'
 import Waiting from './waiting.json'
 
 import UploadFile from './upload_file.json'
+import correctAnswer from './correct.json'
+import wrongAnswer from './wrong.json'
 
 
 
@@ -32,4 +34,6 @@ export {
     UploadSpaceship,
     Waiting,
     UploadFile,
+    correctAnswer,
+    wrongAnswer
 }

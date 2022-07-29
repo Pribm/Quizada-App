@@ -50,7 +50,7 @@ const drawerLinks = [
     {
         text: 'Criar novas questões',
         icon: <RiEditLine/>,
-        linkTo: '/questions/create',
+        linkTo: '/questions/create?onlyquestions=true',
 
     },
     {

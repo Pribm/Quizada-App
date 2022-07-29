@@ -13,14 +13,15 @@ const InfiniteScrollComponent = ({children, title, handleLoadMore, className, cu
               loadMore={handleLoadMore}
               hasMore={current_page === last_page ? false : true}
               initialLoad={false}
-              loader={<div className='flex justify-center relative' key={'loader_friends_0'}>
-                  <CircularProgress />
+              loader={
+                <div className='flex justify-center h-[40px]' key={'loader_friends_0'}>
+                  <CircularProgress size={20}/>
                   </div>}
               useWindow={false}
               
           >
-              <h4 className='sticky top-[0px] p-4 text-white mb-4 z-10 bg-blue-400 '>{title}</h4>
-              <div className='px-4'>
+              <h4 className='sticky top-[0px] p-4 text-white z-10 bg-blue-400 '>{title}</h4>
+              <div>
               {
                  children
               }

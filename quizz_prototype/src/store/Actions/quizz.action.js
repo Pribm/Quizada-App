@@ -82,7 +82,6 @@ export const destroy = id => dispatch => {
 }
  
 export const uploadQuizzFile =  (payload) => dispatch => {
-    //console.log('quizz_action:', payload)
     let formdata = new FormData()
 
     Object.entries(payload).forEach(async (element, i, array) => {

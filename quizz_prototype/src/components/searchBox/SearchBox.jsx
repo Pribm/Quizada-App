@@ -53,6 +53,7 @@ export const SearchBox = (props) => {
     return (
         <Search>
             <SearchIconWrapper
+                className='cursor-pointer z-50'
                 onClick={() => searchHandler()}
             >
               <FaSearch className='text-white'/>

@@ -18,8 +18,6 @@ class CategoryController extends Controller
 
     public function index(Request $request)
     {
-
-
         //Return selected categories or admin registered questions categories
         if($request->get_registered_categories == true){
             $categories = Categories::where('name', 'like', '%'.$request->name.'%')

@@ -85,6 +85,18 @@ const Rules = () => {
                 <FormGroup className='mt-4'>
                     <FormControlLabel
                         control={
+                            <Switch
+                                checked={Boolean(rules.immediate_show_wrong_answers)}
+                                onChange={() => dispatch(change({ rules: { ...rules, immediate_show_wrong_answers: rules.immediate_show_wrong_answers ? false : true }}))} />
+                        }
+                        label="Mostrar a resposta Imediatamente?"
+                    />
+                    <FormHelperText>As suas respostas serão exibidas ao fim de cada quizz.</FormHelperText>
+                </FormGroup>
+
+                <FormGroup className='mt-4'>
+                    <FormControlLabel
+                        control={
                             <Switch checked={Boolean(rules.withTime)} onChange={() => {
                                 dispatch(change({ rules: { ...rules, withTime: !rules.withTime, count_time: rules.withTime ? 0 : 1, time_per_question: rules.withTime ? 0 : 30 } }))
                             }} />

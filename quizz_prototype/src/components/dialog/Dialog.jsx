@@ -3,7 +3,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogContentText, Dialog
 
 const CustomDialog = (props) => {
 
-    const {dialogTitle, dialogContentText, children, handleClose, actionButtonText, handleConfirm, open } = props
+    const {dialogTitle, dialogContentText, children, handleClose, actionButtonText, cancelButtonText = 'Cancelar', handleConfirm, open } = props
     
 
   return (
@@ -20,8 +20,14 @@ const CustomDialog = (props) => {
             </div>
         </DialogContent>
         <DialogActions>
-            <Button onClick={handleClose}>Cancelar</Button>
-            <Button onClick={handleConfirm}>{actionButtonText}</Button>
+            {
+                handleClose &&
+                <Button onClick={handleClose}>{cancelButtonText}</Button>
+            }
+            {
+                handleConfirm &&
+                <Button onClick={handleConfirm}>{actionButtonText}</Button>
+            }
         </DialogActions>
     </Dialog>
   )
