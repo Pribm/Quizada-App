@@ -54,11 +54,13 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function findForPassport($username)
     {
-        if(!$this->hasVerifiedEmail()){
+        $user = $this->where('nickname', $username)->orWhere('email',$username)->first();
+
+        if(!$user->hasVerifiedEmail()){
             throw new OAuthServerException('Seu email ainda não foi verificado, cheque sua caixa de entrada e se spam', '401', 'unverified_user');
         }
 
-        return $this->where('nickname', $username)->orWhere('email',$username)->first();
+        return $user;
     }
 
     public function socialAccounts(){
