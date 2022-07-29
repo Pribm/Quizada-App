@@ -76,8 +76,19 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Question::class, 'user_id');
     }
 
+    public function adminQuizz(){
+        return Quizz::where('user_id', function($q){
+            $q->belongsTo(User::class)
+            ->where('role_id', 1);
+        })
+        ->with([ 'category'])
+        ->where('random_generated', false);
+    }
+
     public function quizzOwner(){
-        return $this->hasMany(Quizz::class, 'user_id')->with(['questions', 'category'])->where('random_generated', false);
+        return $this->hasMany(Quizz::class, 'user_id')
+        ->with([ 'category'])
+        ->where('random_generated', false);
     }
 
     public function quizzInvitationAccepted(){

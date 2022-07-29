@@ -27,7 +27,15 @@ class QuizzController extends Controller
 
     public function index(Request $request)
     {
+        // $user = new User();
+        // $adm_quizz = User::where(function($q) use ($request){
+        //     $q->where("role_id",1);
+        // })
+        // ->whereHas('quizzOwner')->with(['quizzOwner'])->paginate(10);
+
+        // return $adm_quizz;
         $quizz_list = $this->auth_user->quizzOwner()->orderBy('created_at', 'DESC')->paginate(10);
+
         if($request->showAcceptedQuizzList){
             $quizz_list = $this->auth_user->quizzInvitationAccepted()->orderBy('created_at', 'DESC')->paginate(10);
         }

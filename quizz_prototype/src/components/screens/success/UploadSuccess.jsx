@@ -15,7 +15,6 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from '@mui/material'
 import { BiPencil } from 'react-icons/bi'
 
-import { useParams } from 'react-router-dom'
 
 const UploadSuccess = () => {
 
@@ -23,7 +22,13 @@ const UploadSuccess = () => {
     const {token} = useSelector(state => state.quizzReducer)
 
     const navigate = useNavigate()
-    const params = useParams()
+    
+    useEffect(() => {
+        return () => {
+            dispatch(changeGame('clear'))
+            dispatch(change('clear'))
+        }
+    })
 
     return (
         <div className='flex flex-col items-center min-h-[75vh] md:w-[30vw] md:mx-auto'>

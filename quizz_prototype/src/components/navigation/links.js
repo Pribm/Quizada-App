@@ -15,12 +15,12 @@ const cards = [
         subtitle: 'Jogue Sozinho',
         image: PlayAlone,
     },
-    {
-        title: 'Duelo',
-        subtitle: 'Jogue contra um amigo',
-        image: Battle,
-        loop: false,
-    },
+    // {
+    //     title: 'Duelo',
+    //     subtitle: 'Jogue contra um amigo',
+    //     image: Battle,
+    //     loop: false,
+    // },
     {
         title: 'Torneio',
         subtitle: 'Jogue contra outras Pessoas',
@@ -60,7 +60,7 @@ const drawerLinks = [
 
     },
     {
-        text: 'Quizzes Concluídos',
+        text: 'Ranking dos quizzes concluídos',
         icon: <BsCardChecklist/>,
         linkTo: '/quizz/finished'
     }
