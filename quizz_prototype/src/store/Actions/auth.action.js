@@ -1,5 +1,6 @@
 import { Http, HttpAuth } from "../../config/Http"
 import { changeAlert } from "./alert.action"
+import { changeConfirm } from "./confirm.action"
 import { changeLoading } from "./loading.action"
 
 export const actionTypes = {
@@ -81,6 +82,17 @@ export const login = credentials => dispatch => {
         if (typeof error.response !== 'undefined') {
             if (error.response.status === 401 || error.response.status === 400) {
                 if(error.response.data.error === 'unverified_user'){
+                    dispatch(changeConfirm({open: true,
+                    confirmAction: () => {
+                        dispatch(changeLoading({open: true, text: 'Enviando verificação'}))
+                        HttpAuth.get('email/resend', {params: {email: credentials.email}}).then(res => {
+                        dispatch(changeLoading({open: false}))
+                        dispatch(changeConfirm({open: false}))
+                        dispatch(changeAlert({ open: true, msg: res.data.success, class: 'success' }))
+                    })
+                },
+                    msg: 'Caso confirme, um novo e-mail de verificação será enviado, cheque também sua caixa de spam.',
+                    title: 'Seu e-mail de verificação expirou?'}))
                     dispatch(changeAlert({ open: true, msg: error.response.data.message, class: 'error' }))
                 }else{
                     dispatch(changeAlert({ open: true, msg: 'Email ou senha incorretos ', class: 'error' }))
@@ -129,7 +141,9 @@ export const socialLogin = payload => dispatch => {
 }
 
 export const forgotPassword = email => dispatch => {
+    dispatch(changeLoading({open: true, text: 'Enviando email de recuperação'}))
     return HttpAuth.post('user/forgot-password', {email}).then(res => {
+        dispatch(changeLoading({open: false}))
         if(res.status === 200){
             dispatch(changeAlert({open:true, msg: res.data.message, class: 'success'}))
         }else{

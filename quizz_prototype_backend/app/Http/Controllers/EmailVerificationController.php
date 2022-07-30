@@ -43,7 +43,6 @@ class EmailVerificationController extends Controller
 
     public function resend(Request $request)
     {
-
         $request->validate(['email' => 'required|email']);
 
         $user = User::where('email', $request->email)->first();
@@ -54,6 +53,10 @@ class EmailVerificationController extends Controller
             }
 
             $user->sendEmailVerificationNotification();
+
+            if(isset($_SERVER['HTTP_ORIGIN']) && $_SERVER['HTTP_ORIGIN'].'/' === env('APP_VIEW_URL')){
+                return response()->json(['success' => 'Enviamos um novo email de vireificação para você cheque sua caixa de entrada.']);
+            }
 
             return redirect(env('APP_VIEW_URL').'?message=Enviamos+um+novo+email+de+verificação+para+você,+cheque+sua+caixa+de+entrada');
         }

@@ -27,14 +27,15 @@ class QuizzController extends Controller
 
     public function index(Request $request)
     {
-        // $user = new User();
-        // $adm_quizz = User::where(function($q) use ($request){
-        //     $q->where("role_id",1);
-        // })
-        // ->whereHas('quizzOwner')->with(['quizzOwner'])->paginate(10);
 
-        // return $adm_quizz;
+
         $quizz_list = $this->auth_user->quizzOwner()->orderBy('created_at', 'DESC')->paginate(10);
+
+        if($request->showAdminQuizzList){
+            $quizz_list = Quizz::whereHas('user.role', function($q){
+                return $q->where('role', 'admin');
+            })->paginate(10);
+        }
 
         if($request->showAcceptedQuizzList){
             $quizz_list = $this->auth_user->quizzInvitationAccepted()->orderBy('created_at', 'DESC')->paginate(10);
@@ -80,13 +81,13 @@ class QuizzController extends Controller
             'title' => $request->title,
             'description' => $request->description,
             'image' => $quizz_image_path,
-            'withTime' => $request->withTime ? (bool)$request->withTime : 0,
+            'withTime' => $request->withTime === 'true' ? true : false,
             'time_per_question' => $request->time_per_question,
             'total_time' =>  ($request->time_per_question * $request->limit),
             'count_time' => $request->count_time+1,
-            'shuffle_answers' => (bool)$request->shuffle_answers,
-            'shuffle_questions' => (bool)$request->shuffle_questions,
-            'immediate_show_wrong_answers' => (bool)$request->immediate_show_wrong_answers,
+            'shuffle_answers' => $request->shuffle_answers === 'true' ? true : false,
+            'shuffle_questions' => $request->shuffle_questions === 'true' ? true : false,
+            'immediate_show_wrong_answers' => $request->immediate_show_wrong_answers === 'true' ? true : false,
         ]);
 
 

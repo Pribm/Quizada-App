@@ -56,11 +56,13 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $user = $this->where('nickname', $username)->orWhere('email',$username)->first();
 
-        if(!$user->hasVerifiedEmail()){
-            throw new OAuthServerException('Seu email ainda não foi verificado, cheque sua caixa de entrada e se spam', '401', 'unverified_user');
+        if($user){
+            if(!$user->hasVerifiedEmail()){
+                throw new OAuthServerException('Seu email ainda não foi verificado, cheque sua caixa de entrada e de spam', '401', 'unverified_user');
+            }
+            return $user;
         }
-
-        return $user;
+        throw new OAuthServerException('Usuário não encontrado', '401', 'not_found_user');
     }
 
     public function socialAccounts(){

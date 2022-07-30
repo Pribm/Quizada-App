@@ -81,7 +81,7 @@ const QuizzRules = () => {
                             control={
                                 <Switch
                                 checked={Boolean(rules.withTime)}
-                                onChange={() => setRules({ ...rules, withTime: rules.withTime ? false : true, time_per_question: Boolean(rules.withTime) ?  0 : 30 })} />
+                                onChange={() => setRules({ ...rules, withTime: !rules.withTime, time_per_question: Boolean(rules.withTime) ?  0 : 30 })} />
                             }
                             label="Deseja que as questões tenham tempo?"
                         />
