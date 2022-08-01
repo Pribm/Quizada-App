@@ -95,12 +95,12 @@ class QuestionController extends Controller
                 'category_id' => $request->category_id,
                 'title' => $request->title,
                 'description' => $request->description,
-                'withTime' => $request->withTime === 'true' ? true : false,
+                'withTime' => $request->withTime == 'true' ? true : false,
                 'time_per_question' => $request->time_per_question,
                 'count_time' => $request->count_time+1,
-                'shuffle_answers' => $request->shuffle_answers === 'true' ? true : false,
-                'shuffle_questions' => $request->shuffle_questions === 'true' ? true : false,
-                'immediate_show_wrong_answers' => $request->immediate_show_wrong_answers === 'true' ? true : false,
+                'shuffle_answers' => $request->shuffle_answers == 'true' ? true : false,
+                'shuffle_questions' => $request->shuffle_questions == 'true' ? true : false,
+                'immediate_show_wrong_answers' => $request->immediate_show_wrong_answers == 'true' ? true : false,
             ]);
         }
 
