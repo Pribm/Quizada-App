@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { index } from 'store/Actions/quizz.action'
 import { useNavigate } from 'react-router-dom'
 import QuizzCard from 'components/quizzCard/QuizzCard'
+import { ListWrapper } from 'components/wrappers/ListWrapper'
 
 
 
@@ -15,44 +16,42 @@ const IndexQuestions = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const { quizz_list } = useSelector(state => state.quizzReducer)
-  const { quizz:{quizzCreated} } = useSelector(state => state.gameReducer)
+  const { quizz: { quizzCreated } } = useSelector(state => state.gameReducer)
 
   const [isLoading, setLoading] = useState(true)
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
     dispatch(index()).then(() => setLoading(false))
   }, [])
 
-
-
   useEffect(() => {
-    if(quizzCreated){
-      navigate('/quizz', {replace: true})
+    if (quizzCreated) {
+      navigate('/quizz', { replace: true })
     }
   }, [quizzCreated])
 
-  return (
-    <div className='md:container md:w-[60vw] w-auto mx-[auto] md:p-4 flex flex-wrap justify-center'>
-      {!isLoading ?
-        quizz_list.data?.length > 0 ?
-          quizz_list.data?.map((quizz, i) => <QuizzCard props={{ ...quizz, dispatch }} key={'quizz_card' + i} />)
-          :
-          <Paper className='flex flex-col items-center p-4 w-[100%]'>
-            <FcFolder size={100} />
-            <h1 className='text-center'>Você ainda não possui nenhum quizz cadastrado, gostaria de criar um?</h1>
-            <Button
-              onClick={() => navigate('/quizz/create', { replace: true })}
-              variant='contained'
-              className='mt-2'>
-              Sim, por favor!
-            </Button>
-          </Paper>
+  const searchHandler = () => {
+    setLoading(true)
+    dispatch(index({ search: search })).then(() => setLoading(false))
+  }
 
-        :
-        <div className='flex flex-1 justify-center'>
-          <CircularProgress />
-        </div>
-      }
+  return (
+    <div className='p-4 md:w-[30vw] mx-auto'>
+      <ListWrapper
+        Component={QuizzCard}
+        componentProps={{dispatch, exportQuizzButton: true, deleteQuizzButton: true, quizzToken: true}}
+        className={'min-h-[calc(100vh-120px-120px)] max-h-[calc(100vh-120px-120px)]'}
+        componentData={quizz_list.data}
+        search={search}
+        setSearch={setSearch}
+        searchHandler={searchHandler}
+        isLoading={isLoading}
+        setLoading={setLoading}
+        searchBoxPlaceholder={'Seus Quizzes'}
+        listTitle={'Quizzes criados por você'}
+        notFoundList={'Nenhum Quizz foi encontrado'}
+      />
     </div>
   )
 }

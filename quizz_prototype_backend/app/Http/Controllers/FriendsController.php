@@ -40,7 +40,9 @@ class FriendsController extends Controller
 
         if($request->showFriendsList){
             $friends_list = User::where(function($q) use ($request){
-                $q->where("name",'LIKE',"%".$request->search."%")->orWhere("email",'LIKE',"%".$request->search."%");
+                $q->where("name",'LIKE',"%".$request->search."%")->orWhere("email",'LIKE',"%".$request->search."%")
+                ->orWhere("nickname",'LIKE',"%".$request->search."%")->orWhere("email",'LIKE',"%".$request->search."%")
+                ->orWhere("email",'LIKE',"%".$request->search."%")->orWhere("email",'LIKE',"%".$request->search."%");
             })
             ->whereHas('friends',function($q){
                 $q->where('id', $this->auth_user->id);

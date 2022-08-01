@@ -39,8 +39,8 @@ const Rules = () => {
 
         <Dialog
             open={open}
-            dialogTitle='Escolha o quizz de acordo com suas preferências'
-            dialogContentText='Escolha as opções abaixo para a geração do seu quizz'
+            dialogtitle='Escolha o quizz de acordo com suas preferências'
+            dialogcontenttext='Escolha as opções abaixo para a geração do seu quizz'
             actionButtonText='Confirmar'
             handleConfirm={() => dispatch(change({open: false}))}
             handleClose={() => {

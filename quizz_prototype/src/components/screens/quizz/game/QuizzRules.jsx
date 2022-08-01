@@ -32,8 +32,8 @@ const QuizzRules = () => {
         <div className='min-w[100vw] min-h-[100vh] bg-sky-600'>
             <Dialog
                 open={true}
-                dialogTitle='Escolha o quizz de acordo com suas preferências'
-                dialogContentText='Escolha as opções abaixo para a geração do seu quizz'
+                dialogtitle='Escolha o quizz de acordo com suas preferências'
+                dialogcontenttext='Escolha as opções abaixo para a geração do seu quizz'
                 actionButtonText='Confirmar'
                 handleConfirm={handleCreateQuizz}
                 handleClose={() => navigate('/home', { replace: true })}

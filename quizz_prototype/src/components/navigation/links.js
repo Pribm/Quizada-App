@@ -8,29 +8,27 @@ import { BsCardChecklist } from 'react-icons/bs'
 import {Battle, Endurance, Tournment, PlayAlone} from 'assets'
 
 import { change as changeQuizz } from 'store/Actions/quizz.action'
+import { MdPublic } from 'react-icons/md'
 
 const cards = [
     {
-        title: 'Desafio',
+        title: 'Individual',
         subtitle: 'Jogue Sozinho',
         image: PlayAlone,
+        link: '/quizz'
     },
-    // {
-    //     title: 'Duelo',
-    //     subtitle: 'Jogue contra um amigo',
-    //     image: Battle,
-    //     loop: false,
-    // },
     {
-        title: 'Torneio',
+        title: 'Desafio',
         subtitle: 'Jogue contra outras Pessoas',
-        image: Tournment
+        image: Tournment,
+        link: '/multiplayer'
     },
     {
         title: 'Resistência',
         subtitle: 'Mais perguntas em menos tempo',
         image: Endurance,
-        loop: true
+        loop: true,
+        link: '/ranking'
     },
 ]
 
@@ -48,6 +46,17 @@ const drawerLinks = [
         action: dispatch => dispatch(changeQuizz('clear'))
     },
     {
+        text: 'Quizzes públicos',
+        icon: <MdPublic/>,
+        linkTo: '/quizz/public'
+    },
+    {
+        text: 'Ranking dos quizzes concluídos',
+        icon: <BsCardChecklist/>,
+        linkTo: '/quizz/finished',
+        setDivider: true
+    },
+    {
         text: 'Criar novas questões',
         icon: <RiEditLine/>,
         linkTo: '/questions/create?onlyquestions=true',
@@ -59,11 +68,7 @@ const drawerLinks = [
         linkTo: '/questions',
 
     },
-    {
-        text: 'Ranking dos quizzes concluídos',
-        icon: <BsCardChecklist/>,
-        linkTo: '/quizz/finished'
-    }
+    
 ]
 
 const bottomNavbarLinks = [

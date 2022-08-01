@@ -1,21 +1,21 @@
 import React from 'react'
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material'
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, dialogtitle } from '@mui/material'
 
 const CustomDialog = (props) => {
 
-    const {dialogTitle, dialogContentText, children, handleClose, actionButtonText, cancelButtonText = 'Cancelar', handleConfirm, open } = props
+    const {dialogtitle, dialogcontenttext , children, handleClose, actionButtonText, cancelButtonText = 'Cancelar', handleConfirm, open, ...other } = props
     
 
   return (
     <Dialog open={open} onClose={handleClose}>
         <DialogTitle>
-            {dialogTitle}
+            {dialogtitle}
         </DialogTitle>
         <DialogContent>
             <DialogContentText>
-                {dialogContentText}
+                {dialogcontenttext}
             </DialogContentText>
-            <div>
+            <div {...other}>
                 {children}
             </div>
         </DialogContent>

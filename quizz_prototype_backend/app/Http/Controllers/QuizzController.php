@@ -28,24 +28,51 @@ class QuizzController extends Controller
     public function index(Request $request)
     {
 
-
-        $quizz_list = $this->auth_user->quizzOwner()->orderBy('created_at', 'DESC')->paginate(10);
+        $quizz_list = $this->auth_user->quizzOwner()
+        ->where(function($q) use ($request){
+            $q->where('title', 'LIKE', '%'.$request->search.'%')
+            ->orWhereHas('category', function($q) use($request){
+                $q->where('name', 'LIKE', '%'.$request->search.'%');
+            });
+        })
+        ->orderBy('created_at', 'DESC')
+        ->paginate(10);
 
         if($request->showAdminQuizzList){
             $quizz_list = Quizz::whereHas('user.role', function($q){
-                return $q->where('role', 'admin');
-            })->paginate(10);
+                return $q->where('role', 'admin')
+                ->where('random_generated', 0);
+            })
+            ->where(function($q) use ($request){
+                $q->where('title', 'LIKE', '%'.$request->search.'%')
+                ->orWhereHas('category', function($q) use($request){
+                    $q->where('name', 'LIKE', '%'.$request->search.'%');
+                });
+            })
+            ->with('invitation', function($q){
+                $q->where('quizz_complete', 1);
+            })
+            ->with(['category'])
+            ->paginate(10);
         }
 
         if($request->showAcceptedQuizzList){
             $quizz_list = $this->auth_user->quizzInvitationAccepted()->orderBy('created_at', 'DESC')->paginate(10);
         }
         if($request->showCompletedQuizzList){
-            $quizz_list = $this->auth_user->quizzComplete()->orderBy('created_at', 'DESC')->paginate(10);
+            $quizz_list = $this->auth_user
+            ->quizzComplete()
+            ->where(function($q) use ($request){
+                $q->where('title', 'LIKE', '%'.$request->search.'%')
+                ->orWhereHas('category', function($q) use($request){
+                    $q->where('name', 'LIKE', '%'.$request->search.'%');
+                });
+            })
+            ->orderBy('updated_at', 'DESC')
+            ->paginate(10);
         }
         return $quizz_list;
     }
-
 
     public function store(Request $request)
     {
@@ -152,6 +179,23 @@ class QuizzController extends Controller
         };
 
         return response()->json(['error' => 'Você já convidou este '.$guest_user->name.' para este quizz, tente convidá-lo para outro.'], 400);
+    }
+
+    public function massInvitation(Request $request){
+        foreach ($request->quizzes as $quizz) {
+                foreach($request->friends as $friend){
+                    DB::table('quizz_invitation')
+                    ->updateOrInsert([
+                        'quizz_id' => $quizz,
+                        'user_id' => $friend,
+                    ],[
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now()
+                    ]);
+            }
+        }
+
+        return response()->json(['success' => 'Seus convites foram enviados, aguarde a resposta dos usuários e verifique a o ranking com seus quizzes']);
     }
 
     public function storeScore(Request $request)

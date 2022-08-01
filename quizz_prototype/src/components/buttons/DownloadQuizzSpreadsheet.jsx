@@ -5,9 +5,8 @@ import { HttpAuth } from 'config/Http';
 
 
 const DownloadQuizzSpreadsheet = ({fileName, quizzId}) => {
-
   return (
-    <Button onClick={() => HttpAuth.get('quizz/export/'+quizzId, {
+    <Button className='pl-2 pt-4' size='small' onClick={() => HttpAuth.get('quizz/export/'+quizzId, {
         responseType: 'blob'
     }).then(res => {
         const url = window.URL.createObjectURL(new Blob([res.data]));
@@ -18,7 +17,7 @@ const DownloadQuizzSpreadsheet = ({fileName, quizzId}) => {
         document.body.removeChild(link)
     link.click();
     })}>
-        Baixar Quizz
+        Exportar Quizz
     </Button>           
   )
 }

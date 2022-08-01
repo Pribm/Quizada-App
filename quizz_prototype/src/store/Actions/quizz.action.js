@@ -36,8 +36,15 @@ const indexResponse = (payload) => ({
 
 
 
-export const index = () => dispatch => {
-   return HttpAuth.get('quizz').then(res => dispatch(indexResponse(res.data)))
+export const index = payload => dispatch => {
+    if(typeof payload?.search !== 'undefined'){
+        dispatch(changeLoading({open: true}))
+    }
+
+    return HttpAuth.get('quizz', { params: payload }).then(res => {
+        dispatch(changeLoading({open: false}))
+        dispatch(indexResponse(res.data))
+    })
 }
 
 export const create = payload => dispatch => {
@@ -59,6 +66,22 @@ export const create = payload => dispatch => {
 export const makeInvitation = (token, id) => dispatch => {
     dispatch(changeLoading({open: true}))
     HttpAuth.get(`quizz/make-invitation/${token}/${id}`).then(res => {
+        dispatch(changeLoading({open: false}))
+        if(res.data.success){
+            dispatch(changeAlert({open: true, msg: res.data.success, class: 'success', autoHideDuration: 4000}))
+        }
+
+        if(res.data.error){
+            dispatch(changeAlert({open: true, msg: res.data.error, class: 'error', autoHideDuration: 4000}))
+        }
+    })
+}
+
+export const massInvitation = payload => dispatch => {
+    console.log(payload)
+    dispatch(changeLoading({open: true}))
+    HttpAuth.post(`quizz/mass-invitation`, payload).then(res => {
+        console.log(res)
         dispatch(changeLoading({open: false}))
         if(res.data.success){
             dispatch(changeAlert({open: true, msg: res.data.success, class: 'success', autoHideDuration: 4000}))
@@ -97,9 +120,6 @@ export const uploadQuizzFile =  (payload) => dispatch => {
         formdata.append(element[0], file)
         
         if(i === (array.length - 1)){
-            
-            // Object.entries(formdata).forEach(d => console.log(d[0], d[1]))
-
            HttpAuth.post('question/upload', formdata).then(res => {
                 
                 if(res.data.errors){

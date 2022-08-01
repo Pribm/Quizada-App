@@ -90,6 +90,9 @@ class User extends Authenticatable implements MustVerifyEmail
     public function quizzOwner(){
         return $this->hasMany(Quizz::class, 'user_id')
         ->with([ 'category'])
+        ->with('invitation', function($q){
+            $q->where('quizz_complete', 1)->orderBy('score', 'DESC');
+        })
         ->where('random_generated', false);
     }
 

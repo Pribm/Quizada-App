@@ -232,8 +232,8 @@ const CreateQuizz = () => {
 
         <Dialog
             open={createNewCategory}
-            dialogTitle='Deseja criar uma nova categoria?'
-            dialogContentText='Ainda não temos a categoria que você selecionou na nossa base de dados, por favor cadastre.'
+            dialogtitle='Deseja criar uma nova categoria?'
+            dialogcontenttext='Ainda não temos a categoria que você selecionou na nossa base de dados, por favor cadastre.'
             actionButtonText='Confirmar'
             handleConfirm={handleCreateCategory}
             handleClose={() => {

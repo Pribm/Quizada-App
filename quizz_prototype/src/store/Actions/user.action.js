@@ -10,6 +10,7 @@ export const actionTypes = {
     RANKING: 'USER_RANKING',
     GET_QUIZZ_INVITATIONS: 'GET_QUIZZ_INVITATIONS',
     GET_QUIZZ_COMPLETE: 'GET_QUIZZ_COMPLETE',
+    GET_PUBLIC_QUIZZ: 'GET_PUBLIC_QUIZZ',
     ERRORS: 'USER_ERRORS'
 }
 
@@ -43,6 +44,11 @@ const getQuizzInvitationsResponse = (payload, loadMore) => ({
 
 const getQuizzCompleteResponse = (payload, loadMore) => ({
   type: actionTypes.GET_QUIZZ_COMPLETE,
+  payload: payload,
+  loadMore
+})
+const getPublicQuizzResponse = (payload, loadMore) => ({
+  type: actionTypes.GET_PUBLIC_QUIZZ,
   payload: payload,
   loadMore
 })
@@ -81,8 +87,14 @@ export const getQuizzInvitations = (payload, isLoadMore) => dispatch => {
 } 
 
 export const getQuizzComplete = (payload, isLoadMore) => dispatch => {
-  return HttpAuth.get('quizz?showCompletedQuizzList=true', {params: payload}).then(res => {
+  return HttpAuth.get('quizz', {params: payload}).then(res => {
     dispatch(getQuizzCompleteResponse(res.data, isLoadMore))
+  })
+} 
+
+export const getPublicQuizz = (payload, isLoadMore) => dispatch => {
+  return HttpAuth.get('quizz', {params: payload}).then(res => {
+    dispatch(getPublicQuizzResponse(res.data, isLoadMore))
   })
 } 
 

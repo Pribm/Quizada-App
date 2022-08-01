@@ -383,8 +383,8 @@ const CreateQuestions = () => {
             </CustomDialog>
             <CustomDialog
             open={showCategoryDialog}
-            dialogTitle={'Selecione uma categoria'}
-            dialogContentText={'Todas as questões serão criadas com a categoria selecionada'}
+            dialogtitle={'Selecione uma categoria'}
+            dialogcontenttext={'Todas as questões serão criadas com a categoria selecionada'}
             actionButtonText={'Salvar Categoria'}
             handleConfirm={() => setShowCategoryDialog(false)}
             >

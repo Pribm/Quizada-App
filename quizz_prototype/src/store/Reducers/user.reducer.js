@@ -13,6 +13,9 @@ const initialState = {
     quizzComplete: {
       data: [],
     },
+    publicQuizz: {
+      data: [],
+    },
     errors: []
 }
 
@@ -60,6 +63,15 @@ const userReducer = (state = initialState, { type, payload, isLoadMore }) => {
             payload
 
     return {...state, quizzComplete: payload}
+
+    case actionTypes.GET_PUBLIC_QUIZZ:
+          payload = isLoadMore ? {
+            ...payload, data: state.publicQuizz.data.concat(payload.data),
+            }
+            : 
+            payload
+
+    return {...state, publicQuizz: payload}
     
     case actionTypes.ERRORS:
       return {...state, errors: payload}

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Drawer, Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Button } from '@mui/material'
+import { Drawer, Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Button, Divider } from '@mui/material'
 import { HiX } from 'react-icons/hi'
 
 import {IoMdLogOut} from 'react-icons/io'
@@ -31,24 +31,29 @@ const DrawerMenu = () => {
             <div className='h-[100px] flex items-center justify-start p-6'>
                 <img src={logo} alt='quizzada logo' className='h-[100%] m-0'/>
                 <div>
-                    <span className=' text-blue-600 text-[2rem] md:text-[3rem] ml-2 font-bold logo-font'>Quiz</span><span className='logo-font font-bold  text-blue-400 text-[2rem] md:text-[3rem]'>zada</span>
+                    <span className=' text-blue-600 text-[2rem] md:text-[3rem] ml-2 font-bold logo-font'>Qui</span>
+                    <span className=' text-orange-500 text-[2rem] md:text-[3rem] font-bold logo-font'>z</span>
+                    <span className='logo-font font-bold  text-blue-400 text-[2rem] md:text-[3rem]'>ada</span>
                 </div>
             </div>
             <List>
                 {
                     drawerLinks.map((link, i) => (
-                        <Link to={link.linkTo} key={`link_${i}`} onClick={link?.action && link.action}>
-                            <ListItem>
-                                <ListItemButton>
-                                    <ListItemIcon>
-                                        {link.icon}
-                                    </ListItemIcon>
-                                    <ListItemText>
-                                        {link.text}
-                                    </ListItemText>
-                                </ListItemButton>
-                            </ListItem>
-                        </Link>
+                        <React.Fragment  key={`link_${i}`}>
+                            <Link to={link.linkTo} onClick={link?.action && link.action}>
+                                <ListItem>
+                                    <ListItemButton>
+                                        <ListItemIcon>
+                                            {link.icon}
+                                        </ListItemIcon>
+                                        <ListItemText>
+                                            {link.text}
+                                        </ListItemText>
+                                    </ListItemButton>
+                                </ListItem>
+                            </Link>
+                            {link.setDivider && <Divider/>}
+                        </React.Fragment>
                     )
                 )
                 }

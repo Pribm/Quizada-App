@@ -24,7 +24,7 @@ const BottomNavbar = () => {
                         showLabel
                         label={link.label}
                         icon={link.icon}
-                        onClick={() => navigate(link.linkTo, { replace: true })}
+                        onClick={() => navigate(link.linkTo)}
                         />
 
                 ))}

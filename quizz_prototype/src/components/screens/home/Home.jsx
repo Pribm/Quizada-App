@@ -23,6 +23,7 @@ import { HiUserAdd } from 'react-icons/hi'
 import { FcConferenceCall, FcFolder } from 'react-icons/fc'
 import { SearchBox } from 'components/searchBox/SearchBox'
 import { changeLoading } from 'store/Actions/loading.action'
+import HorizontalQuizzCardLarge from 'components/quizzCard/HorizontalQuizzCardLarge'
 
 const Home = () => {
 
@@ -73,7 +74,7 @@ const Home = () => {
                                         key={'card_' + i}
                                         onClick={() => {
                                             dispatch(change(card.quizz))
-                                            navigate('/quizz', { replace: true })
+                                            navigate(card.link)
                                         }}
                                         className={`
                                     relative
@@ -120,7 +121,7 @@ const Home = () => {
                                     quizzInvitations.data.length > 0 ?
                                         quizzInvitations.data.map((quizz, i) => (
                                             <React.Fragment key={'quizz_solicitation' + i}>
-                                                <HorizontalQuizzCard props={{ ...quizz, dispatch }} />
+                                                <HorizontalQuizzCardLarge props={{ ...quizz, dispatch }} />
                                             </React.Fragment>
                                         ))
                                         :
