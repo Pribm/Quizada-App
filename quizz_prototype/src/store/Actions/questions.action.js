@@ -59,7 +59,7 @@ export const destroy = payload => dispatch => {
     HttpAuth.post('/question', {_method: 'delete', question}).then(res => {
         dispatch(changeLoading({open:false}))
         if(res.data.success){
-            dispatch(deleteResponse(res.data.deleted_ids))
+            dispatch(index())
         }
     })
 }

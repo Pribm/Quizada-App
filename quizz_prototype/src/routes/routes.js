@@ -47,10 +47,6 @@ import PublicQuizzList from "components/screens/quizz/public_quizz/PublicQuizzLi
                     <Route path='finished' element={<Finished/>}/>
                   </Route>
 
-                  {/* <Route path='ranking'>
-                    <Route index element={<Scores/>}/>
-                  </Route> */}
-
                   <Route path='questions'>
                     <Route index element={<ListQuestions/>}/>
                     <Route path='create' element={<CreateQuestions/>}/>

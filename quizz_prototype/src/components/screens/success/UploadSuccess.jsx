@@ -76,7 +76,7 @@ const UploadSuccess = () => {
                                     if(token){
                                         navigate('/quizz/list', {replace: true})
                                     }else{
-                                        navigate('/questions/list', {replace: true})
+                                        navigate('/questions', {replace: true})
                                     }
                                 }}
 
