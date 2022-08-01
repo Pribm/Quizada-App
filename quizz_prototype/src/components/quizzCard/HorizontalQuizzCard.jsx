@@ -14,13 +14,12 @@ const HorizontalQuizzCard = ({ props }) => {
   const {id, image, key, title, category, token, handleChange} = props
 
   return (
-    <div className='bg-white shadow-md rounded-md h-[80px] flex p-2 mb-4' key={key}>
-      <img src={image ? getQuizzThumbnail(image) : logo} alt={title} />
+    <div className='bg-white shadow-md rounded-md h-[120px] flex p-2 mb-4' key={key}>
+      <img className='h-[100%]' src={image ? getQuizzThumbnail(image) : logo} alt={title} />
       <div className='px-2 text-start flex-1'>
 
         <h1 className='font-bold text-blue-500'>{title}</h1>
         <h2 className='text-orange-500'>{category.name}</h2>
-        <h3>{token}</h3>
       </div>
       <div className='flex justify-center items-center'>
         <Checkbox

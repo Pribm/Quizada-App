@@ -102,7 +102,7 @@ const Home = () => {
                                             <h2 className='z-10'>{card.title}</h2>
                                             <h3 className='z-10 bg-blue-400 rounded-md p-2 text-white'>{card.subtitle}</h3>
                                         </div>
-                                        <Lottie loop={card.loop} animationData={card.image} size={100} className='z-10 mt-auto mb-auto w-[100%]' />
+                                        <Lottie initialSegment={card.initialSegment ? card.initialSegment : ''} loop={card.loop} animationData={card.image} size={100} className='z-10 mt-auto mb-auto w-[100%]' />
                                         <Lottie animationData={BackGroundMenuCard} className='z-0 w-[140%] top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] absolute' />
                                     </div>
                                 )

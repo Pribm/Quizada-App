@@ -5,7 +5,7 @@ import { IoPerson, IoPodium } from 'react-icons/io5'
 import { FaUserFriends } from 'react-icons/fa'
 import { BsCardChecklist } from 'react-icons/bs'
 
-import {Battle, Endurance, Tournment, PlayAlone} from 'assets'
+import {AwardMedal, Endurance, Tournment, PlayAlone} from 'assets'
 
 import { change as changeQuizz } from 'store/Actions/quizz.action'
 import { MdPublic } from 'react-icons/md'
@@ -24,11 +24,12 @@ const cards = [
         link: '/multiplayer'
     },
     {
-        title: 'Resistência',
-        subtitle: 'Mais perguntas em menos tempo',
-        image: Endurance,
+        title: 'Ranking',
+        subtitle: 'Veja Sua Colocação',
+        image: AwardMedal,
         loop: true,
-        link: '/ranking'
+        link: '/quizz/finished',
+        initialSegment: [45,100]
     },
 ]
 
