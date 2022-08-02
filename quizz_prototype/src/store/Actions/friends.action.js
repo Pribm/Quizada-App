@@ -113,6 +113,6 @@ export const acceptFriendshipInvitation = (id, payload) => dispatch => {
 export const acceptQuizzInvitation = id => dispatch => {
   HttpAuth.put('quizz/accept/'+id).then(res => {
     dispatch(acceptQuizzResponse(res.data))
-    dispatch(getQuizzInvitations())
+    dispatch(getQuizzInvitations({showAcceptedQuizzList: true}))
   })
 }

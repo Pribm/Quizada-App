@@ -307,8 +307,12 @@ class QuizzController extends Controller
     public function acceptQuizz($id)
     {
         $quizz = $this->auth_user->pendingQuizzInvitation()->find($id);
+
         if($quizz){
-            if($this->auth_user->pendingQuizzInvitation()->update(['invitation_accepted' => true, 'updated_at' => Carbon::now()])){
+            if($this->auth_user
+            ->pendingQuizzInvitation()
+            ->where('quizz_id', $id)
+            ->update(['invitation_accepted' => true, 'updated_at' => Carbon::now()])){
                 return $quizz;
             }
             return response()->json(['error' => 'O quizz não pôde ser aceito por algum motivo, tente novamente.']);

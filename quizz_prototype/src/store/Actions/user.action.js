@@ -70,18 +70,8 @@ export const index = (payload) => dispatch => {
   })
 }
 
-export const ranking = () => dispatch => {
-  dispatch(changeLoading({open: true}))
-  HttpAuth.get('/user/ranking').then(res => {
-    dispatch(changeLoading({open: false}))
-    if(typeof res !== 'undefined'){
-      dispatch(rankingResponse(res.data, false))
-    }
-  })
-}
-
 export const getQuizzInvitations = (payload, isLoadMore) => dispatch => {
-  HttpAuth.get('quizz?showAcceptedQuizzList=true', {params: payload}).then(res => {
+  return HttpAuth.get('quizz', {params: payload}).then(res => {
     dispatch(getQuizzInvitationsResponse(res.data, isLoadMore))
   })
 } 

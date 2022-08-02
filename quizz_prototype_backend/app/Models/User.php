@@ -91,7 +91,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Quizz::class, 'user_id')
         ->with([ 'category'])
         ->with('invitation', function($q){
-            $q->where('quizz_complete', 1)->orderBy('score', 'DESC');
+            return $q->orderByRaw('quizz_invitation.score DESC, quizz_invitation.updated_at ASC');
         })
         ->where('random_generated', false);
     }

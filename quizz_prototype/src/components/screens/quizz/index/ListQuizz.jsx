@@ -40,7 +40,7 @@ const IndexQuestions = () => {
     <div className='p-4 md:w-[30vw] mx-auto'>
       <ListWrapper
         Component={QuizzCard}
-        componentProps={{dispatch, exportQuizzButton: true, deleteQuizzButton: true, quizzToken: true}}
+        componentProps={{dispatch, exportQuizzButton: true, deleteQuizzButton: true, quizzToken: true, showRanking: true}}
         className={'min-h-[calc(100vh-120px-120px)] max-h-[calc(100vh-120px-120px)]'}
         componentData={quizz_list.data}
         search={search}

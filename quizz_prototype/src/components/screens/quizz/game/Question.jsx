@@ -103,7 +103,9 @@ const Question = ({ handleAnswer }) => {
                 dispatch(changeConfirm({
                   open: true,
                   msg: 'Você quer parar por aqui? Todo o seu progresso e pontos ganhados neste quizz serão perdidos',
-                  confirmAction: () => navigate('/home', { replace: true })
+                  confirmAction: () => {
+                    navigate('/home')
+                  }
                 }))
               }
               } />

@@ -24,6 +24,7 @@ import { FcConferenceCall, FcFolder } from 'react-icons/fc'
 import { SearchBox } from 'components/searchBox/SearchBox'
 import { changeLoading } from 'store/Actions/loading.action'
 import HorizontalQuizzCardLarge from 'components/quizzCard/HorizontalQuizzCardLarge'
+import QuizzCard from 'components/quizzCard/QuizzCard'
 
 const Home = () => {
 
@@ -39,7 +40,7 @@ const Home = () => {
 
     useEffect(() => {
         dispatch(index({ showUnfollowedUsers: true }, false)).then(() => setLoadingFriend(false))
-        dispatch(getQuizzInvitations({}, false))
+        dispatch(getQuizzInvitations({showAcceptedQuizzList: true}, false))
     }, [])
 
     useEffect(() => {
@@ -53,7 +54,7 @@ const Home = () => {
     }
 
     const handleLoadMoreQuizzSolicitations = () => {
-        dispatch(getQuizzInvitations({ page: quizzInvitations.current_page + 1 }, true))
+        dispatch(getQuizzInvitations({showAcceptedQuizzList: true, page: quizzInvitations.current_page + 1 }, true))
     }
 
     const handlesearching = () => {
@@ -120,9 +121,9 @@ const Home = () => {
                                 {
                                     quizzInvitations.data.length > 0 ?
                                         quizzInvitations.data.map((quizz, i) => (
-                                            <React.Fragment key={'quizz_solicitation' + i}>
-                                                <HorizontalQuizzCardLarge props={{ ...quizz, dispatch }} />
-                                            </React.Fragment>
+                                            <div className='p-4' key={'quizz_solicitation' + i}>
+                                                <QuizzCard props={{ ...quizz, dispatch, showUser: true }} />
+                                            </div>
                                         ))
                                         :
                                         <Paper className='flex flex-col items-center p-4 w-[100%]'>

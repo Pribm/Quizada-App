@@ -1,11 +1,12 @@
 import {IoMdCreate, IoMdHome, IoMdList} from 'react-icons/io'
 import { HiEye } from 'react-icons/hi'
 import { RiEditLine } from 'react-icons/ri'
-import { IoPerson, IoPodium } from 'react-icons/io5'
+import { IoPerson } from 'react-icons/io5'
 import { FaUserFriends } from 'react-icons/fa'
 import { BsCardChecklist } from 'react-icons/bs'
+import { GrConfigure } from 'react-icons/gr'
 
-import {AwardMedal, Endurance, Tournment, PlayAlone} from 'assets'
+import {AwardMedal, Tournment, PlayAlone} from 'assets'
 
 import { change as changeQuizz } from 'store/Actions/quizz.action'
 import { MdPublic } from 'react-icons/md'
@@ -67,7 +68,13 @@ const drawerLinks = [
         text: 'Ver questões que você criou',
         icon: <HiEye/>,
         linkTo: '/questions',
-
+        setDivider: true,
+    },
+    {
+        text: 'Painel Administrativo',
+        icon: <GrConfigure/>,
+        linkTo: '/panel-admin',
+        user_role: 1
     },
     
 ]

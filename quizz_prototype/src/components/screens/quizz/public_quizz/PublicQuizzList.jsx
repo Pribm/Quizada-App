@@ -35,7 +35,7 @@ const PublicQuizzList = () => {
         <div className='p-4 md:w-[30vw] mx-auto'>
             <ListWrapper
                 Component={QuizzCard}
-                componentProps={{ dispatch }}
+                componentProps={{ dispatch, exportQuizzButton: true }}
                 className={'min-h-[calc(100vh-120px-120px)] max-h-[calc(100vh-120px-120px)]'}
                 componentData={publicQuizz.data}
                 search={search}
@@ -43,8 +43,8 @@ const PublicQuizzList = () => {
                 searchHandler={searchHandler}
                 isLoading={isLoading}
                 setLoading={setLoading}
-                searchBoxPlaceholder={'Seus Quizzes'}
-                listTitle={'Quizzes criados por você'}
+                searchBoxPlaceholder={'Quizzes Públicos'}
+                listTitle={'Quizzes de exemplo'}
                 notFoundList={'Nenhum Quizz foi encontrado'}
             />
         </div>

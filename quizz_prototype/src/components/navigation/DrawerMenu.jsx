@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Drawer, Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Button, Divider } from '@mui/material'
+import { Drawer, Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Button, Divider, CircularProgress } from '@mui/material'
 import { HiX } from 'react-icons/hi'
 
 import {IoMdLogOut} from 'react-icons/io'
@@ -18,8 +18,11 @@ import { Link } from 'react-router-dom'
 const DrawerMenu = () => {
 
     const {open} = useSelector(state => state.mainMenuReducer)
+    const {user} = useSelector(state => state.userReducer)
 
     const dispatch = useDispatch()
+
+
 
     const MenuItems = () => (
         <Box
@@ -36,11 +39,19 @@ const DrawerMenu = () => {
                     <span className='logo-font font-bold  text-blue-400 text-[2rem] md:text-[3rem]'>ada</span>
                 </div>
             </div>
+
             <List>
                 {
-                    drawerLinks.map((link, i) => (
-                        <React.Fragment  key={`link_${i}`}>
-                            <Link to={link.linkTo} onClick={link?.action && link.action}>
+                    !user.role_id ?
+                    <div className='flex justify-center'>
+                        <CircularProgress/>
+                    </div>
+                    :
+                    drawerLinks.filter(link => (link.user_role !== user.role_id && typeof link.user_role === 'undefined'))
+                    .concat(drawerLinks.filter(link => (link.user_role === user.role_id)))
+                    .map((link, i) => (
+                        <React.Fragment key={`link_${i}`}>
+                            <Link to={link.linkTo} onClick={link?.action && link.action} replace={true}>
                                 <ListItem>
                                     <ListItemButton>
                                         <ListItemIcon>
@@ -52,10 +63,10 @@ const DrawerMenu = () => {
                                     </ListItemButton>
                                 </ListItem>
                             </Link>
-                            {link.setDivider && <Divider/>}
+                            {link.setDivider && <Divider />}
                         </React.Fragment>
                     )
-                )
+                    )
                 }
             </List>
 

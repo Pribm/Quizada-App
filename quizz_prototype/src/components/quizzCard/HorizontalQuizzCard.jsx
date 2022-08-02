@@ -15,7 +15,7 @@ const HorizontalQuizzCard = ({ props }) => {
 
   return (
     <div className='bg-white shadow-md rounded-md h-[120px] flex p-2 mb-4' key={key}>
-      <img className='h-[100%]' src={image ? getQuizzThumbnail(image) : logo} alt={title} />
+      <img className='h-[100px] w-[100px] object-cover rounded-lg overflow-hidden' src={image ? getQuizzThumbnail(image) : logo} alt={title} />
       <div className='px-2 text-start flex-1'>
 
         <h1 className='font-bold text-blue-500'>{title}</h1>

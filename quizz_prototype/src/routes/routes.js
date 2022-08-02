@@ -2,9 +2,9 @@ import {
     BrowserRouter,
     Routes,
     Route,
+    Navigate,
   } from "react-router-dom";
 import Quizz from "../components/screens/quizz/game/Quizz";
-import Scores from "../components/screens/scores/Scores";
 import Login from "../components/screens/Login/Login";
 import ProtectedRoutes from "./protected.routes";
 import Home from "../components/screens/home/Home";
@@ -22,6 +22,8 @@ import Finished from "components/screens/quizz/finished/Finished";
 import Donate from "components/screens/donate/Donate";
 import Multiplayer from "components/screens/multiplayer/Multiplayer";
 import PublicQuizzList from "components/screens/quizz/public_quizz/PublicQuizzList";
+import AdminRoutes from "./admin.routes";
+import PanelAdmin from "components/screens/admin/PanelAdmin";
 
 
   const routes = () => (
@@ -34,6 +36,7 @@ import PublicQuizzList from "components/screens/quizz/public_quizz/PublicQuizzLi
               <Route path="reset/:token" element={<PasswordReset/>}/>
 
                 <Route element={<ProtectedRoutes/>}>
+                  <Route path="*" element={<Navigate to="/home" />} />
                   <Route path="home" element={<Home/>}/>
                   <Route path="multiplayer" element={<Multiplayer/>}/>
                   <Route path="donate" element={<Donate/>}/>
@@ -58,6 +61,11 @@ import PublicQuizzList from "components/screens/quizz/public_quizz/PublicQuizzLi
 
                   <Route path='success'>
                     <Route path="upload" element={<UploadSuccess/>}/>
+                  </Route>
+                  
+
+                  <Route element={<AdminRoutes/>}>
+                    <Route path="/panel-admin" element={<PanelAdmin/>}/>
                   </Route>
                 
                 </Route>

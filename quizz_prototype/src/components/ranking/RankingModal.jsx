@@ -24,7 +24,7 @@ const RankingModal = (props) => {
         setOpen(false);
     };
 
-    // const {user} = useSelector(state => state.userReducer)
+    const {user} = useSelector(state => state.userReducer)
 
 
     return (
@@ -43,9 +43,9 @@ const RankingModal = (props) => {
                     {
                         ranking.map((el, i) => (
                             <React.Fragment key={(Math.random() + 1).toString(36).substring(7)+i}>
-                                <div className={`flex w-[70vw] justify-between `}>
+                                <div className={`flex w-[70vw] justify-between ${el.pivot.user_id === user.id && 'bg-green-200 p-2'}`}>
                                     <div className="flex flex-col">
-                                        <h6>Posição</h6>
+                                        <h6>{`${el.pivot.user_id === user.id ? 'Sua' : ''} Posição`}</h6>
                                         <h6>{i+1}º</h6>
                                     </div>
                                     <div className="flex flex-col items-center text-center w-[30%]">
@@ -57,6 +57,7 @@ const RankingModal = (props) => {
                                         <h6>{el.pivot.score} Pontos</h6>
                                     </div>
                                 </div>
+                                <div className='text-center bg-slate-200'>Quizz Feito em: {new Date(el.pivot.updated_at).toLocaleString('pt-BR')}</div>
                                 <hr className='my-4' />
 
                             </React.Fragment>
