@@ -34,9 +34,14 @@ const Categories = () => {
     const dispatch = useDispatch()
 
     const {categories} = useSelector(state => state.categoriesReducer)
+    const {user} = useSelector(state => state.userReducer)
 
     useEffect(() => {
-        dispatch(index({user_categories: true})).then(() => setLoading(false))
+        if(user.role_id === 1){
+            dispatch(index()).then(() => setLoading(false))
+        }else{
+            dispatch(index({getUserCategories: true})).then(() => setLoading(false))
+        }
     }, [])
 
 
@@ -65,8 +70,8 @@ const Categories = () => {
                 isLoading={isLoading}
                 setLoading={setLoading}
                 searchBoxPlaceholder={'Nome da categoria'}
-                listTitle={'Lista de Categorias'}
-                notFoundList={'Nenhuma categoria foi encontrada'}
+                listTitle={user.role_id === 1 ? 'Sua Categorias e de outros moderadores': 'Lista de Categorias'}
+                notFoundList={'Você não possui nenhuma categoria cadastrada'}
             />
         </div>
     )

@@ -49,6 +49,10 @@ class CategoryController extends Controller
                 });
             })
             ->get(['name', 'id']);
+        }else if($request->getUserCategories){
+            $categories = Categories::
+                where('user_id', $this->auth_user->id)
+                ->get(['name', 'id']);
         }else{
             $categories = Categories::
                 where('user_id', $this->auth_user->id)
@@ -106,7 +110,11 @@ class CategoryController extends Controller
 
     public function destroy($id)
     {
-        $category = Categories::where('user_id', $this->auth_user->id)->find($id);
+        $category = Categories::find($id);
+        
+        if($this->auth_user->role_id !== 1 ){
+            $category = Categories::where('user_id', $this->auth_user->id)->find($id);
+        }
 
         if($category){
             if($category->delete()){
