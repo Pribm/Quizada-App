@@ -25,7 +25,7 @@ class Quizz extends Model
         'shuffle_answers',
         'shuffle_questions',
         'immediate_show_wrong_answers',
-        
+
     ];
 
     protected $hidden = [ 'created_at', 'updated_at', 'pivot'];

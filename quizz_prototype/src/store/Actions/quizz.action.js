@@ -29,21 +29,47 @@ export const success = payload => ({
     payload
 })
 
-const indexResponse = (payload) => ({
+const indexResponse = (payload, isLoadMore = false) => ({
   type: actionTypes.INDEX,
-  payload
+  payload,
+  isLoadMore
 })
 
 
 
-export const index = payload => dispatch => {
+export const index = (payload, isLoadMore) => dispatch => {
+
     if(typeof payload?.search !== 'undefined'){
         dispatch(changeLoading({open: true}))
     }
 
-    return HttpAuth.get('quizz', { params: payload }).then(res => {
+    return HttpAuth.get('quizz',  {params: {...payload}}).then(res => {
         dispatch(changeLoading({open: false}))
-        dispatch(indexResponse(res.data))
+        dispatch(indexResponse(res.data, isLoadMore))
+    })
+}
+
+export const restartInvitations = (token) => dispatch => {
+    HttpAuth.get('quizz/reset-invitations/'+token).then(res => {
+        if(res.data.success){
+            dispatch(changeAlert({open: true, msg: res.data.success, class: 'success'}))
+            dispatch(index())
+        }
+        if(res.data.error){
+            dispatch(changeAlert({open: true, msg: res.data.error, class: 'error'}))
+        }
+    })
+}
+
+export const deleteInvitations = (token) => dispatch => {
+    HttpAuth.get('quizz/delete-invitations/'+token).then(res => {
+        if(res.data.success){
+            dispatch(changeAlert({open: true, msg: res.data.success, class: 'success'}))
+            dispatch(index())
+        }
+        if(res.data.error){
+            dispatch(changeAlert({open: true, msg: res.data.error, class: 'error'}))
+        }
     })
 }
 
@@ -65,23 +91,25 @@ export const create = payload => dispatch => {
 
 export const makeInvitation = (token, id) => dispatch => {
     dispatch(changeLoading({open: true}))
-    HttpAuth.get(`quizz/make-invitation/${token}/${id}`).then(res => {
+    return HttpAuth.get(`quizz/make-invitation/${token}/${id}`).then(res => {
         dispatch(changeLoading({open: false}))
         if(res.data.success){
             dispatch(changeAlert({open: true, msg: res.data.success, class: 'success', autoHideDuration: 4000}))
+            return true
         }
 
         if(res.data.error){
             dispatch(changeAlert({open: true, msg: res.data.error, class: 'error', autoHideDuration: 4000}))
+            return false
         }
     })
 }
 
 export const massInvitation = payload => dispatch => {
-    console.log(payload)
+
     dispatch(changeLoading({open: true}))
     HttpAuth.post(`quizz/mass-invitation`, payload).then(res => {
-        console.log(res)
+
         dispatch(changeLoading({open: false}))
         if(res.data.success){
             dispatch(changeAlert({open: true, msg: res.data.success, class: 'success', autoHideDuration: 4000}))

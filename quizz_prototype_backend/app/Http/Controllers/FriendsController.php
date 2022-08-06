@@ -23,7 +23,14 @@ class FriendsController extends Controller
         }
 
         if($request->showUnfollowedUsers){
-            $followable_users = $this->auth_user->followableUsers()->where('name', 'LIKE', '%'.$request->search.'%')
+            $followable_users = $this->auth_user
+            ->followableUsers()
+            ->where('id', '!=', $this->auth_user->id)
+            ->where(function($q) use($request){
+                $q->where('name', 'LIKE', '%'.$request->search.'%')
+                ->orWhere('nickname', 'LIKE', '%'.$request->search.'%')
+                ->orWhere('email', 'LIKE', '%'.$request->search.'%');
+            })
             ->orderBy('updated_at', 'Desc')->paginate(10);
             return $followable_users;
         }
@@ -80,12 +87,17 @@ class FriendsController extends Controller
         if(!$friendship_request_exists){
             //Send a friendship request
             $this->auth_user->friendsTo()->attach($id);
+            $this->auth_user->notificationsTo()->attach($id, [
+                'message' => $this->auth_user->name.' enviou uma solicitação de amizade para você',
+                'notification_type' => 1
+            ]);
             return $this->auth_user->friendsTo()->where('friend_id', $id)->first();
         }
 
         //Revoke a invitation
         $this->auth_user->friendsTo()->detach($id);
         $this->auth_user->friendsFrom()->detach($id);
+        $this->auth_user->notificationsTo()->detach($id);
         return User::find($id);
     }
 
@@ -97,6 +109,10 @@ class FriendsController extends Controller
 
         if($request->accept_invitation === true){
             $this->auth_user->pendingFriendsFrom()->updateExistingPivot($id,['accepted' => true]);
+            $this->auth_user->notificationsTo()->attach($id, [
+                'message' => User::find($id)->name.' aceitou sua solicitação de amizade',
+                'notification_type' => 2
+            ]);
             return ['accepted' => true, 'user' => User::find($id)];
         }
         //Revoke a invitation

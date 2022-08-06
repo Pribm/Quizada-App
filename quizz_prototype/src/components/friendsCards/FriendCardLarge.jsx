@@ -9,53 +9,40 @@ import { unfollowFriend } from 'store/Actions/friends.action';
 import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 
-const FriendCardLarge = ({friendsList, isLoading}) => {
+const FriendCardLarge = ({ props }) => {
 
-    const dispatch = useDispatch()
-    const [tokenState, setTokenState] = useState([])
+    const { dispatch, handleInputToken, ...other} = props
 
-    const handleInputToken = (e, id) => {
-        let result = [...friendsList]
-        result.map(x => {
-            if (x.id === id) x.token = e.target.value;
-            return x
-        })
-        setTokenState(result)
-    }
+    const [token, setToken] = useState('')
 
     return (
-        !isLoading ?
-        friendsList.map((friend, i) => (
-                <Paper key={'your_friend_' + i} className='min-h-[100px] flex flex-col items-center mb-4 py-4' elevation={2}>
-                    <Avatar src={friend.avatar ? getUserThumbnail(friend.avatar, friend.id) : ''} alt={friend.name} className='mr-4' />
-                    <p>{friend.name}</p>
-                    <p className='text-sm'>{friend.email}</p>
-                    <TextField
-                        className='mt-2'
-                        label='Enviar Token'
-                        size='small'
-                        onChange={e => handleInputToken(e, friend.id)}
-                        value={friend.token || ''}
-                        InputProps={{
-                            endAdornment: (
-                                <IoSend
-                                    size={20}
-                                    className='text-blue-500 cursor-pointer'
-                                    onClick={() => dispatch(makeInvitation(tokenState[i].token, friend.id))}
-                                />)
-                        }}
-                    />
-                    <Button
-                        className='mt-2'
-                        onClick={() => dispatch(unfollowFriend(friend.id))}
-                    >
-                        <RiUserUnfollowFill className='mr-2' />
-                        Deixar de Seguir
-                    </Button>
-                </Paper>
-            ))
-            :
-            <div className='flex justify-center'><CircularProgress /></div>
+        <Paper className='min-h-[100px] flex flex-col items-center mb-4 py-4' elevation={2}>
+            <Avatar src={other.avatar ? getUserThumbnail(other.avatar, other.id) : ''} alt={other.name} className='mr-4' />
+            <p>{other.name}</p>
+            <p className='text-sm'>{other.email}</p>
+            <TextField
+                className='mt-2'
+                label='Enviar Token'
+                size='small'
+                onChange={e => setToken(e.target.value)}
+                value={token || ''}
+                InputProps={{
+                    endAdornment: (
+                        <IoSend
+                            size={20}
+                            className='text-blue-500 cursor-pointer'
+                            onClick={() => dispatch(makeInvitation(token, other.id)).then(success => success && setToken(''))}
+                        />)
+                }}
+            />
+            <Button
+                className='mt-2'
+                onClick={() => dispatch(unfollowFriend(other.id))}
+            >
+                <RiUserUnfollowFill className='mr-2' />
+                Deixar de Seguir
+            </Button>
+        </Paper>
     )
 }
 

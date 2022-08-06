@@ -36,7 +36,7 @@ class Question extends Model
     }
 
     public function category(){
-        return $this->belongsTo(Categories::class, 'category_id');
+        return $this->belongsToMany(Categories::class,'question_category','question_id', 'category_id');
     }
 
     public function user(){

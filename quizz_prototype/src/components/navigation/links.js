@@ -9,7 +9,8 @@ import { GrConfigure } from 'react-icons/gr'
 import {AwardMedal, Tournment, PlayAlone} from 'assets'
 
 import { change as changeQuizz } from 'store/Actions/quizz.action'
-import { MdPublic } from 'react-icons/md'
+import { MdPendingActions, MdPublic } from 'react-icons/md'
+import { BiCategory } from 'react-icons/bi'
 
 const cards = [
     {
@@ -48,6 +49,11 @@ const drawerLinks = [
         action: dispatch => dispatch(changeQuizz('clear'))
     },
     {
+        text: 'Quizzes pendentes',
+        icon: <MdPendingActions/>,
+        linkTo: '/multiplayer?show_pending=true'
+    },
+    {
         text: 'Quizzes públicos',
         icon: <MdPublic/>,
         linkTo: '/quizz/public'
@@ -68,6 +74,12 @@ const drawerLinks = [
         text: 'Ver questões que você criou',
         icon: <HiEye/>,
         linkTo: '/questions',
+        setDivider: true,
+    },
+    {
+        text: 'Categorias Cadastradas',
+        icon: <BiCategory/>,
+        linkTo: '/categories',
         setDivider: true,
     },
     {

@@ -51,6 +51,11 @@ Route::post('/process_payment', [PaymentController::class, 'pix']);
 
 Route::middleware(['auth:api', 'verified'])->prefix('user')->group(function () {
     Route::get('/', [UserController::class, 'index']);
+    Route::get('/getNotifications', [UserController::class, 'getNotifications']);
+    Route::get('/show-to-adm', [UserController::class, 'showUsersToAdm']);
+    Route::get('/send-adm-invitation/{id}', [UserController::class, 'sendAdmInvitation']);
+    Route::get('/accept-adm-invitation/{id}/{accept}', [UserController::class, 'acceptAdmInvitation']);
+    Route::post('/open-notification', [UserController::class, 'openNotification']);
     Route::get('ranking', [UserController::class, 'ranking']);
     Route::put('/', [UserController::class, 'update']);
     Route::apiResource('/friends',FriendsController::class);
@@ -60,6 +65,8 @@ Route::middleware(['auth:api', 'verified'])->prefix('user')->group(function () {
 Route::get('/quizz/export/{id}', [QuizzController::class, 'export'])->middleware(['auth:api', 'verified']);
 Route::post('/quizz/score', [QuizzController::class, 'storeScore'])->middleware(['auth:api', 'verified']);
 Route::get('/quizz/ranking/{id}', [QuizzController::class, 'ranking'])->middleware(['auth:api', 'verified']);
+Route::get('/quizz/delete-invitations/{token}', [QuizzController::class, 'deleteQuizzInvitations'])->middleware(['auth:api', 'verified']);
+Route::get('/quizz/reset-invitations/{token}', [QuizzController::class, 'resetQuizzInvitations'])->middleware(['auth:api', 'verified']);
 Route::put('/quizz/accept/{id}', [QuizzController::class, 'acceptQuizz'])->middleware(['auth:api', 'verified']);
 Route::get('/quizz/make-invitation/{token}/{guest_user}', [QuizzController::class, 'sendToken'])->middleware(['auth:api', 'verified']);
 Route::post('/quizz/mass-invitation', [QuizzController::class, 'massInvitation'])->middleware(['auth:api', 'verified']);

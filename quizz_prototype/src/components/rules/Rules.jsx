@@ -9,14 +9,23 @@ import NumberFormat from 'react-number-format';
 import { useNavigate } from 'react-router-dom'
 
 const NumberField = React.forwardRef(function NumberField(props, ref) {
+
+    const MIN_VAL = 1;
+
+    const withValueCap = (inputObj) => {
+        const { value } = inputObj;
+        if (value >= MIN_VAL) return true;
+        return false;
+      };
+
     const { onChange, ...other } = props;
 
     return (
         <NumberFormat
             {...other}
+            isAllowed={withValueCap}
             allowLeadingZeros={false}
             getInputRef={ref}
-            
             onValueChange={(values) => {
                 onChange({
                     target: {
@@ -141,7 +150,9 @@ const Rules = () => {
                                     :
                                     'Este tempo será contado para todo o quizz'}`}
                                 value={rules.time_per_question}
-                                onChange={e => dispatch(change({ rules: { ...rules, time_per_question: e.target.value } }))}
+                                onChange={e => {
+                                    dispatch(change({ rules: { ...rules, time_per_question: parseInt(e.target.value) } }))
+                                }}
                                 name="numberformat"
                                 className='mt-2'
                                 InputProps={{

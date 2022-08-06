@@ -12,6 +12,7 @@ use Illuminate\Validation\Rule;
 use App\Rules\ValidatePassword;
 use App\Models\Score;
 use Illuminate\Support\Facades\DB;
+use PhpOffice\PhpSpreadsheet\Calculation\Logical\Boolean;
 
 
 
@@ -25,24 +26,109 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
-        return $this->auth_user;
+        //$user = $this->auth_user->with(['admInvitationFrom'])->first();
+        $user = User::where('id', $this->auth_user->id)->with(['admInvitationFrom' => function($q){
+            $q->where('accepted', false);
+        }])->first();
+
+        return compact('user');
+    }
+
+    public function showUsersToAdm(Request $request)
+    {
+        if ($this->auth_user->role->id === 1) {
+            return User::where('id', '!=', $this->auth_user->id)
+                ->where(function ($q) use ($request) {
+                $q->where('name', 'LIKE', '%' . $request->search . '%')
+                    ->orWhere('email', 'LIKE', '%' . $request->search . '%')
+                    ->orWhere('nickname', 'LIKE', '%' . $request->search . '%');
+                })->with(['admInvitationFrom' => function($q){
+                    $q->where('accepted', 0);
+                }])
+                ->orderBy('name')
+                ->paginate();
+        }
+        return null;
+    }
+
+    public function sendAdmInvitation(Request $request, $id)
+    {
+        if ($this->auth_user->role->id === 1) {
+            $user = User::find($id);
+            if ($user) {
+                if($request->remove){
+                    $user->role_id = 3;
+                    return $user->save();
+                }
+                $invitation = $this->auth_user->admInvitationTo()->save($user);
+                $this->auth_user->notificationsTo()->attach(
+                    $user->id,
+                [
+                    'message' => $this->auth_user->name . ' convidou você para gerenciar o app Quizada.',
+                    'notification_type' => 6
+                ]
+                );
+                return response()->json(['success' => $invitation]);
+            }
+        }
+
+        return response()->json(['error' => 'Você não pode convidar um usuário para ser adm, pois você não possui os privilégios para isso']);
+    }
+    public function acceptAdmInvitation($id, $accept)
+    {
+        $invitation = $this->auth_user->admInvitationFrom()->where('adm_invitation.id',$id)->first();
+
+        if($invitation){
+            if($accept === 'true'){
+                $invitation->pivot->accepted = true;
+                if($invitation->pivot->save()){
+                    $this->auth_user->role_id = $invitation->pivot->to_role;
+                    $this->auth_user->save();
+                    return response()->json(['success' => 'Agora você é um adm do App quizzada']);
+                }
+                return response()->json(['error' => 'Erro ao aceitar o convite']);
+            }
+
+            $this->auth_user->admInvitationFrom()->where('adm_invitation.id',$id)->detach($id);
+            return response()->json(['success' => 'Você recusou o convite para ser adm do App quizzada']);
+        }
+        return response()->json(['error' => 'Você não possui nenhuma solicitação']);
+    }
+
+    public function getNotifications()
+    {
+        $notifications_from = $this->auth_user
+            ->notificationsFrom()
+            ->where('opened_notification', false)
+            ->orderBy('created_at')
+            ->paginate(25);
+
+        return compact('notifications_from');
+    }
+
+    public function openNotification(Request $request)
+    {
+        if ($this->auth_user->notificationsFrom()->whereIn('notifications.id', json_decode($request->notifications_ids))->update(['opened_notification' => 1])) {
+            return true;
+        }
+        return false;
     }
 
     public function ranking(Request $request)
     {
-         //See if user have a password or not
-         $user = array_merge($this->auth_user->with('score')->first()->toArray(),
-         (!$this->auth_user->password || $this->auth_user->password === '')
-         ?
-         ['password_is_null' => true]
-             :
-         ['password_is_null' => false]
-         );
+        //See if user have a password or not
+        $user = array_merge($this->auth_user->with('score')->first()->toArray(),
+            (!$this->auth_user->password || $this->auth_user->password === '')
+            ?
+        ['password_is_null' => true]
+            :
+        ['password_is_null' => false]
+        );
 
-         $countUsers = User::count() < 99 ? User::count() : 100;
+        $countUsers = User::count() < 99 ?User::count() : 100;
 
 
-         $query = "WITH MyTable AS
+        $query = "WITH MyTable AS
          (
              SELECT users.*, score.score,
 
@@ -59,11 +145,11 @@ class UserController extends Controller
          LIMIT ?
          ";
 
-         $user = DB::select($query, [$this->auth_user->id, $countUsers])[0];
+        $user = DB::select($query, [$this->auth_user->id, $countUsers])[0];
 
-         $users = ['data' => DB::select($query, ['%' , $countUsers])];
+        $users = ['data' => DB::select($query, ['%', $countUsers])];
 
-         return compact('user', 'users');
+        return compact('user', 'users');
     }
 
     public function update(Request $request)
@@ -80,12 +166,12 @@ class UserController extends Controller
         ];
 
         //criação de senha
-        if(!$user->password || $user->password === ''){
+        if (!$user->password || $user->password === '') {
             array_push($password_rules, 'same:password_confirm');
         }
 
         //Atualização de senha
-        if(($user->password || $user->password !== '') ){
+        if (($user->password || $user->password !== '')) {
             array_push($password_rules, new ValidatePassword($this->auth_user));
         }
 
@@ -130,7 +216,7 @@ class UserController extends Controller
             'avatar' => $fileName,
             'email' => $request->email,
             'custom_avatar' => 1,
-            'password' => ($request->password && $request->password_confirm) ? Hash::make($request->password_confirm) : $user->password
+            'password' => ($request->password && $request->password_confirm) ?Hash::make($request->password_confirm) : $user->password
         ]);
 
         if ($user->save()) {
@@ -175,7 +261,7 @@ class UserController extends Controller
         $name = $request->name;
         $email = $request->email;
         $password = $request->password;
-        $user = User::create(['name' => $name, 'email' => $email,'nickname' => $request->nickname,'password' => Hash::make($password)]);
+        $user = User::create(['name' => $name, 'email' => $email, 'nickname' => $request->nickname, 'password' => Hash::make($password)]);
 
         if ($user->id) {
             $score = new Score();
@@ -187,7 +273,7 @@ class UserController extends Controller
             $user->sendEmailVerificationNotification();
             return response()->json([
                 'success' => 'Enviamos um email para você, cheque sua caixa de mensagens ou a caixa de spam',
-               // 'access_token' => $user->createToken('auth-api')->accessToken
+                // 'access_token' => $user->createToken('auth-api')->accessToken
             ]);
         }
 

@@ -33,17 +33,17 @@ const RankingModal = (props) => {
                 onClose={handleClose}
                 aria-labelledby="customized-dialog-title"
                 open={open}
-                className='max-h-[80vh] md:h-auto'
+                className='max-h-[80vh] md:h-auto '
             >
                 <DialogTitle className='text-sm flex' onClose={handleClose}>
                     {dialogtitle}
                     <HiX className='ml-auto my-auto text-lg' onClick={handleClose}/>
                 </DialogTitle>
-                <DialogContent dividers>
+                <DialogContent dividers >
                     {
                         ranking.map((el, i) => (
                             <React.Fragment key={(Math.random() + 1).toString(36).substring(7)+i}>
-                                <div className={`flex w-[70vw] justify-between ${el.pivot.user_id === user.id && 'bg-green-200 p-2'}`}>
+                                <div className={`flex md:w-[500px] w-[70vw] justify-between ${el.pivot.user_id === user.id && 'bg-green-200 p-2'}`}>
                                     <div className="flex flex-col">
                                         <h6>{`${el.pivot.user_id === user.id ? 'Sua' : ''} Posição`}</h6>
                                         <h6>{i+1}º</h6>

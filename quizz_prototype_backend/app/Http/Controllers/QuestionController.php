@@ -29,21 +29,26 @@ class QuestionController extends Controller
     {
 
         if (!isset($request->random_questions)) {
-
-            $questions = Question::with('category')
-                ->where('user_id', $this->auth_user->id)
-                ->where(function ($q) use ($request) {
-                if ($request->category_id || $request->category_id != 0) {
-                    return $q->where('category_id', $request->category_id);
+            $questions = $this->auth_user
+            ->questions()
+            ->where(function ($q) use ($request){
+                if($request->category){
+                    $q->whereHas('category', function($q) use ($request){
+                        $q->where('categories.id', $request->category);
+                    });
                 }
             })
-                ->where(function ($q) use ($request) {
-                if ($request->question || $request->question != '') {
-                    return $q->where('question', 'like', '%' . $request->question . '%');
+            ->where(function($q) use ($request) {
+                if($request->search && $request->search !== ''){
+                    $q->where('question', 'LIKE', '%'.$request->search.'%')
+                    ->orWhere('correct_answer', 'LIKE', '%'.$request->search.'%');
                 }
             })
-                ->orderBy('created_at', 'DESC')
-                ->Paginate($request->per_page);
+            ->with(['category' => function($q){
+                $q->select(['categories.id','name']);
+            }])
+            ->orderBy('created_at', 'DESC')
+            ->Paginate($request->per_page);
         }
         else {
             $questions = Question::where(function ($q) use ($request) {
@@ -52,9 +57,9 @@ class QuestionController extends Controller
                 }
                 return $q->where('user_id', 1);
             })
-                ->inRandomOrder()
-                ->limit($request->limit ? $request->limit : null)
-                ->get();
+            ->inRandomOrder()
+            ->limit($request->limit ? $request->limit : null)
+            ->get();
         }
 
         return $questions;
@@ -63,6 +68,7 @@ class QuestionController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate(['category_id' => 'required']);
 
         $quizz_image_path = null;
         $file_questions_array = $request->questions ? array_map(function($q){return json_decode($q, true);}, $request->questions) : null;
@@ -75,6 +81,7 @@ class QuestionController extends Controller
             $quizz_image_path = basename($image_url);
         }
 
+        //Se as questões forem criadas através de um arquivo enviado
         if ($request->hasFile('question_file')) {
             if($request->createQuizz){
                 $rules = [
@@ -87,6 +94,7 @@ class QuestionController extends Controller
             $file_questions_array = $this->uploadCSVFile($request);
         }
 
+        //Se o quizz for criado junto com as questões
         if($request->createQuizz){
             $quizz = Quizz::create([
                 'user_id' => $this->auth_user->id,
@@ -116,8 +124,16 @@ class QuestionController extends Controller
 
             $question_model->fill(array_merge($question, ['image' => $question_image_path]));
 
+            $question = Question::firstOrCreate([
+                'question' => $question['question'],
+                'user_id' => $this->auth_user->id,
+            ], $question_model->toArray());
 
-            $question = Question::firstOrCreate(['question' => $question['question'], 'user_id' => $this->auth_user->id], $question_model->toArray());
+            DB::table('question_category')->updateOrInsert([
+                'question_id' => $question->id,
+                'category_id' => $request->category_id
+            ]);
+
             if($request->createQuizz){
                 DB::table('quizz_question')->insert([
                     'question_id' => $question->id,
@@ -195,8 +211,11 @@ class QuestionController extends Controller
                     $assoc_array[$header[$key]] = $question[$key];
 
                     if ($key === 6 && is_numeric($question[$key])) {
-                        $assoc_array[$header[$key]] = $question[(int)$question[$key]];
-
+                        if($question[$key] <= 1 && $question[$key] <= 5){
+                            $assoc_array[$header[$key]] = $question[(int)$question[$key]];
+                        }else{
+                            $assoc_array[$header[$key]] = $question[$key];
+                        }
                     }
                 }
             }
@@ -208,7 +227,7 @@ class QuestionController extends Controller
 
         //Filter the invalid questions
         $csv_questions_array = array_filter($csv_questions_array, function ($csv_question) {
-            if (count($csv_question) === 9) {
+            if (count($csv_question) === 9 && $csv_question['question']) {
                 return $csv_question;
             }
         });
@@ -218,7 +237,7 @@ class QuestionController extends Controller
         //Add authenticated user and category to question array
         $csv_questions_array = array_map(function ($question) use ($request) {
             $question['user_id'] = $this->auth_user->id;
-            $question['category_id'] = $request->category_id;
+            //$question['category_id'] = $request->category_id;
             return $question;
         }, $csv_questions_array);
 

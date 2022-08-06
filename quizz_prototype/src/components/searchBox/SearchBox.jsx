@@ -4,6 +4,7 @@ import { styled, alpha } from '@mui/material/styles';
 import InputBase from '@mui/material/InputBase';
 
 import { FaSearch } from 'react-icons/fa';
+import { height } from '@mui/system';
 
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -21,14 +22,13 @@ const Search = styled('div')(({ theme }) => ({
 }));
 
 const SearchIconWrapper = styled('button')(({ theme }) => ({
-    padding: theme.spacing(0, 2),
-    height: '100%',
     position: 'absolute',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    cursor: 'pointer',
-
+    right: '0',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    fontSize: '1.5rem',
+    height: '100%',
+    width: '35px'
 }));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
@@ -52,16 +52,16 @@ export const SearchBox = (props) => {
     const {searchHandler, ...rest} = props
     return (
         <Search>
+            <StyledInputBase
+              inputProps={{ 'aria-label': 'search' }}
+              {...rest}
+            />
             <SearchIconWrapper
                 className='cursor-pointer z-50'
                 onClick={() => searchHandler()}
             >
               <FaSearch className='text-white'/>
             </SearchIconWrapper>
-            <StyledInputBase
-              inputProps={{ 'aria-label': 'search' }}
-              {...rest}
-            />
         </Search>
     )
 }

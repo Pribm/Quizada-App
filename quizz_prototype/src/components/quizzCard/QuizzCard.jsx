@@ -4,17 +4,17 @@ import { HiTrash } from 'react-icons/hi'
 import { logo } from 'assets'
 import { IoMdCopy } from 'react-icons/io'
 
-import { Card, CardActions, CardContent, CardMedia, Typography, Button, Grid, Paper, Fab, Chip, Avatar } from '@mui/material'
+import { Card, CardActions, CardContent, CardMedia, Typography, Button, Grid, Paper, Fab, Chip, Avatar, Accordion, AccordionSummary, AccordionDetails } from '@mui/material'
 import { changeConfirm } from 'store/Actions/confirm.action'
 
-import { destroy } from 'store/Actions/quizz.action'
+import { deleteInvitations, destroy, restartInvitations } from 'store/Actions/quizz.action'
 
 import { getQuizzThumbnail, getUserThumbnail } from 'utils/getThumbnails'
 import { MdGamepad } from 'react-icons/md'
 import { changeAlert } from 'store/Actions/alert.action'
 import DownloadQuizzSpreadsheet from 'components/buttons/DownloadQuizzSpreadsheet'
 import { show } from 'store/Actions/game.action'
-import { BiTrophy } from 'react-icons/bi'
+import { BiChevronDown, BiTrophy } from 'react-icons/bi'
 import RankingModal from 'components/ranking/RankingModal'
 
 const QuizzCard = ({ props }) => {
@@ -23,7 +23,7 @@ const QuizzCard = ({ props }) => {
 
   return (
     <>
-      <Grid container component={Paper} className='my-4 text-left bg-slate-50 relative'>
+      <Grid container component={Paper} className='mb-8 mt-4 text-left bg-slate-50 relative'>
         {
           props.exportQuizzButton &&
           <Grid item xs={12}>
@@ -65,23 +65,26 @@ const QuizzCard = ({ props }) => {
         </Grid>
         <Grid container className='bg-white'>
           <div className='p-2 flex  flex-1'>
-            <Button
-              className='flex items-center flex-1'
-              variant='contained'
-              size="small"
-              color="secondary"
-              onClick={() => props.dispatch(changeConfirm({
-                open: true,
-                title: 'Você está preparado para iniciar o quizz?',
-                msg: props.description ? props.description : 'Boa Sorte no seu quizz!',
-                confirmAction: () => props.dispatch(show(props.token)).then(() => {
-                  props.dispatch(changeConfirm({ open: false }))
-                })
-              }))}
-            >
-              <MdGamepad size={20} />
-              <p>Fazer Quizz</p>
-            </Button>
+            {
+              (!props.hideMakeQuizzButton) &&
+                <Button
+                className='flex items-center flex-1'
+                variant='contained'
+                size="small"
+                color="secondary"
+                onClick={() => props.dispatch(changeConfirm({
+                  open: true,
+                  title: 'Você está preparado para iniciar o quizz?',
+                  msg: props.description ? props.description : 'Boa Sorte no seu quizz!',
+                  confirmAction: () => props.dispatch(show(props.token)).then(() => {
+                    props.dispatch(changeConfirm({ open: false }))
+                  })
+                }))}
+              >
+                <MdGamepad size={20} />
+                <p>Fazer Quizz</p>
+              </Button>
+            }
 
             {
               props.showRanking &&
@@ -96,6 +99,38 @@ const QuizzCard = ({ props }) => {
               </Button>
             }
           </div>
+          {
+            (props.showRankingReset) &&
+          <Accordion className='w-[100%]'>
+                <AccordionSummary
+                  expandIcon={<BiChevronDown/>}
+                  aria-controls="panel1a-content"
+                  id="panel1a-header"
+                >
+                  <Typography>Reiniciar Partida</Typography>
+                </AccordionSummary>
+                <AccordionDetails  className='p-2 flex  flex-1'>
+                <Button
+                  disabled={props.invitation.length <= 0}
+                  className='flex-1 mb-2 mr-2'
+                  onClick={() => props.dispatch(deleteInvitations(props.token))}
+                  size='small'
+                  color='error'
+                  variant='contained'>
+                  <p>Desfazer Convites</p>
+                </Button>
+                <Button
+                  disabled={props.invitation.length <= 0}
+                  className='flex-1 mb-2'
+                  onClick={() => props.dispatch(restartInvitations(props.token))}
+                  size='small'
+                  color='error'
+                  variant='contained'>
+                  <p>Reiniciar Ranking</p>
+                </Button>
+                </AccordionDetails>
+          </Accordion>
+          }
         </Grid>
         {
           props.deleteQuizzButton &&

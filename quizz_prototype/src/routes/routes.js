@@ -4,26 +4,27 @@ import {
     Route,
     Navigate,
   } from "react-router-dom";
-import Quizz from "../components/screens/quizz/game/Quizz";
-import Login from "../components/screens/Login/Login";
+import Quizz from "../screens/quizz/game/Quizz";
+import Login from "../screens/Login/Login";
 import ProtectedRoutes from "./protected.routes";
-import Home from "../components/screens/home/Home";
-import CreateQuizz from "../components/screens/quizz/create/CreateQuizzHub";
-import Update from "components/screens/profile/Update";
-import ListQuestions from "components/screens/Questions/index/ListQuestions";
-import UploadSuccess from "components/screens/success/UploadSuccess";
-import ListQuizz from "components/screens/quizz/index/ListQuizz";
-import Register from "components/screens/Login/Register";
-import CreateQuestions from "components/screens/Questions/create/CreateQuestions";
-import { Forgot } from "components/screens/Login/ForgotPassword";
-import { PasswordReset } from "components/screens/Login/PasswordReset";
-import Friends from "components/screens/friends/Friends";
-import Finished from "components/screens/quizz/finished/Finished";
-import Donate from "components/screens/donate/Donate";
-import Multiplayer from "components/screens/multiplayer/Multiplayer";
-import PublicQuizzList from "components/screens/quizz/public_quizz/PublicQuizzList";
+import Home from "../screens/home/Home";
+import CreateQuizz from "../screens/quizz/create/CreateQuizzHub";
+import Update from "screens/profile/Update";
+import ListQuestions from "screens/Questions/index/ListQuestions";
+import UploadSuccess from "screens/success/UploadSuccess";
+import ListQuizz from "screens/quizz/index/ListQuizz";
+import Register from "screens/Login/Register";
+import CreateQuestions from "screens/Questions/create/CreateQuestions";
+import { Forgot } from "screens/Login/ForgotPassword";
+import { PasswordReset } from "screens/Login/PasswordReset";
+import Friends from "screens/friends/Friends";
+import Finished from "screens/quizz/finished/Finished";
+import Donate from "screens/donate/Donate";
+import Multiplayer from "screens/multiplayer/Multiplayer";
+import PublicQuizzList from "screens/quizz/public_quizz/PublicQuizzList";
 import AdminRoutes from "./admin.routes";
-import PanelAdmin from "components/screens/admin/PanelAdmin";
+import PanelAdmin from "screens/admin/PanelAdmin";
+import Categories from "screens/categories/Categories";
 
 
   const routes = () => (
@@ -41,6 +42,7 @@ import PanelAdmin from "components/screens/admin/PanelAdmin";
                   <Route path="multiplayer" element={<Multiplayer/>}/>
                   <Route path="donate" element={<Donate/>}/>
                   <Route path="friends" element={<Friends/>}/>
+                  <Route path="categories" element={<Categories/>}/>
                   
                   <Route path='quizz'>
                     <Route index element={<Quizz/>}/>

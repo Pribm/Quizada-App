@@ -4,6 +4,7 @@ import { changeLoading } from "./loading.action"
 export const actionsTypes = {
     CHANGE : 'CHANGE_CATEGORIES',
     INDEX: 'CATEGORIES_INDEX',
+    DESTROY: 'CATEGORIES_DESTROY',
     SUCCESS: 'CATEGORIES_SUCCESS',
     ERROR: 'CATEGORIES_ERROR'
 }
@@ -15,6 +16,11 @@ export const change = (payload) => ({
 
 export const indexResponse = (payload) => ({
   type: actionsTypes.INDEX,
+  payload
+})
+
+export const destroyResponse = payload => ({
+  type: actionsTypes.DESTROY,
   payload
 })
 
@@ -38,15 +44,23 @@ export const create = payload => dispatch => {
     dispatch(changeLoading({open: true}))
     return HttpAuth.post('question/categories', payload).then(res => {
         dispatch(changeLoading({open: false}))
-        if(typeof res !== 'undefined'){
-            if(res.data.success){
-                dispatch(change({createNewCategory: false, category: res.data.success}))
-                return res.data.success;
-            }
-            if(res.data.errors){
-                dispatch(error(res.data.errors))
-            }
+        if(res.data.success){
+          dispatch(index()).then(() => dispatch(change(res.data.success)))
+          return {success: true, category: res.data.success.id}
+        }
+
+        if(res.data.errors){
+          dispatch(error(res.data.errors))
+          return false
         }
     })
+}
+
+export const destroy = id => dispatch => {
+  dispatch(changeLoading({open: true}))
+  HttpAuth.delete('question/categories/'+id).then(res => {
+    dispatch(changeLoading({open: false}))
+    dispatch(destroyResponse(res.data.deleted_id))
+  })
 }
 

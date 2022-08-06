@@ -4,7 +4,7 @@ import { getQuizzInvitations } from "./user.action"
 export const actionTypes = {
     CHANGE: 'CHANGE_FRIENDS',
     INDEX: 'INDEX_FRIENDS',
-    ALL_FRIENDS: 'GET_FRIENDS',
+    GET_FRIENDS: 'GET_FRIENDS',
     FRIENDSHIP_REQUESTS: 'FRIENDSHIP_REQUESTS',
     QUIZZ_REQUESTS: 'QUIZZ_REQUESTS',
     USER_FRIENDSHIP_REQUESTS: 'USER_FRIENDSHIP_REQUESTS',
@@ -26,7 +26,7 @@ const showUnfollowedUsersResponse = (payload, isLoadMore=false) => ({
 })
 
 const showAllFriendsResponse = (payload, isLoadMore=false) => ({
-  type: actionTypes.ALL_FRIENDS,
+  type: actionTypes.GET_FRIENDS,
   payload,
   isLoadMore
 })
@@ -71,7 +71,6 @@ const acceptQuizzResponse = payload => ({
 
 export const index = (payload, isLoadMore) => dispatch => {
     return HttpAuth.get('/user/friends', {params: {...payload}}).then(res => {
-
         if(res.status === 200){
             if(Object.keys(payload)[0] === 'showUnfollowedUsers'){
               dispatch(showUnfollowedUsersResponse(res.data, isLoadMore))

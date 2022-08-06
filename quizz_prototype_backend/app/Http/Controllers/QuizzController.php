@@ -21,7 +21,8 @@ class QuizzController extends Controller
 
     private $auth_user;
 
-    public function __construct(){
+    public function __construct()
+    {
         $this->auth_user = auth()->guard('api')->user();
     }
 
@@ -29,48 +30,54 @@ class QuizzController extends Controller
     {
 
         $quizz_list = $this->auth_user->quizzOwner()
-        ->where(function($q) use ($request){
-            $q->where('title', 'LIKE', '%'.$request->search.'%')
-            ->orWhereHas('category', function($q) use($request){
-                $q->where('name', 'LIKE', '%'.$request->search.'%');
-            });
+            ->where(function ($q) use ($request) {
+            $q->where('title', 'LIKE', '%' . $request->search . '%')
+                ->orWhereHas('category', function ($q) use ($request) {
+                $q->where('name', 'LIKE', '%' . $request->search . '%');
+            }
+            );
         })
-        ->orderBy('created_at', 'DESC')
-        ->paginate(10);
+            ->orderBy('created_at', 'DESC')
+            ->paginate(10);
 
-        if($request->showAdminQuizzList){
-            $quizz_list = Quizz::whereHas('user.role', function($q){
+        if ($request->showAdminQuizzList) {
+            $quizz_list = Quizz::whereHas('user.role', function ($q) {
                 return $q->where('role', 'admin')
+                ->orWhere('role', 'manager')
                 ->where('random_generated', 0);
             })
-            ->where(function($q) use ($request){
-                $q->where('title', 'LIKE', '%'.$request->search.'%')
-                ->orWhereHas('category', function($q) use($request){
-                    $q->where('name', 'LIKE', '%'.$request->search.'%');
-                });
+                ->where(function ($q) use ($request) {
+                $q->where('title', 'LIKE', '%' . $request->search . '%')
+                    ->orWhereHas('category', function ($q) use ($request) {
+                    $q->where('name', 'LIKE', '%' . $request->search . '%');
+                }
+                );
             })
-            ->with('invitation', function($q){
-                $q->where('quizz_complete', 1);
-            })
-            ->with(['category'])
-            ->paginate(10);
+                ->with(['category' => function ($q) {
+                $q->withTrashed();
+            }])
+                ->orderBy('created_at', 'DESC')
+                ->paginate(10);
         }
 
-        if($request->showAcceptedQuizzList){
+        if ($request->showAcceptedQuizzList) {
+
             $quizz_list = $this->auth_user->quizzInvitationAccepted()->orderBy('created_at', 'DESC')->paginate(10);
         }
-        if($request->showCompletedQuizzList){
+        if ($request->showCompletedQuizzList) {
             $quizz_list = $this->auth_user
-            ->quizzComplete()
-            ->where(function($q) use ($request){
-                $q->where('title', 'LIKE', '%'.$request->search.'%')
-                ->orWhereHas('category', function($q) use($request){
-                    $q->where('name', 'LIKE', '%'.$request->search.'%');
-                });
-            })
-            ->orderBy('updated_at', 'DESC')
-            ->paginate(10);
+                ->quizzComplete()
+                ->where(function ($q) use ($request) {
+                $q->where('title', 'LIKE', '%' . $request->search . '%')
+                    ->orWhereHas('category', function ($q) use ($request) {
+                    $q->where('name', 'LIKE', '%' . $request->search . '%');
+                }
+                );
+            })->with(['user'])
+                ->orderBy('updated_at', 'DESC')
+                ->paginate(10);
         }
+
         return $quizz_list;
     }
 
@@ -85,7 +92,6 @@ class QuizzController extends Controller
         ];
 
         $request->validate($rule);
-
         $questions = $request->questions;
         $limit = $request->limit ? $request->limit : 10;
 
@@ -93,8 +99,8 @@ class QuizzController extends Controller
         $quizz_image_path = null;
 
 
-        if($request->hasFile('image')){
-            $request->validate(['image' => ['max:512','mimes:jpg,jpeg,png']]);
+        if ($request->hasFile('image')) {
+            $request->validate(['image' => ['max:512', 'mimes:jpg,jpeg,png']]);
 
             $path = 'quizz/images';
             $image_url = Storage::disk('local')->put($path, $request->file('image'));
@@ -110,34 +116,33 @@ class QuizzController extends Controller
             'image' => $quizz_image_path,
             'withTime' => $request->withTime == 'true' ? true : false,
             'time_per_question' => $request->time_per_question,
-            'total_time' =>  ($request->time_per_question * $request->limit),
-            'count_time' => $request->count_time+1,
+            'total_time' => ($request->time_per_question * $request->limit),
+            'count_time' => $request->count_time + 1,
             'shuffle_answers' => $request->shuffle_answers == 'true' ? true : false,
             'shuffle_questions' => $request->shuffle_questions == 'true' ? true : false,
             'immediate_show_wrong_answers' => $request->immediate_show_wrong_answers == 'true' ? true : false,
         ]);
 
         //Random Generated // Pick only questions generated by the admin
-        if(!$request->questions || $request->questions === null || !isset($request->questions)){
+        if (!$request->questions || $request->questions === null || !isset($request->questions)) {
 
             $questions = Question::whereHas('user', function ($q) {
                 $q->where('role_id', env('ADMIN_ROLE_ID'));
             })
-                ->where(function ($q) use ($request) {
-                if (isset($request->category_id) && $request->category_id !== 0) {
-                    return $q->where('category_id', $request->category_id);
-                }
+            ->whereHas('category', function($q) use($request){
+                $q->where('categories.id', $request->category_id);
             })
-                ->inRandomOrder()
-                ->limit($limit)
-                ->pluck('id')->toArray();
+            ->inRandomOrder()
+            ->limit($limit)
+            ->pluck('id')->toArray();
+
 
             $quizz->random_generated = 1;
             $quizz->category_id = 1;
         }
 
 
-        if($quizz->save()){
+        if ($quizz->save()) {
             foreach ($questions as $question) {
                 DB::table('quizz_question')->insert([
                     'quizz_id' => $quizz->id,
@@ -153,41 +158,61 @@ class QuizzController extends Controller
         return response()->json(['error' => 'o quizz não pôde ser gerado, por favor verifique se todos os parâmetros estão corretos']);
     }
 
-    public function sendToken($token, $guest_user){
+    public function sendToken($token, $guest_user)
+    {
         //Só pode enviar token se for o seu
         $quizz = $this->auth_user->quizzOwner()->where('token', $token)->first();
 
         $guest_user = User::where('id', $guest_user)
-        ->whereHas('friends',function($q){
+            ->whereHas('friends', function ($q) {
             $q->where('id', $this->auth_user->id);
         })->first();
 
-        if(!$guest_user){
+        if (!$guest_user) {
             return response()->json(['error' => 'Você só pode enviar um quizz caso tenha esta pessoa na sua lista de amigos.'], 400);
         }
-        if(!$quizz){
+        if (!$quizz) {
             return response()->json(['error' => 'Você só pode enviar um quizz existente e criado por você.'], 400);
         }
 
-        if(!$quizz->invitation()->find($guest_user->id)){
+        if (!$quizz->invitation()->find($guest_user->id)) {
             $quizz->invitation()->attach($guest_user->id);
-            return response()->json(['success' => 'Parabéns, você acabou de convidar '.$guest_user->name.' para o seu quizz!'], 200);
-        };
 
-        return response()->json(['error' => 'Você já convidou este '.$guest_user->name.' para este quizz, tente convidá-lo para outro.'], 400);
+            $this->auth_user->notificationsTo()->attach(
+                $guest_user->id,
+            [
+                'message' => $this->auth_user->name . ' convidou você para fazer o quizz: ' . $quizz->title,
+                'notification_type' => 3
+            ]
+            );
+
+            return response()->json(['success' => 'Parabéns, você acabou de convidar ' . $guest_user->name . ' para o seu quizz!'], 200);
+        }
+        ;
+
+        return response()->json(['error' => 'Você já convidou este ' . $guest_user->name . ' para este quizz, tente convidá-lo para outro.'], 400);
     }
 
-    public function massInvitation(Request $request){
+    public function massInvitation(Request $request)
+    {
         foreach ($request->quizzes as $quizz) {
-                foreach($request->friends as $friend){
-                    DB::table('quizz_invitation')
+            foreach ($request->friends as $friend) {
+                DB::table('quizz_invitation')
                     ->updateOrInsert([
-                        'quizz_id' => $quizz,
-                        'user_id' => $friend,
-                    ],[
-                        'created_at' => Carbon::now(),
-                        'updated_at' => Carbon::now()
-                    ]);
+                    'quizz_id' => $quizz,
+                    'user_id' => $friend,
+                ], [
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now()
+                ]);
+
+                $this->auth_user->notificationsTo()->attach(
+                    $friend,
+                [
+                    'message' => $this->auth_user->name . ' convidou você para fazer o quizz: ' . Quizz::find($quizz)->title,
+                    'notification_type' => 3
+                ]
+                );
             }
         }
 
@@ -206,53 +231,47 @@ class QuizzController extends Controller
         //Get the quizz wich refers que requested one
         $quizz = $quizz = Quizz::where('token', $request->token)->first();
 
-        if(!$quizz){
+        if (!$quizz) {
             return ['error' => 'Não existe nenhum quizz que corresponda à este token'];
         }
 
-        if($quizz['error']) return $quizz['error'];
+        if ($quizz['error'])
+            return $quizz['error'];
 
-        if(DB::table('quizz_invitation')
+        if (DB::table('quizz_invitation')
         ->where('user_id', $this->auth_user->id)
         ->where('quizz_id', $quizz->id)
         ->where('quizz_complete', true)
         ->where('invitation_accepted', true)
-        ->first()){
+        ->first()) {
             return response()->json(['error' => 'Um quizz feito anteriormente não lhe concede pontuação']);
         }
 
-        //If the generated quizz is not generated by yourself || only permitted if is randomic generated
-        if($quizz->user_id !== $this->auth_user->id || $quizz->random_generated){
-            //Get the current user score
-            $curr_score = $this->auth_user->score->score;
-            $score = $this->auth_user->score;
 
-            $score->fill([
-                'user_id' => $this->auth_user->id,
-                'score' => $curr_score + $request->score
-            ]);
+        DB::table('quizz_invitation')->updateOrInsert([
+            'user_id' => $this->auth_user->id,
+            'quizz_id' => $quizz->id,
+            'invitation_accepted' => true
+        ], [
+            'score' => $request->score,
+            'quizz_complete' => true,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now()
+        ]);
 
-            if($score->save()){
-                DB::table('quizz_invitation')->updateOrInsert([
-                    'user_id' => $this->auth_user->id,
-                    'quizz_id' => $quizz->id,
-                    'invitation_accepted' => true
-                ], [
-                    'score' => $request->score,
-                    'quizz_complete' => true,
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now()
-                ]);
-            }
+        $this->auth_user->notificationsTo()->attach(
+            $quizz->user_id,
+        [
+            'message' => $this->auth_user->name . ' fez ' . $request->score . ' pontos no seu quizz: ' . $quizz->title,
+            'notification_type' => 5
+        ]
+        );
 
-            if($quizz->random_generated && $quizz->user_id === $this->auth_user->id){
-               $quizz->delete();
-            }
-
-            return response()->json(['success' => 'Você fez '.$request->score.' pontos neste quizz.']);
+        if ($quizz->random_generated && $quizz->user_id === $this->auth_user->id) {
+            $quizz->delete();
         }
 
-        return response()->json(['error' => 'Um quizz que você mesmo gerou não concede pontuação para o ranking, para isso, você precisa fazer o quizz de um amigo']);
+        return response()->json(['success' => 'Você fez ' . $request->score . ' pontos neste quizz.']);
     }
 
     public function ranking($id)
@@ -281,17 +300,46 @@ class QuizzController extends Controller
 
     public function show($token)
     {
-
         $quizz = Quizz::where('token', $token)->first();
         $questions = Quizz::find($quizz->id)->questions()->withTrashed()->get();
 
         $questions = $this->transformQuestionResult($questions, true);
 
-        if(!$quizz){
+        if (!$quizz) {
             return ['error' => 'Não existe nenhum quizz que corresponda à este token'];
         }
 
         return response()->json(['quizz' => $quizz, 'questions' => $questions]);
+    }
+
+    public function deleteQuizzInvitations($token)
+    {
+        $quizz = $this->auth_user->quizzOwner()->where('token', $token)->first();
+        if ($quizz) {
+            if ($quizz->invitation()->detach()) {
+                return response()->json(['success' => 'Você não possui mais nenhum usuário convidado para este quizz, você pode convidar todos os seus amigos novamente']);
+            }
+            return response()->json(['error' => 'Este quizz não possui nenhum usuário convidado'], 422);
+        }
+        return response()->json(['error' => 'Você não pode deletar um convite de um quizz que não foi feito por você'], 422);
+    }
+
+    public function resetQuizzInvitations($token)
+    {
+        $quizz = $this->auth_user->quizzOwner()->where('token', $token)->first();
+        if ($quizz) {
+            if (count($quizz->invitation) > 0) {
+                foreach ($quizz->invitation as $invitation) {
+                    $invitation->pivot->invitation_accepted = 0;
+                    $invitation->pivot->quizz_complete = 0;
+                    $invitation->pivot->score = 0;
+                    $invitation->pivot->save();
+                }
+                return response()->json(['success' => 'Você não possui mais nenhum usuário convidado para este quizz, você pode convidar todos os seus amigos novamente']);
+            }
+            return response()->json(['error' => 'Este quizz não possui nenhum usuário convidado'], 422);
+        }
+        return response()->json(['error' => 'Você não pode deletar um convite de um quizz que não foi feito por você'], 422);
     }
 
     public function export($id)
@@ -308,11 +356,11 @@ class QuizzController extends Controller
     {
         $quizz = $this->auth_user->pendingQuizzInvitation()->find($id);
 
-        if($quizz){
-            if($this->auth_user
+        if ($quizz) {
+            if ($this->auth_user
             ->pendingQuizzInvitation()
             ->where('quizz_id', $id)
-            ->update(['invitation_accepted' => true, 'updated_at' => Carbon::now()])){
+            ->update(['invitation_accepted' => true, 'updated_at' => Carbon::now()])) {
                 return $quizz;
             }
             return response()->json(['error' => 'O quizz não pôde ser aceito por algum motivo, tente novamente.']);
@@ -324,8 +372,8 @@ class QuizzController extends Controller
     public function destroy($id)
     {
         $quizz = $this->auth_user->quizzOwner()->find($id);
-        if($quizz){
-            if($quizz->delete()){
+        if ($quizz) {
+            if ($quizz->delete()) {
                 return response()->json(['success' => 'quizz deletado com sucesso']);
             }
             return response()->json(['error' => 'erro ao deletar o quizz']);
@@ -334,40 +382,42 @@ class QuizzController extends Controller
         return response()->json(['error' => 'quizz Inexistente']);
     }
 
-    private function transformQuestionResult($questionResult, bool $shuffle_answers){
+    private function transformQuestionResult($questionResult, bool $shuffle_answers)
+    {
 
-        $questionResult = collect($questionResult)->transform(function($q) use ($shuffle_answers){
-            $question =  [
+        $questionResult = collect($questionResult)->transform(function ($q) use ($shuffle_answers) {
+            $question = [
                 'question' => $q['question'],
                 'answers' => [$q['answer_1'],
-                            $q['answer_2'],
-                            $q['answer_3'],
-                            $q['answer_4'],
-                            $q['answer_5']],
+                    $q['answer_2'],
+                    $q['answer_3'],
+                    $q['answer_4'],
+                    $q['answer_5']],
                 'correct_answer' => $q['correct_answer'],
                 'question_comment' => $q['question_comment'],
                 'user_id' => $this->auth_user->id,
-                'category_id' => $q['category_id'],
+                //'category_id' => $q['category_id'],
                 'image' => $q['image']
             ];
-            if($shuffle_answers === true){
+            if ($shuffle_answers === true) {
                 shuffle($question['answers']);
 
                 $nda = '';
                 $shuffled_answers = [];
                 foreach ($question['answers'] as $answer) {
-                    if($answer !== 'nda'){
+                    if ($answer !== 'nda') {
                         $shuffled_answers[] = $answer;
-                    }else{
+                    }
+                    else {
                         $nda = $answer;
                     }
                 }
 
 
-               if($nda !== '') {
-                array_push($shuffled_answers, $nda);
-                $question['answers'] = $shuffled_answers;
-               }
+                if ($nda !== '') {
+                    array_push($shuffled_answers, $nda);
+                    $question['answers'] = $shuffled_answers;
+                }
 
             }
             return $question;

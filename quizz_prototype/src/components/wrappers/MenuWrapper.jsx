@@ -6,8 +6,7 @@ import MenuHeader from '../navigation/MenuHeader'
 import BottomNavbar from 'components/navigation/BottomNavbar'
 import DrawerMenu from 'components/navigation/DrawerMenu'
 import Rules from 'components/rules/Rules'
-import { Fab } from '@mui/material'
-import { FaHandsHelping } from 'react-icons/fa'
+
 
 const MenuWrapper = (Component) => {
 

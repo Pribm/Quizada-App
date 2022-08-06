@@ -5,28 +5,28 @@ const initialState = {
 
     },
     friendsList: {
-      current_page: 1,
-      last_page: 1,
+      current_page: 0,
+      last_page: 0,
       data: []
     },
     yourFriends: {
-      current_page: 1,
-      last_page: 1,
+      current_page: 0,
+      last_page: 0,
       data: []
     },
     friendship_requests: {
-      current_page: 1,
-      last_page: 1,
+      current_page: 0,
+      last_page: 0,
       data: []
     },
     user_friendship_requests: {
-      current_page: 1,
-      last_page: 1,
+      current_page: 0,
+      last_page: 0,
       data: []
     },
     user_quizz_requests: {
-      current_page: 1,
-      last_page: 1,
+      current_page: 0,
+      last_page: 0,
       data: []
     },
     isLoading: true,
@@ -47,13 +47,12 @@ const friendsReducer = (state = initialState, { type, payload, isLoadMore}) => {
 
     return {...state, friendsList: payload}
 
-    case actionTypes.ALL_FRIENDS:
+    case actionTypes.GET_FRIENDS:
           payload = isLoadMore ? {
             ...payload, data: state.yourFriends.data.concat(payload.data),
             }
             : 
             payload
-
     return {...state, yourFriends: payload}
 
     case actionTypes.FRIENDSHIP_REQUESTS:

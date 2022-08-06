@@ -83,13 +83,17 @@ class User extends Authenticatable implements MustVerifyEmail
             $q->belongsTo(User::class)
             ->where('role_id', 1);
         })
-        ->with([ 'category'])
+        ->with([ 'category' => function($q){
+            $q->withTrashed();
+        }])
         ->where('random_generated', false);
     }
 
     public function quizzOwner(){
         return $this->hasMany(Quizz::class, 'user_id')
-        ->with([ 'category'])
+        ->with([ 'category' => function($q){
+            $q->withTrashed();
+        }])
         ->with('invitation', function($q){
             return $q->orderByRaw('quizz_invitation.score DESC, quizz_invitation.updated_at ASC');
         })
@@ -122,9 +126,18 @@ class User extends Authenticatable implements MustVerifyEmail
         ->withTimestamps();
     }
 
-
     public function role(){
         return $this->belongsTo(Role::class, 'role_id');
+    }
+
+    public function categories(){
+        return $this->hasMany(Categories::class, 'user_id');
+    }
+
+    public function adminCategories(){
+        return Categories::where('user_id', function($q){
+            $q->belongsTo(User::class)->where('role_id', 1);
+        });
     }
 
     public function followableUsers(){
@@ -180,5 +193,28 @@ class User extends Authenticatable implements MustVerifyEmail
     public function acceptedFriendsFrom()
     {
         return $this->friendsFrom()->wherePivot('accepted', true);
+    }
+
+    public function notificationsTo(){
+        return $this->belongsToMany(User::class, 'notifications', 'notifier_id', 'notified_id')
+        ->withPivot(['id','message', 'notification_type'])
+        ->withTimestamps();
+    }
+
+    public function notificationsFrom(){
+        return $this->belongsToMany(User::class, 'notifications', 'notified_id' , 'notifier_id')
+        ->withPivot(['id','message', 'notification_type'])
+        ->withTimestamps();
+    }
+
+    public function admInvitationTo(){
+        return $this->belongsToMany(User::class, 'adm_invitation', 'inviter_user', 'invitated_user')
+        ->withPivot(['accepted', 'to_role'])
+        ->withTimestamps();
+    }
+    public function admInvitationFrom(){
+        return $this->belongsToMany(User::class, 'adm_invitation', 'invitated_user', 'inviter_user')
+        ->withPivot(['accepted', 'to_role', 'id'])
+        ->withTimestamps();
     }
 }
