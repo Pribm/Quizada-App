@@ -81,7 +81,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public function adminQuizz(){
         return Quizz::where('user_id', function($q){
             $q->belongsTo(User::class)
-            ->where('role_id', 1);
+            ->where('role.role', 1);
         })
         ->with([ 'category' => function($q){
             $q->withTrashed();
@@ -136,7 +136,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function adminCategories(){
         return Categories::where('user_id', function($q){
-            $q->belongsTo(User::class)->where('role_id', 1);
+            $q->belongsTo(User::class)->where('role.role', 'admin');
         });
     }
 

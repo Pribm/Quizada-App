@@ -86,7 +86,7 @@ const drawerLinks = [
         text: 'Painel Administrativo',
         icon: <GrConfigure/>,
         linkTo: '/panel-admin',
-        user_role: 1
+        user_role: 'admin'
     },
     
 ]

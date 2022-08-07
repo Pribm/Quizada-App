@@ -47,8 +47,8 @@ const DrawerMenu = () => {
                         <CircularProgress/>
                     </div>
                     :
-                    drawerLinks.filter(link => (link.user_role !== user.role_id && typeof link.user_role === 'undefined'))
-                    .concat(drawerLinks.filter(link => (link.user_role === user.role_id)))
+                    drawerLinks.filter(link => (link.user_role !== user.role.role && typeof link.user_role === 'undefined'))
+                    .concat(drawerLinks.filter(link => (link.user_role === user.role.role)))
                     .map((link, i) => (
                         <React.Fragment key={`link_${i}`}>
                             <Link to={link.linkTo} onClick={link?.action && link.action} replace={true}>

@@ -17,16 +17,16 @@ const FriendCard = ({ props }) => {
             <Button
             fullWidth
             disabled={props.adm_invitation_from.length > 0}
-            color={`${props.role_id !== 3 ? 'error' : 'primary'}`}
+            color={`${props.role.role !== 'user' ? 'error' : 'primary'}`}
             onClick={() => {
-                if(props.role_id === 3){
+                if(props.role.role === 'user'){
                     props.dispatch(sendAdmInvitation(props.id))
                 }else{
                     props.dispatch(removeAdmInvitation(props.id))
                 }
             }}
             >
-                {props.role_id !== 3 ?
+                {props.role.role !== 'user' ?
                 'Remover Adm'
                 :
                 props.adm_invitation_from.length <= 0 ?
@@ -35,7 +35,7 @@ const FriendCard = ({ props }) => {
                 'Usuário Convidado'
                 }   
             </Button>
-
+           {console.log(props)}
         </div>
 
     )

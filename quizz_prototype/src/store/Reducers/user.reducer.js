@@ -1,7 +1,11 @@
 import { actionTypes } from "store/Actions/user.action"
 
 const initialState = {
-    user: {},
+    user: {
+      role: {
+        role: ''
+      }
+    },
     users: {
       data:[]
     },

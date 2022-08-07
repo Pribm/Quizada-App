@@ -7,7 +7,7 @@ const AdminRoutes = () => {
     const navigate = useNavigate()
     const {user} = useSelector(state => state.userReducer)
 
-    const isAdmin = user.role_id === 1
+    const isAdmin = user.role.role === 'admin'
 
     React.useEffect(() => {
         if(!isAdmin) {

@@ -37,12 +37,14 @@ const Categories = () => {
     const {user} = useSelector(state => state.userReducer)
 
     useEffect(() => {
-        if(user.role_id === 1){
-            dispatch(index()).then(() => setLoading(false))
-        }else{
-            dispatch(index({getUserCategories: true})).then(() => setLoading(false))
+        if(user.role.role !== ''){
+            if(user.role.role === 'admin'){
+                dispatch(index()).then(() => setLoading(false))
+            }else{
+                dispatch(index({getUserCategories: true})).then(() => setLoading(false))
+            }
         }
-    }, [])
+    }, [user.role.role])
 
 
     const searchHandler = () => {
@@ -70,7 +72,7 @@ const Categories = () => {
                 isLoading={isLoading}
                 setLoading={setLoading}
                 searchBoxPlaceholder={'Nome da categoria'}
-                listTitle={user.role_id === 1 ? 'Sua Categorias e de outros moderadores': 'Lista de Categorias'}
+                listTitle={user.role.role === 'admin' ? 'Suas Categorias e de outros moderadores': 'Lista de Categorias'}
                 notFoundList={'Você não possui nenhuma categoria cadastrada'}
             />
         </div>

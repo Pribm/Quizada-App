@@ -58,7 +58,7 @@ const MenuHeader = () => {
     const handleDispenseNotification = dispensableTypes => {
         let dispensableNotifications = []
         notifications_from.data.forEach(element => {
-            if (dispensableTypes.includes(element.pivot.notification_type)) {
+            if (!dispensableTypes.includes(element.pivot.notification_type)) {
                 dispensableNotifications.push(element.pivot.id)
             }
         });
@@ -202,7 +202,7 @@ const MenuHeader = () => {
                                 {
                                     (notification.pivot.notification_type === 'admin_request') &&
                                     <div className='flex flex-col ml-2'>
-                                        {console.log(notification)}
+                 
                                         <Button
                                             onClick={() => {
                                                 dispatch(acceptAdmInvitation(true))

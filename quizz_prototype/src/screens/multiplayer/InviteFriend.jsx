@@ -9,8 +9,9 @@ import { FcFolder } from 'react-icons/fc';
 import { IoSend } from 'react-icons/io5';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { FriendsListComponent2 } from 'screens/friends/FriendsListComponent2';
 import { index, massInvitation } from 'store/Actions/quizz.action';
-import { FriendsListComponent } from '../friends/FriendsListComponent';
+
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -67,7 +68,9 @@ const InviteFriend = () => {
     return (
         <div className='px-4 relative'>
             <Fab
-            onClick={() => dispatch(massInvitation({quizzes: selectedQuizzIds, friends: selectedFriendsIds}))}
+            onClick={() => dispatch(massInvitation({quizzes: selectedQuizzIds, friends: selectedFriendsIds})).then(() => {
+                setSelectedFriendsIds([])
+            })}
             className='fixed top-[90px] right-5'
             size='small'
             color='secondary'>
@@ -116,7 +119,7 @@ const InviteFriend = () => {
                         </Item>
                     </Grid>
                     <Grid item md={6} xs={12}>
-                        <FriendsListComponent
+                        <FriendsListComponent2
                             className='h-[calc(50vh-100px)]'
                             Component={FriendCardSmall}
                             componentProps={{ handleChange: handleSelectFriend, selectedFriendsIds }} />

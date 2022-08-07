@@ -97,6 +97,7 @@ export const getNotifications = (payload) => dispatch => {
 }
 
 export const openNotifications = notificationIds => dispatch => {
+
   HttpAuth.post('/user/open-notification',{notifications_ids: JSON.stringify(notificationIds)})
   .then(() => {
     dispatch(index())

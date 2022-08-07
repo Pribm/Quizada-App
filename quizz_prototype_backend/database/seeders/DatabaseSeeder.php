@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
             'password' => Hash::make('123456'),
-            'role_id' => 1
+            'role_id' => env('ADMIN_ROLE_ID')
         ]);
 
         $this->call(CategoriesSeeder::class);

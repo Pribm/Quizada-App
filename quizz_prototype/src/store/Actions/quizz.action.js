@@ -108,7 +108,7 @@ export const makeInvitation = (token, id) => dispatch => {
 export const massInvitation = payload => dispatch => {
 
     dispatch(changeLoading({open: true}))
-    HttpAuth.post(`quizz/mass-invitation`, payload).then(res => {
+    return HttpAuth.post(`quizz/mass-invitation`, payload).then(res => {
 
         dispatch(changeLoading({open: false}))
         if(res.data.success){

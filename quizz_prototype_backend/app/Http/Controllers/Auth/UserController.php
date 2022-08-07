@@ -13,6 +13,7 @@ use App\Rules\ValidatePassword;
 use App\Models\Score;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Calculation\Logical\Boolean;
+use App\Models\Role;
 
 
 
@@ -29,14 +30,14 @@ class UserController extends Controller
         //$user = $this->auth_user->with(['admInvitationFrom'])->first();
         $user = User::where('id', $this->auth_user->id)->with(['admInvitationFrom' => function($q){
             $q->where('accepted', false);
-        }])->first();
+        }])->with('role')->first();
 
         return compact('user');
     }
 
     public function showUsersToAdm(Request $request)
     {
-        if ($this->auth_user->role->id === 1) {
+        if ($this->auth_user->role->role === 'admin') {
             return User::where('id', '!=', $this->auth_user->id)
                 ->where(function ($q) use ($request) {
                 $q->where('name', 'LIKE', '%' . $request->search . '%')
@@ -45,6 +46,7 @@ class UserController extends Controller
                 })->with(['admInvitationFrom' => function($q){
                     $q->where('accepted', 0);
                 }])
+                ->with('role')
                 ->orderBy('name')
                 ->paginate();
         }
@@ -53,11 +55,13 @@ class UserController extends Controller
 
     public function sendAdmInvitation(Request $request, $id)
     {
-        if ($this->auth_user->role->id === 1) {
+        if ($this->auth_user->role->role === 'admin') {
             $user = User::find($id);
             if ($user) {
                 if($request->remove){
-                    $user->role_id = 3;
+                    $role = Role::where('role', 'user')->first()->id;
+                    $user->role_id = $role;
+                    $user->admInvitationFrom()->detach();
                     return $user->save();
                 }
                 $invitation = $this->auth_user->admInvitationTo()->save($user);

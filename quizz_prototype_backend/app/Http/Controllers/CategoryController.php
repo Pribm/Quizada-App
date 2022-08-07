@@ -57,7 +57,8 @@ class CategoryController extends Controller
             $categories = Categories::
                 where('user_id', $this->auth_user->id)
                 ->orWhereHas('user.role', function ($q) {
-                $q->where('role', 'admin');
+                $q->where('role', 'admin')
+                ->orWhere('role', 'manager');
             })
                 ->get(['name', 'id']);
         }
@@ -111,8 +112,8 @@ class CategoryController extends Controller
     public function destroy($id)
     {
         $category = Categories::find($id);
-        
-        if($this->auth_user->role_id !== 1 ){
+
+        if($this->auth_user->role->role !== 'admin' ){
             $category = Categories::where('user_id', $this->auth_user->id)->find($id);
         }
 

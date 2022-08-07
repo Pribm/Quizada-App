@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('inviter_user');
             $table->foreignId('invitated_user');
             $table->boolean('accepted')->default(false);
-            $table->smallInteger('to_role')->default(2);
+            $table->smallInteger('to_role')->default(env('MANAGER_ROLE_ID'));
             $table->timestamps();
 
             $table->foreign('inviter_user')->references('id')->on('users');
