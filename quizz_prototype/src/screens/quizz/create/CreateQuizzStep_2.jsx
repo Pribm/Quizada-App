@@ -16,13 +16,6 @@ import { useNavigate } from 'react-router-dom'
 
 const CreateQuizzStep_2 = () => {
 
-
-    // React.useEffect(() => {
-    //     return () => {
-    //         dispatch(changeCategory('clear'))
-    //     }
-    // }, [])
-
     
     const { newQuizz } = useSelector(state => state.quizzReducer)
     const dispatch = useDispatch()

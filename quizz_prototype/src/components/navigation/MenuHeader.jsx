@@ -58,7 +58,7 @@ const MenuHeader = () => {
     const handleDispenseNotification = dispensableTypes => {
         let dispensableNotifications = []
         notifications_from.data.forEach(element => {
-            if (!dispensableTypes.includes(element.pivot.notification_type)) {
+            if (dispensableTypes.includes(element.pivot.notification_type)) {
                 dispensableNotifications.push(element.pivot.id)
             }
         });

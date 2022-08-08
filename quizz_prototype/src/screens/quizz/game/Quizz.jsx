@@ -33,10 +33,15 @@ const Quizz = () => {
     const {remainingTime} = useSelector(state => state.timerReducer)
 
     useEffect(() => {
-        dispatch(index())
         // eslint-disable-next-line react-hooks/exhaustive-deps
         return () => dispatch(change('clear'))
     }, [])
+
+    // useEffect(() => {
+    //     if(quizzCreated){
+    //         dispatch(index())
+    //     }
+    // }, [quizzCreated])
 
     const handleAnswer = () => { 
         //End of the game

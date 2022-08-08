@@ -259,13 +259,15 @@ class QuizzController extends Controller
             'updated_at' => Carbon::now()
         ]);
 
-        $this->auth_user->notificationsTo()->attach(
-            $quizz->user_id,
-        [
-            'message' => $this->auth_user->name . ' fez ' . $request->score . ' pontos no seu quizz: ' . $quizz->title,
-            'notification_type' => 5
-        ]
-        );
+        if($quizz->user_id !== $this->auth_user->id){
+            $this->auth_user->notificationsTo()->attach(
+                $quizz->user_id,
+            [
+                'message' => $this->auth_user->name . ' fez ' . $request->score . ' pontos no seu quizz: ' . $quizz->title,
+                'notification_type' => 5
+            ]
+            );
+        }
 
         if ($quizz->random_generated && $quizz->user_id === $this->auth_user->id) {
             $quizz->delete();
