@@ -49,6 +49,7 @@ class CategoryController extends Controller
                 });
             })
             ->get(['name', 'id']);
+
         }else if($request->getUserCategories){
             $categories = Categories::
                 where('user_id', $this->auth_user->id)

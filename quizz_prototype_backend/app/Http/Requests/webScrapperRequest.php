@@ -24,7 +24,8 @@ class webScrapperRequest extends FormRequest
     public function rules()
     {
         return [
-            'url' => 'required|url|active_url'
+            'url' => 'required|url|active_url',
+            'category' => 'required'
         ];
     }
 }

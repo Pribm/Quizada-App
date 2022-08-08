@@ -7,18 +7,15 @@ use Carbon\Carbon;
 use App\Models\Question;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Categories;
+use App\Models\User;
 
 class webScrapperController extends Controller
 {
     public function scrapQuizz(webScrapperRequest $request)
     {
 
-        $category_id = 1;
-
-        if($request->category){
-            $category_id = Categories::firstOrCreate(['name' => $request->category, 'user_id' => 1]);
-            $category_id = $category_id->id;
-        }
+        $category = Categories::firstOrCreate(['name' => $request->input('category'), 'user_id' => User::first()->id]);
+        $category_id = $category->id;
 
         //Seed from todamateria quizzes
         $url = $request->input('url');
@@ -72,7 +69,7 @@ class webScrapperController extends Controller
             $correct_answer = $answers[$correct_answer];
 
             try {
-                Question::updateOrCreate([
+                $question = Question::updateOrCreate([
                     'question' => $question,
                     'user_id' => 1,
                 ], [
@@ -82,11 +79,12 @@ class webScrapperController extends Controller
                     'answer_4' => $answers[3],
                     'answer_5' => $answers[4],
                     'correct_answer' => $correct_answer,
-                    'category_id' => $category_id,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                     'image' => $question_image_path
                 ]);
+
+                $question->category()->attach($category_id);
 
             } catch (\Throwable $th) {
                 //throw $th;
