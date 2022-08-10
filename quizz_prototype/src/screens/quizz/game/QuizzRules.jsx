@@ -1,19 +1,24 @@
 import React, { useState } from 'react'
 
-import { FormControl, FormControlLabel, FormGroup, FormHelperText, FormLabel, MenuItem, Radio, RadioGroup, Select, Slider, Switch, Typography } from '@mui/material'
+import { FormControl, FormControlLabel, FormGroup, FormHelperText, Slider, Switch, Typography } from '@mui/material'
 import Dialog from 'components/dialog/Dialog'
-import { useSelector, useDispatch } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { create, change } from 'store/Actions/game.action'
 
 import { useNavigate } from 'react-router-dom'
 import CategorySelector from 'components/categorySelector/CategorySelector'
 import { changeAlert } from 'store/Actions/alert.action'
+import { change as changeCategory } from 'store/Actions/categories.action'
 
 const QuizzRules = () => {
 
     const dispatch = useDispatch()
-
     const navigate = useNavigate()
+
+    React.useEffect(() => {
+        dispatch(changeCategory('clear'))
+    }, [])
+    
 
     const [rules, setRules] = useState({
         limit: 10,

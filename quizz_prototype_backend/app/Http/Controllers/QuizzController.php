@@ -446,7 +446,7 @@ class QuizzController extends Controller
                 $nda = '';
                 $shuffled_answers = [];
                 foreach ($question['answers'] as $answer) {
-                    if ($answer !== 'nda') {
+                    if ($answer !== 'nda' || $answer !== 'NDA' ) {
                         $shuffled_answers[] = $answer;
                     }
                     else {
