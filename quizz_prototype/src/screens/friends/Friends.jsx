@@ -5,16 +5,31 @@ import { FriendsListComponent } from './FriendsListComponent';
 import FriendCardLarge from 'components/friendsCards/FriendCardLarge2';
 import { useState } from 'react';
 import FriendshipInvitations from './FriendshipInvitations';
+import { useLocation } from 'react-router-dom';
 
 
 
 
 const Friends = () => {
 
+  const location = useLocation()
+
   const [state, setState] = useState({
     showFriendsList: true,
     showFriendsInvitations: false,
   })
+
+  React.useEffect(() => {
+    let url = new URLSearchParams(location.search)
+    let urlParams = Object.fromEntries(url.entries());
+
+    if(urlParams?.requests){
+      setState({
+        showFriendsList: false,
+        showFriendsInvitations: true,
+      })
+    }
+  }, [])
 
   return (
     <div className="container mx-auto  p-4 md:w-[600px]">
@@ -30,7 +45,7 @@ const Friends = () => {
                 showFriendsList: false,
                 showFriendsInvitations: true,
               })}
-            >Convites de amizade</Button>
+            >Solicitações de Amizade</Button>
           </ButtonGroup>
           {
             state.showFriendsList &&

@@ -35,7 +35,7 @@ const FriendCard = ({ props }) => {
                 'Usuário Convidado'
                 }   
             </Button>
-           {console.log(props)}
+
         </div>
 
     )

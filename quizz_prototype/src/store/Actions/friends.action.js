@@ -64,11 +64,6 @@ const acceptFriendResponse = (payload) => ({
   payload
 })
 
-const acceptQuizzResponse = payload => ({
-  type: actionTypes.ACCEPT_QUIZZ,
-  payload
-})
-
 export const index = (payload, isLoadMore) => dispatch => {
     return HttpAuth.get('/user/friends', {params: {...payload}}).then(res => {
         if(res.status === 200){
@@ -109,9 +104,3 @@ export const acceptFriendshipInvitation = (id, payload) => dispatch => {
   })
 }
 
-export const acceptQuizzInvitation = id => dispatch => {
-  HttpAuth.put('quizz/accept/'+id).then(res => {
-    dispatch(acceptQuizzResponse(res.data))
-    dispatch(getQuizzInvitations({showAcceptedQuizzList: true}))
-  })
-}

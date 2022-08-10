@@ -89,7 +89,7 @@ class User extends Authenticatable implements MustVerifyEmail
         ->where('random_generated', false);
     }
 
-    public function quizzOwner(){
+    public function quizz(){
         return $this->hasMany(Quizz::class, 'user_id')
         ->with([ 'category' => function($q){
             $q->withTrashed();
@@ -98,6 +98,13 @@ class User extends Authenticatable implements MustVerifyEmail
             return $q->orderByRaw('quizz_invitation.score DESC, quizz_invitation.updated_at ASC');
         })
         ->where('random_generated', false);
+    }
+
+    public function quizzFrom(){
+        return $this
+        ->belongsToMany(Quizz::class, 'quizz_invitation','user_id', 'quizz_id')
+        ->wherePivot('invitation_accepted', false)
+        ->with('user');
     }
 
     public function quizzInvitationAccepted(){
@@ -117,7 +124,7 @@ class User extends Authenticatable implements MustVerifyEmail
         });
     }
 
-    public function pendingQuizzInvitation(){
+    public function pendingQuizzFrom(){
         return $this->belongsToMany(Quizz::class, 'quizz_invitation', 'user_id', 'quizz_id')
         ->withPivot('invitation_accepted')
         ->with('user')
@@ -197,13 +204,13 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function notificationsTo(){
         return $this->belongsToMany(User::class, 'notifications', 'notifier_id', 'notified_id')
-        ->withPivot(['id','message', 'notification_type'])
+        ->withPivot(['id','message', 'notification_type','opened_notification'])
         ->withTimestamps();
     }
 
     public function notificationsFrom(){
         return $this->belongsToMany(User::class, 'notifications', 'notified_id' , 'notifier_id')
-        ->withPivot(['id','message', 'notification_type'])
+        ->withPivot(['id','message', 'notification_type','opened_notification'])
         ->withTimestamps();
     }
 

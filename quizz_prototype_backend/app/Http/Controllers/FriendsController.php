@@ -18,7 +18,7 @@ class FriendsController extends Controller
     {
 
         if($request->showQuizzRequests){
-            $quizz_requests = $this->auth_user->pendingQuizzInvitation()->withCount('questions')->orderBy('updated_at', 'Desc')->paginate(10);
+            $quizz_requests = $this->auth_user->pendingQuizzFrom()->withCount('questions')->orderBy('updated_at', 'Desc')->paginate(10);
             return $quizz_requests;
         }
 
@@ -110,7 +110,7 @@ class FriendsController extends Controller
         if($request->accept_invitation === true){
             $this->auth_user->pendingFriendsFrom()->updateExistingPivot($id,['accepted' => true]);
             $this->auth_user->notificationsTo()->attach($id, [
-                'message' => User::find($id)->name.' aceitou sua solicitação de amizade',
+                'message' => $this->auth_user->name.' aceitou sua solicitação de amizade',
                 'notification_type' => 2
             ]);
             return ['accepted' => true, 'user' => User::find($id)];

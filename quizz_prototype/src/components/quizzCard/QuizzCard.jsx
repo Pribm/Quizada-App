@@ -4,10 +4,10 @@ import { HiTrash } from 'react-icons/hi'
 import { logo } from 'assets'
 import { IoMdCopy } from 'react-icons/io'
 
-import { Card, CardActions, CardContent, CardMedia, Typography, Button, Grid, Paper, Fab, Chip, Avatar, Accordion, AccordionSummary, AccordionDetails } from '@mui/material'
+import {  Typography, Button, Grid, Paper, Fab, Chip, Avatar, Accordion, AccordionSummary, AccordionDetails } from '@mui/material'
 import { changeConfirm } from 'store/Actions/confirm.action'
 
-import { deleteInvitations, destroy, restartInvitations } from 'store/Actions/quizz.action'
+import { destroy, restartInvitations } from 'store/Actions/quizz.action'
 
 import { getQuizzThumbnail, getUserThumbnail } from 'utils/getThumbnails'
 import { MdGamepad } from 'react-icons/md'
@@ -16,6 +16,7 @@ import DownloadQuizzSpreadsheet from 'components/buttons/DownloadQuizzSpreadshee
 import { show } from 'store/Actions/game.action'
 import { BiChevronDown, BiTrophy } from 'react-icons/bi'
 import RankingModal from 'components/ranking/RankingModal'
+import { acceptQuizzInvitation, deleteQuizzInvitations, refuseQuizzInvitation } from 'store/Actions/user.action'
 
 const QuizzCard = ({ props }) => {
 
@@ -23,7 +24,7 @@ const QuizzCard = ({ props }) => {
 
   return (
     <>
-      <Grid container component={Paper} className='mb-8 mt-4 text-left bg-slate-50 relative'>
+      <Grid container component={Paper} className='mb-8 mt-4 text-left  relative'>
         {
           props.exportQuizzButton &&
           <Grid item xs={12}>
@@ -62,12 +63,48 @@ const QuizzCard = ({ props }) => {
               {props.token}
             </span>
           }
+          {
+            (props.showInvitation) &&
+            <Button
+              disabled={props.invitation.length <= 0}
+              className='flex-1 mb-2 mr-2 mt-2'
+              onClick={() => props.dispatch(deleteQuizzInvitations(props.token))}
+              size='small'
+              color='error'
+              variant='contained'>
+              <p>Desfazer Convites</p>
+            </Button>
+          }
         </Grid>
         <Grid container className='bg-white'>
+        {
+          props.showInvitationButtons &&
+            <div className='w-[100%] px-2 flex mt-2'>
+            <Button fullWidth
+                onClick={() => {
+                  props.dispatch(acceptQuizzInvitation(props.id))
+                }}
+                variant='contained'
+                size='small'
+                >
+                Aceitar
+            </Button>
+
+            <Button
+            fullWidth
+                onClick={() => props.dispatch(refuseQuizzInvitation(props.id))}
+                variant='contained'
+                color='error'
+                size='small'
+                className='mx-2'>
+                Recusar
+            </Button>
+        </div>
+          }
           <div className='p-2 flex  flex-1'>
             {
               (!props.hideMakeQuizzButton) &&
-                <Button
+              <Button
                 className='flex items-center flex-1'
                 variant='contained'
                 size="small"
@@ -101,19 +138,19 @@ const QuizzCard = ({ props }) => {
           </div>
           {
             (props.showRankingReset) &&
-          <Accordion className='w-[100%]'>
-                <AccordionSummary
-                  expandIcon={<BiChevronDown/>}
-                  aria-controls="panel1a-content"
-                  id="panel1a-header"
-                >
-                  <Typography>Reiniciar Partida</Typography>
-                </AccordionSummary>
-                <AccordionDetails  className='p-2 flex  flex-1'>
+            <Accordion className='w-[100%]'>
+              <AccordionSummary
+                expandIcon={<BiChevronDown />}
+                aria-controls="panel1a-content"
+                id="panel1a-header"
+              >
+                <Typography>Reiniciar Partida</Typography>
+              </AccordionSummary>
+              <AccordionDetails className='p-2 flex  flex-1'>
                 <Button
                   disabled={props.invitation.length <= 0}
                   className='flex-1 mb-2 mr-2'
-                  onClick={() => props.dispatch(deleteInvitations(props.token))}
+                  onClick={() => props.dispatch(deleteQuizzInvitations(props.token))}
                   size='small'
                   color='error'
                   variant='contained'>
@@ -128,9 +165,47 @@ const QuizzCard = ({ props }) => {
                   variant='contained'>
                   <p>Reiniciar Ranking</p>
                 </Button>
-                </AccordionDetails>
-          </Accordion>
+              </AccordionDetails>
+            </Accordion>
           }
+
+          {
+            (props.showInvitation) &&
+            <Accordion className='w-[100%]'>
+              <AccordionSummary
+                expandIcon={<BiChevronDown />}
+                aria-controls="panel1a-content"
+                id="panel1a-header"
+              >
+                <Typography>Usuários Convidados</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <div className='flex text-sm'>
+                  <span className='mr-2 text-blue-500'>Convite Aceito</span>
+                  <span className='mr-2  text-red-600'>Convite Pendente</span>
+                  <span className='mr-2 text-green-600'>Quizz Concluido</span>
+                </div>
+                <hr />
+                <div className='flex  flex-wrap'>
+                {
+                  props.invitation.map((invit, i) => (
+                      
+                      <Chip
+                      key={'invit_label'+i}
+                      color={invit.pivot.invitation_accepted === 1 && 'primary' || invit.pivot.invitation_accepted === 0 && 'error' || invit.pivot.quizz_complete === 1 && 'success'}
+                      className='mr-2 mt-2'
+                      label={invit.name}
+                      avatar={<Avatar src={invit.avatar ? getUserThumbnail(invit.avatar, invit.id) : ''} alt={invit.name}/>}
+                      />
+                      
+                    )
+                  )
+                }
+                </div>
+              </AccordionDetails>
+            </Accordion>
+          }
+
         </Grid>
         {
           props.deleteQuizzButton &&

@@ -21,6 +21,14 @@ const initialState = {
       current_page: 0,
       data: []
     },
+    quizzFrom: {
+      current_page: 0,
+      data: []
+    },
+    quizzTo: {
+      current_page: 0,
+      data: []
+    },
     quizzComplete: {
       current_page: 0,
       data: [],
@@ -74,6 +82,24 @@ const userReducer = (state = initialState, { type, payload, isLoadMore }) => {
             payload
 
     return {...state, quizzInvitations: payload}
+
+    case actionTypes.QUIZZ_FROM:
+          payload = isLoadMore ? {
+            ...payload, data: state.quizzFrom.data.concat(payload.data),
+            }
+            : 
+            payload
+
+    return {...state, quizzFrom: payload}
+    
+    case actionTypes.QUIZZ_TO:
+          payload = isLoadMore ? {
+            ...payload, data: state.quizzTo.data.concat(payload.data),
+            }
+            : 
+            payload
+
+    return {...state, quizzTo: payload}
 
     case actionTypes.GET_QUIZZ_COMPLETE:
           payload = isLoadMore ? {

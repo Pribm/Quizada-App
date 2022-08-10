@@ -3,7 +3,7 @@ import { HiEye } from 'react-icons/hi'
 import { RiEditLine } from 'react-icons/ri'
 import { IoPerson } from 'react-icons/io5'
 import { FaUserFriends } from 'react-icons/fa'
-import { BsCardChecklist } from 'react-icons/bs'
+import { BsCardChecklist, BsFillQuestionSquareFill } from 'react-icons/bs'
 import { GrConfigure } from 'react-icons/gr'
 
 import {AwardMedal, Tournment, PlayAlone} from 'assets'
@@ -106,6 +106,11 @@ const bottomNavbarLinks = [
         label: 'Amigos',
         icon: <FaUserFriends/>,
         linkTo: '/friends'
+    },
+    {
+        label: 'Quizzes',
+        icon: <BsFillQuestionSquareFill/>,
+        linkTo: '/quizz/invitations'
     },
     {
         label: 'perfil',

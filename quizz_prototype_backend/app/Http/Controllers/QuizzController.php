@@ -29,7 +29,7 @@ class QuizzController extends Controller
     public function index(Request $request)
     {
 
-        $quizz_list = $this->auth_user->quizzOwner()
+        $quizz_list = $this->auth_user->quizz()
             ->where(function ($q) use ($request) {
             $q->where('title', 'LIKE', '%' . $request->search . '%')
                 ->orWhereHas('category', function ($q) use ($request) {
@@ -59,7 +59,6 @@ class QuizzController extends Controller
                 ->orderBy('created_at', 'DESC')
                 ->paginate(10);
         }
-
         if ($request->showAcceptedQuizzList) {
 
             $quizz_list = $this->auth_user->quizzInvitationAccepted()->orderBy('created_at', 'DESC')->paginate(10);
@@ -77,7 +76,32 @@ class QuizzController extends Controller
                 ->orderBy('updated_at', 'DESC')
                 ->paginate(10);
         }
+        if ($request->quizzFrom) {
+            $quizz_list = $this->auth_user
+            ->quizzFrom()
+            ->with('category')
+            ->withCount('questions')
+            ->where(function($q) use($request){
+                $q->where('title','LIKE','%'.$request->search.'%')
+                ->orWhereHas('category', function($q) use($request){
+                    $q->where('name', 'LIKE','%'.$request->search.'%' );
+                });
+            })
+            ->paginate(10);
+        }
+        if ($request->quizzTo) {
+            $quizz_list = $this->auth_user
+            ->quizz()
 
+            ->whereHas('invitation')
+            ->where(function($q) use($request){
+                $q->where('title','LIKE','%'.$request->search.'%')
+                ->orWhereHas('category', function($q) use($request){
+                    $q->where('name', 'LIKE','%'.$request->search.'%' );
+                });
+            })
+            ->paginate(10);
+        }
         return $quizz_list;
     }
 
@@ -161,7 +185,7 @@ class QuizzController extends Controller
     public function sendToken($token, $guest_user)
     {
         //Só pode enviar token se for o seu
-        $quizz = $this->auth_user->quizzOwner()->where('token', $token)->first();
+        $quizz = $this->auth_user->quizz()->where('token', $token)->first();
 
         $guest_user = User::where('id', $guest_user)
             ->whereHas('friends', function ($q) {
@@ -316,7 +340,7 @@ class QuizzController extends Controller
 
     public function deleteQuizzInvitations($token)
     {
-        $quizz = $this->auth_user->quizzOwner()->where('token', $token)->first();
+        $quizz = $this->auth_user->quizz()->where('token', $token)->first();
         if ($quizz) {
             if ($quizz->invitation()->detach()) {
                 return response()->json(['success' => 'Você não possui mais nenhum usuário convidado para este quizz, você pode convidar todos os seus amigos novamente']);
@@ -328,7 +352,7 @@ class QuizzController extends Controller
 
     public function resetQuizzInvitations($token)
     {
-        $quizz = $this->auth_user->quizzOwner()->where('token', $token)->first();
+        $quizz = $this->auth_user->quizz()->where('token', $token)->first();
         if ($quizz) {
             if (count($quizz->invitation) > 0) {
                 foreach ($quizz->invitation as $invitation) {
@@ -356,11 +380,11 @@ class QuizzController extends Controller
 
     public function acceptQuizz($id)
     {
-        $quizz = $this->auth_user->pendingQuizzInvitation()->find($id);
+        $quizz = $this->auth_user->pendingQuizzFrom()->find($id);
 
         if ($quizz) {
             if ($this->auth_user
-            ->pendingQuizzInvitation()
+            ->pendingQuizzFrom()
             ->where('quizz_id', $id)
             ->update(['invitation_accepted' => true, 'updated_at' => Carbon::now()])) {
                 return $quizz;
@@ -370,10 +394,28 @@ class QuizzController extends Controller
         return response()->json(['error' => 'Este quizz não pôde ser aceito, o dono do quizz não lhe enviou o token ou pode ter deletado o quizz.']);
     }
 
+    public function refuseQuizz($id)
+    {
+        $quizz = Quizz::find($id);
+        $quizz_sender = $quizz->user;
+
+        if ($this->auth_user->pendingQuizzFrom()->detach($id)) {
+            $this->auth_user->notificationsTo()->attach(
+                $quizz_sender->id,
+            [
+                'message' => $this->auth_user->name . ' recusou o convite para fazer o quizz ' . $quizz->title,
+                'notification_type' => 3
+            ]
+            );
+            return response()->json(['success' => 'quizz recusado']);
+        }
+        return response()->json(['error' => 'Este quizz não pôde ser aceito, o dono do quizz não lhe enviou o token ou pode ter deletado o quizz.']);
+    }
+
 
     public function destroy($id)
     {
-        $quizz = $this->auth_user->quizzOwner()->find($id);
+        $quizz = $this->auth_user->quizz()->find($id);
         if ($quizz) {
             if ($quizz->delete()) {
                 return response()->json(['success' => 'quizz deletado com sucesso']);

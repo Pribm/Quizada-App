@@ -61,17 +61,7 @@ export const restartInvitations = (token) => dispatch => {
     })
 }
 
-export const deleteInvitations = (token) => dispatch => {
-    HttpAuth.get('quizz/delete-invitations/'+token).then(res => {
-        if(res.data.success){
-            dispatch(changeAlert({open: true, msg: res.data.success, class: 'success'}))
-            dispatch(index())
-        }
-        if(res.data.error){
-            dispatch(changeAlert({open: true, msg: res.data.error, class: 'error'}))
-        }
-    })
-}
+
 
 export const create = payload => dispatch => {
     dispatch(changeLoading({open: true}))

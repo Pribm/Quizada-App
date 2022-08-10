@@ -25,6 +25,7 @@ import PublicQuizzList from "screens/quizz/public_quizz/PublicQuizzList";
 import AdminRoutes from "./admin.routes";
 import PanelAdmin from "screens/admin/PanelAdmin";
 import Categories from "screens/categories/Categories";
+import QuizzInvitations from "screens/quizz/invitations/QuizzInvitations";
 
 
   const routes = () => (
@@ -46,6 +47,7 @@ import Categories from "screens/categories/Categories";
                   
                   <Route path='quizz'>
                     <Route index element={<Quizz/>}/>
+                    <Route path='invitations' element={<QuizzInvitations/>}/>
                     <Route path='list' element={<ListQuizz/>}/>
                     <Route path='create' element={<CreateQuizz/>}/>
                     <Route path='public' element={<PublicQuizzList/>}/>

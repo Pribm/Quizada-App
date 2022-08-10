@@ -27,7 +27,6 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
-        //$user = $this->auth_user->with(['admInvitationFrom'])->first();
         $user = User::where('id', $this->auth_user->id)->with(['admInvitationFrom' => function($q){
             $q->where('accepted', false);
         }])->with('role')->first();
@@ -103,7 +102,6 @@ class UserController extends Controller
     {
         $notifications_from = $this->auth_user
             ->notificationsFrom()
-            ->where('opened_notification', false)
             ->orderBy('created_at')
             ->paginate(25);
 

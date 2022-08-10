@@ -52,8 +52,8 @@ const FriendshipInvitations = () => {
                 isLoading={isLoading}
                 setLoading={setLoading}
                 searchBoxPlaceholder={'Nome, Apelido ou e-mail'}
-                listTitle={'Convites de amizade recebidos'}
-                notFoundList={'Nenhum Usuário foi encontrado'}
+                listTitle={'Solicitações de Amizade recebidas'}
+                notFoundList={'Você não possui nenhuma solicitação de amizade'}
             />
     )
 }

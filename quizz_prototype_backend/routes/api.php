@@ -68,6 +68,7 @@ Route::get('/quizz/ranking/{id}', [QuizzController::class, 'ranking'])->middlewa
 Route::get('/quizz/delete-invitations/{token}', [QuizzController::class, 'deleteQuizzInvitations'])->middleware(['auth:api', 'verified']);
 Route::get('/quizz/reset-invitations/{token}', [QuizzController::class, 'resetQuizzInvitations'])->middleware(['auth:api', 'verified']);
 Route::put('/quizz/accept/{id}', [QuizzController::class, 'acceptQuizz'])->middleware(['auth:api', 'verified']);
+Route::get('/quizz/refuse/{id}', [QuizzController::class, 'refuseQuizz'])->middleware(['auth:api', 'verified']);
 Route::get('/quizz/make-invitation/{token}/{guest_user}', [QuizzController::class, 'sendToken'])->middleware(['auth:api', 'verified']);
 Route::post('/quizz/mass-invitation', [QuizzController::class, 'massInvitation'])->middleware(['auth:api', 'verified']);
 Route::apiResource('/quizz', QuizzController::class)->middleware(['auth:api', 'verified']);

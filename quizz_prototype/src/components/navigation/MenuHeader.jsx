@@ -9,9 +9,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import { change } from '../../store/Actions/mainMenu.action'
 import { MdTimer, MdTimerOff } from 'react-icons/md'
 import { useEffect } from 'react'
-import { acceptFriendshipInvitation, acceptQuizzInvitation, index } from 'store/Actions/friends.action'
+import { acceptFriendshipInvitation, index } from 'store/Actions/friends.action'
 import { getUserThumbnail } from 'utils/getThumbnails'
-import { acceptAdmInvitation, openNotifications } from 'store/Actions/user.action'
+import { acceptAdmInvitation, acceptQuizzInvitation, openNotifications, refuseQuizzInvitation } from 'store/Actions/user.action'
+import { Link } from 'react-router-dom'
 
 const MenuHeader = () => {
 
@@ -28,13 +29,13 @@ const MenuHeader = () => {
     
 
     const handleOpenQuizzMenu = (event) => {
-        if (quizzNotifications.length > 0) {
+        if (notifications_from.data.filter(n => n.pivot.notification_type === 'quizz_request').length > 0) {
             setAnchorElQuizz(event.currentTarget);
         }
     };
 
     const handleOpenNotification = (event) => {
-        if (notifications_from.data.length > 0) {
+        if (notifications_from.data.filter(n => n.pivot.notification_type !== 'quizz_request').length > 0) {
             setAnchorElNotifications(event.currentTarget);
         }
     };
@@ -42,6 +43,7 @@ const MenuHeader = () => {
     const handleCloseQuizzMenu = (event) => {
         setAnchorElQuizz(null);
 
+        handleDispenseNotification(['quizz_request'])
     };
 
     const handleCloseNotifications = (event) => {
@@ -49,6 +51,7 @@ const MenuHeader = () => {
 
         handleDispenseNotification([
             'friendship_accepted',
+            'friendship_request',
             'quizz_accepted',
             'quizz_complete',
             'admin_accepted',
@@ -78,7 +81,11 @@ const MenuHeader = () => {
                             color="inherit"
                             onClick={handleOpenQuizzMenu}
                         >
-                            <Badge badgeContent={quizzNotifications.length} color="error">
+                            <Badge badgeContent={notifications_from?.data.filter(n => {
+                                if(n.pivot.notification_type === 'quizz_request' && n.pivot.opened_notification === 0){
+                                    return n
+                                }
+                            }).length} color="error">
                                 <BsFillQuestionSquareFill />
                             </Badge>
                         </IconButton>
@@ -101,7 +108,7 @@ const MenuHeader = () => {
                         className='max-h-[250px]'
                         PaperProps={{ className: 'overflow-y-scroll' }}
                     >
-                        {quizzNotifications.map((notification, i) => (
+                        {notifications_from?.data.filter(n => n.pivot.notification_type === 'quizz_request').map((notification, i) => (
                             <MenuItem
                                 key={'notification_' + i}
                                 onClick={handleCloseQuizzMenu}
@@ -110,38 +117,35 @@ const MenuHeader = () => {
                                 divider
                                 sx={{ display: 'flex', flexDirection: 'column' }}
                             >
-                                <div className="flex items-center">
+                                    <Avatar
+                                    src={notification.avatar ? getUserThumbnail(notification.avatar, notification.id) : ''}
+                                    alt={notification.name}
+                                    />
                                     <Typography textAlign="start" noWrap={false}>
-                                        {notification.user.nickname} lhe convidou para fazer {notification.questions_count} questões sobre {notification.title}
+                                        {notification?.pivot.message}
                                     </Typography>
-                                    <div className='ml-2'>
-                                        {notification.withTime ? <MdTimer size={20} className='text-green-500' /> : <MdTimerOff size={20} className='text-red-500' />}
-                                    </div>
-                                </div>
-                                <div className="flex">
-                                    <Button
-                                        onClick={() => dispatch(acceptQuizzInvitation(notification.id))}
-                                        variant='contained'
-                                        className='mt-2 mx-2'>
-                                        Aceitar
+                                    <Button variant='contained' size='small' className='mt-2'>
+                                        <Link to='/quizz/invitations?requests=true'>
+                                            Ver Solicitações de Quizz
+                                        </Link>
                                     </Button>
-                                    <Button variant='contained' color='error' className='mt-2 mx-2'>
-                                        Recusar
-                                    </Button>
-                                </div>
                             </MenuItem>
                         ))}
                     </Menu>
 
 
-                    <Tooltip title="Solicitações de amizade">
+                    <Tooltip title="Notificações">
                         <IconButton
                             size="large"
-                            aria-label="show 17 new notifications"
+                            aria-label="mostrar novas notificações"
                             color="inherit"
                             onClick={handleOpenNotification}
                         >
-                            <Badge badgeContent={notifications_from?.data.length} color="error">
+                            <Badge badgeContent={notifications_from.data.filter(n => {
+                                if(n.pivot.notification_type !== 'quizz_request' && n.pivot.opened_notification === 0){
+                                    return n
+                                }
+                            }).length} color="error">
                                 <IoNotifications />
                             </Badge>
                         </IconButton>
@@ -164,7 +168,7 @@ const MenuHeader = () => {
                         className='max-h-[250px]'
                         PaperProps={{ className: 'overflow-y-scroll' }}
                     >
-                        {notifications_from?.data.map((notification, i) => (
+                        {notifications_from.data.filter(n => n.pivot.notification_type !== 'quizz_request').map((notification, i) => (
                             <MenuItem
                                 key={'notification_' + i}
                                 onClick={handleCloseNotifications}
@@ -178,31 +182,15 @@ const MenuHeader = () => {
                                 </Typography>
                                 {
                                     (notification.pivot.notification_type === 'friendship_request') &&
-                                    <div className='flex flex-col ml-2'>
-                                        <Button
-                                            onClick={() => {
-                                                dispatch(acceptFriendshipInvitation(notification.id, { accept_invitation: true }))
-                                                handleDispenseNotification(['friendship_request'])
-                                            }}
-                                            variant='contained'
-                                            size='small'
-                                            className='my-2'>
-                                            Aceitar
-                                        </Button>
-
-                                        <Button
-                                            onClick={() => dispatch(acceptFriendshipInvitation(notification.id, { accept_invitation: false }))}
-                                            variant='contained'
-                                            color='error'
-                                            size='small'>
-                                            Recusar
-                                        </Button>
-                                    </div>
+                                    <Button >
+                                        <Link to='/friends?requests=true'>
+                                            Ver Solicitações de Amizade
+                                        </Link>
+                                    </Button>
                                 }
                                 {
                                     (notification.pivot.notification_type === 'admin_request') &&
                                     <div className='flex flex-col ml-2'>
-                 
                                         <Button
                                             onClick={() => {
                                                 dispatch(acceptAdmInvitation(true))

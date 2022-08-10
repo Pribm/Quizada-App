@@ -9,6 +9,8 @@ export const actionTypes = {
     RANKING: 'USER_RANKING',
     GET_USERS_FOR_ADM: 'GET_USERS_FOR_ADM',
     GET_QUIZZ_INVITATIONS: 'GET_QUIZZ_INVITATIONS',
+    QUIZZ_FROM: 'QUIZZ_FROM',
+    QUIZZ_TO: 'QUIZZ_TO',
     GET_QUIZZ_COMPLETE: 'GET_QUIZZ_COMPLETE',
     GET_PUBLIC_QUIZZ: 'GET_PUBLIC_QUIZZ',
     ERRORS: 'USER_ERRORS'
@@ -30,12 +32,6 @@ const indexResponse = (payload, isLoadMore=false) => ({
   isLoadMore
 })
 
-const rankingResponse = (payload, isLoadMore=false) => ({
-  type: actionTypes.RANKING,
-  payload: payload,
-  isLoadMore
-})
-
 const getUsersForAdmResponse = (payload, isLoadMore=false) => ({
   type: actionTypes.GET_USERS_FOR_ADM,
   payload: payload,
@@ -48,11 +44,18 @@ const getQuizzInvitationsResponse = (payload, isLoadMore=false) => ({
   isLoadMore
 })
 
-const getQuizzCompleteResponse = (payload, isLoadMore=false) => ({
-  type: actionTypes.GET_QUIZZ_COMPLETE,
+const quizzFromResponse = (payload, isLoadMore=false) => ({
+  type: actionTypes.QUIZZ_FROM,
   payload: payload,
   isLoadMore
 })
+
+const quizzToResponse = (payload, isLoadMore=false) => ({
+  type: actionTypes.QUIZZ_TO,
+  payload: payload,
+  isLoadMore
+})
+
 const getPublicQuizzResponse = (payload, isLoadMore=false) => ({
   type: actionTypes.GET_PUBLIC_QUIZZ,
   payload: payload,
@@ -91,6 +94,7 @@ export const acceptAdmInvitation = ( accept = false) => dispatch => {
 export const getNotifications = (payload) => dispatch => {
   return HttpAuth.get('/user/getNotifications', { params: { ...payload } }).then(res => {
     if (typeof res !== 'undefined') {
+    
         dispatch(indexResponse(res.data))
     }
   })
@@ -109,10 +113,21 @@ export const getQuizzInvitations = (payload, isLoadMore) => dispatch => {
     dispatch(getQuizzInvitationsResponse(res.data, isLoadMore))
   })
 } 
+export const quizzFrom = (payload, isLoadMore) => dispatch => {
+  return HttpAuth.get('quizz', {params: {...payload, quizzFrom: true}}).then(res => {
+    dispatch(quizzFromResponse(res.data, isLoadMore))
+  })
+} 
+
+export const quizzTo = (payload, isLoadMore) => dispatch => {
+  return HttpAuth.get('quizz', {params: {...payload, quizzTo: true}}).then(res => {
+    dispatch(quizzToResponse(res.data, isLoadMore))
+  })
+} 
 
 export const getQuizzComplete = (payload, isLoadMore) => dispatch => {
   return HttpAuth.get('quizz', {params: payload}).then(res => {
-    dispatch(getQuizzCompleteResponse(res.data, isLoadMore))
+    dispatch(quizzFromResponse(res.data, isLoadMore))
   })
 } 
 
@@ -120,7 +135,31 @@ export const getPublicQuizz = (payload, isLoadMore) => dispatch => {
   return HttpAuth.get('quizz', {params: payload}).then(res => {
     dispatch(getPublicQuizzResponse(res.data, isLoadMore))
   })
-} 
+}
+
+export const acceptQuizzInvitation = id => dispatch => {
+  HttpAuth.put('quizz/accept/'+id).then(() => {
+    dispatch(quizzFrom())
+  })
+}
+
+export const refuseQuizzInvitation = id => dispatch => {
+  HttpAuth.get('quizz/refuse/'+id).then(() => {
+    dispatch(quizzFrom())
+  })
+}
+
+export const deleteQuizzInvitations = (token) => dispatch => {
+  HttpAuth.get('quizz/delete-invitations/'+token).then(res => {
+      if(res.data.success){
+          dispatch(changeAlert({open: true, msg: res.data.success, class: 'success'}))
+          dispatch(quizzTo())
+      }
+      if(res.data.error){
+          dispatch(changeAlert({open: true, msg: res.data.error, class: 'error'}))
+      }
+  })
+}
 
 export const update = payload => dispatch => {
   HttpAuth.post('user?_method=PUT', payload).then(res => {
