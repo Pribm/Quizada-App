@@ -92,6 +92,7 @@ class QuestionController extends Controller
             }
 
             $file_questions_array = $this->uploadCSVFile($request);
+
         }
 
         //Se o quizz for criado junto com as questões
@@ -113,6 +114,7 @@ class QuestionController extends Controller
         }
 
         foreach ($file_questions_array as $key => $question) {
+
             $question_image_path = '';
             if($request->hasFile('question_image_'.$key)){
                 $path = 'questions/'.$this->auth_user->id.'/images';

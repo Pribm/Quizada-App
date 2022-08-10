@@ -65,16 +65,14 @@ class QuizzController extends Controller
         }
         if ($request->showCompletedQuizzList) {
             $quizz_list = $this->auth_user
-                ->quizzComplete()
-                ->where(function ($q) use ($request) {
-                $q->where('title', 'LIKE', '%' . $request->search . '%')
-                    ->orWhereHas('category', function ($q) use ($request) {
-                    $q->where('name', 'LIKE', '%' . $request->search . '%');
-                }
-                );
-            })->with(['user'])
-                ->orderBy('updated_at', 'DESC')
-                ->paginate(10);
+            ->quizzCompleteFrom()
+            ->with(['user'])
+            ->with('invitation', function($q){
+                $q->where('invitation_accepted', true)
+                ->where('quizz_complete', true);
+            })
+            ->orderBy('updated_at', 'DESC')
+            ->paginate(10)->toArray();
         }
         if ($request->quizzFrom) {
             $quizz_list = $this->auth_user
@@ -92,7 +90,6 @@ class QuizzController extends Controller
         if ($request->quizzTo) {
             $quizz_list = $this->auth_user
             ->quizz()
-
             ->whereHas('invitation')
             ->where(function($q) use($request){
                 $q->where('title','LIKE','%'.$request->search.'%')

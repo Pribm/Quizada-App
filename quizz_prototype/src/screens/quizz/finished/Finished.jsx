@@ -29,6 +29,7 @@ const Finished = () => {
 
   return (
     <div className='p-4 md:w-[30vw] mx-auto'>
+      
       <ListWrapper
       Component={QuizzCard}
       componentProps={{showUser: true, hideMakeQuizzButton: true, showRanking: true}}

@@ -42,6 +42,24 @@ class Quizz extends Model
         ->withTimestamps();
     }
 
+    public function acceptedInvitation()
+    {
+        return $this->belongsToMany(User::class, 'quizz_invitation', 'quizz_id', 'user_id')
+        ->wherePivot('invitation_accepted', true)
+        ->withPivot(['invitation_accepted', 'quizz_complete', 'score'])
+        ->withTimestamps();
+    }
+
+    public function fromUser()
+    {
+        return $this->belongsToMany(User::class, 'quizz_invitation', 'user_id', 'quizz_id');
+    }
+
+    public function toUser()
+    {
+        return $this->belongsToMany(User::class, 'quizz_invitation', 'quizz_id', 'user_id');
+    }
+
     public function questions() {
         return $this->belongsToMany(Question::class, 'quizz_question', 'quizz_id', 'question_id');
     }
