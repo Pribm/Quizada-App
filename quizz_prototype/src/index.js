@@ -1,5 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client'
+import * as serviceWorkerRegistration from './serviceWorkerRegistration';
+
 import App from './App';
 import './GlobalStyles.css'
 import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
@@ -16,3 +18,5 @@ root.render(
     </ThemeProvider>
   </StyledEngineProvider>
 </Provider>);
+
+serviceWorkerRegistration.register()
