@@ -1,6 +1,7 @@
 {
     "name": "Quizada, seu criador de quizz online",
     "short_name": "Quizada",
+    "start_url": "/",
     "icons": [
       {
         "src": "/android-chrome-192x192.png",
