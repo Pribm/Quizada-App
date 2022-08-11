@@ -69,9 +69,10 @@ class QuizzController extends Controller
             ->with(['user'])
             ->with('invitation', function($q){
                 $q->where('invitation_accepted', true)
-                ->where('quizz_complete', true);
+                ->where('quizz_complete', true)
+                ->orderBy('score', 'DESC');
             })
-            ->orderBy('updated_at', 'DESC')
+            //->orderBy('updated_at', 'DESC')
             ->paginate(10)->toArray();
         }
         if ($request->quizzFrom) {
@@ -85,6 +86,7 @@ class QuizzController extends Controller
                     $q->where('name', 'LIKE','%'.$request->search.'%' );
                 });
             })
+            ->orderBy('updated_at', 'DESC')
             ->paginate(10);
         }
         if ($request->quizzTo) {
