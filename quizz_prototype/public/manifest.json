@@ -1,0 +1,21 @@
+{
+    "name": "Quizada, seu criador de quizz online",
+    "short_name": "Quizada",
+    "start_url": "/",
+    "scope": "/",
+    "icons": [
+      {
+        "src": "/android-chrome-192x192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "/android-chrome-512x512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ],
+    "theme_color": "#ffa200",
+    "background_color": "#ffeed1",
+    "display": "fullscreen"
+  }
