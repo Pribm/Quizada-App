@@ -37,10 +37,10 @@ const UploadSuccess = () => {
                 <>
                     <div className='w-[80vw] md:w-[50vw] flex flex-col items-center justify-center mb-auto'>
                         <h1 className='text-3xl text-white text-center bg-orange-500 p-2 rounded-xl'>
-                            {token ? 'Seu Quizz foi criado com sucesso!' : 'Suas questões foram criadas com sucesso'}
+                            {token ? 'Seu quiz foi criado com sucesso!' : 'Suas questões foram criadas com sucesso'}
                         </h1>
                         <h2 className='text-2xl text-white mt-2 text-center'>
-                            {token ? 'Compartilhe este quizz com seus amigos através desse Token' : 'Você pode selecioná-las e criar um novo quizz'}
+                            {token ? 'Compartilhe este quiz com seus amigos através desse Token' : 'Você pode selecioná-las e criar um novo quizz'}
                         </h2>
                         {
                             token &&
@@ -82,7 +82,7 @@ const UploadSuccess = () => {
 
                             >
                                 <BiPencil className='mr-2' />
-                                {token ? 'Ver Lista de Quizzes' : 'Ver Lista de Questões'}
+                                {token ? 'Ver Lista de Quizes' : 'Ver Lista de Questões'}
                             </Button>
                         </div>
                     </div>

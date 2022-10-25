@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use Illuminate\Support\Facades\Auth;
+
 class Quizz extends Model
 {
     use HasFactory;
@@ -17,6 +19,8 @@ class Quizz extends Model
         'title',
         'description',
         'image',
+        'random_generated',
+        'limit_questions',
         'category_id',
         'withTime',
         'time_per_question',
@@ -24,8 +28,8 @@ class Quizz extends Model
         'count_time',
         'shuffle_answers',
         'shuffle_questions',
+        'public_quizz',
         'immediate_show_wrong_answers',
-
     ];
 
     protected $hidden = [ 'created_at', 'updated_at', 'pivot'];
@@ -38,7 +42,7 @@ class Quizz extends Model
     public function invitation()
     {
         return $this->belongsToMany(User::class, 'quizz_invitation', 'quizz_id', 'user_id')
-        ->withPivot(['invitation_accepted', 'quizz_complete', 'score'])
+        ->withPivot(['invitation_accepted', 'quizz_complete', 'score', 'user_id'])
         ->withTimestamps();
     }
 

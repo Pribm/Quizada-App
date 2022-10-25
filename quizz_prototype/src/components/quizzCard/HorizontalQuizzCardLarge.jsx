@@ -34,7 +34,7 @@ const HorizontalQuizzCardLarge = ({ props }) => (
           
           <div className="flex items-center justify-between">
             <Typography  variant='h6' component={'div'} className='text-orange-600 mt-2'>
-              {props.category?.name ? props.category.name : 'Quizz sem categoria'}
+              {props.category?.name ? props.category.name : 'quiz sem categoria'}
             </Typography>
           </div>
         </CardContent>
@@ -48,7 +48,7 @@ const HorizontalQuizzCardLarge = ({ props }) => (
           onClick={() => props.dispatch(changeConfirm({
             open: true,
             title: 'Você está preparado para iniciar o quizz?',
-            msg: 'Atenção, os quizzes criados por você não concedem pontuação para o ranking, para ganhar pontos você precisa fazer um quizz gerado por outra pessoa.',
+            msg: 'Atenção, os quizes criados por você não concedem pontuação para o ranking, para ganhar pontos você precisa fazer um quiz gerado por outra pessoa.',
             confirmAction: () => props.dispatch(show(props.token)).then(() => {
               props.dispatch(changeConfirm({open: false}))
             })

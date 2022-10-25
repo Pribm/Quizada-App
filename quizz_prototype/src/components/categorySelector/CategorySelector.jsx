@@ -14,15 +14,17 @@ const CategorySelector = (props) => {
 
     useEffect(() => {
         dispatch(index(props.categorySelectorQuery))
+
+        return () => dispatch(change('clear'))
     }, [])
 
     return (
         <FormControl fullWidth size={props.size ? props.size : 'small'}>
         <Select
-          value={category.id}
+          value={props.category || 0}
           placeholder="Categoria"
           className={`${other.className}`}
-          inputProps={{className: `bg-white`}}
+          inputProps={{className: `bg-white text-slate-500`}}
           onChange={e => {
             dispatch(change({ id: e.target.value }))
             if(changeHandler){

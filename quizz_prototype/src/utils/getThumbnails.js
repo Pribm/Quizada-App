@@ -13,7 +13,7 @@ export const getQuizzThumbnail = (image, width=null, height=null) => {
     return url
 }
 
-export const getQuestionThumbnail = (image,userId, width=null, height=null) => {
-    let url = `${process.env.REACT_APP_BASE_URL}thumbnail/questions/${image}?s=${userId}/images${width ? '&w='+width : ''}${height ? '&h='+height : ''}`
+export const getQuestionThumbnail = (image,questionId, width=null, height=null) => {
+    let url = `${process.env.REACT_APP_BASE_URL}thumbnail/questions/${image}?s=${questionId}${width ? '&w='+width : ''}${height ? '&h='+height : ''}`
     return url
 }

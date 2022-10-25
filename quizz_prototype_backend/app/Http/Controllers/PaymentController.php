@@ -14,7 +14,7 @@ class PaymentController extends Controller
         ->contentType('application/json')
         ->accept('application/json')
         ->post('https://api.mercadopago.com/v1/payments', [
-            "transaction_amount" => (int)$request->amount,
+            "transaction_amount" => (float)$request->amount,
             "description" => "Transferência para aplicativo Quizada",
             "payment_method_id" => "pix",
             "payer" => [

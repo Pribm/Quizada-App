@@ -24,11 +24,11 @@ const Finished = () => {
   }
 
   const handleLoadMore = () => {
-    dispatch(getQuizzComplete({showCompletedQuizzList: true, page: current_page + 1}, true))
+    return dispatch(getQuizzComplete({showCompletedQuizzList: true, page: current_page + 1}, true))
   }
 
   return (
-    <div className='p-4 md:w-[30vw] mx-auto'>
+    <div className='h-[calc(100vh-300px)] mx-4 md:mx-auto md:w-[500px]'>
       
       <ListWrapper
       Component={QuizzCard}
@@ -41,9 +41,9 @@ const Finished = () => {
       searchHandler={searchHandler}
       isLoading={isLoading}
       setLoading={setLoading}
-      searchBoxPlaceholder={'Quizzes Concluídos'}
-      listTitle={'Ranking de quizzes concluídos'}
-      notFoundList={'Nenhum Quizz foi encontrado'}
+      searchBoxPlaceholder={'Quizes Concluídos'}
+      listTitle={'Ranking de quizes concluídos'}
+      notFoundList={'Nenhum quiz foi encontrado'}
       />
     </div>
   )

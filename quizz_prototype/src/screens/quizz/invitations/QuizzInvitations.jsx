@@ -33,7 +33,7 @@ const QuizzInvitations = () => {
 
 
   return (
-    <div className="container mx-auto  p-4 md:w-[600px]">
+    <div className="container mx-auto  p-4 md:w-[500px]">
       <h1 className='text-white'>Convites de Quizz</h1>
       <ButtonGroup fullWidth variant="contained" aria-label="outlined primary button group">
         <Button

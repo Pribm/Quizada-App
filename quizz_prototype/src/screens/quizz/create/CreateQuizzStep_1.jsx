@@ -8,12 +8,12 @@ import { InputBase, ButtonBase, TextField, Fab } from '@mui/material'
 
 import Dialog from 'components/dialog/Dialog'
 
-import {AiFillPlusCircle, AiOutlineSearch} from 'react-icons/ai'
+import {AiFillPlusCircle} from 'react-icons/ai'
 
 import {useDispatch, useSelector} from 'react-redux'
 import {change as changeRules} from 'store/Actions/rules.action'
 import { change, create as createQuizz } from 'store/Actions/quizz.action'
-import {change as changeCategory, create, error} from 'store/Actions/categories.action'
+import { create, error} from 'store/Actions/categories.action'
 
 
 import {useFormik} from 'formik'
@@ -49,15 +49,15 @@ const CreateQuizz = () => {
         if(quizz.length === 0){
             createNewQuizz(values)
         }
-
+        
         if(quizz.length > 0){
-            
             const fd = new FormData()
-            fd.append('category_id', category.id)
+            
+            dispatch(changeRules({rules:{category_id: values.category}}))
             fd.append('title', values.title)
             fd.append('description', values.description)
             quizz.forEach((q,i) => fd.append(`questions[${i}]`, q))
-
+            
             Object.keys(rules).forEach((rule) => {
                 fd.append(rule, rules[rule])
             })
@@ -65,14 +65,14 @@ const CreateQuizz = () => {
             if(imageInputRef.current.files.length > 0){
                 fd.append('image', imageInputRef.current.files[0])
             }
-    
+            
             dispatch(createQuizz(fd))      
         }
     }
-
+    
     const imageInputRef = useRef(null)
     const categoryImageRef = useRef(null)
-
+    
     const createNewQuizz = (values) => {
         dispatch(change({
             creatingNewQuizz: true,
@@ -97,7 +97,8 @@ const CreateQuizz = () => {
         fd.append('name', createCategory)
         dispatch(create(fd)).then(res => {
             if(res.success){
-      
+
+                dispatch(changeRules({rules:{category_id: res.category}}))
                 setCreateNewCategory(false)
                 setCreateCategory('')
                 setFieldValue('category', res.category)
@@ -127,14 +128,14 @@ const CreateQuizz = () => {
                     </div>
                 </>
                 :
-                <img src={image} alt="quizz avatar" className='w-[100%] h-[100%] object-cover'/>
+                <img src={image} alt="quiz avatar" className='w-[100%] h-[100%] object-cover'/>
             }
         </div>
         <input type="file" className='hidden' ref={imageInputRef} onChange={handleImageUpload}/>
         <div className='mt-4 w-[100%] px-4 relative'>
             <h2 className='text-xl text-center text-white'>Categoria do quizz</h2>
             <div className="flex items-center mt-4">
-            <CategorySelector size='medium' className='mr-2' changeHandler={e => setFieldValue('category', e.target.value)}/>
+            <CategorySelector size='medium' className='mr-2' category={values.category} changeHandler={e => setFieldValue('category', e.target.value)}/>
             <FcPlus size={60} className='my-auto text-white cursor-pointer' onClick={() => setCreateNewCategory(true)}/>
             </div>
 

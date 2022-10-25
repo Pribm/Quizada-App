@@ -1,16 +1,24 @@
 import React from 'react'
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, dialogtitle } from '@mui/material'
+import { MdClose } from 'react-icons/md'
 
 const CustomDialog = (props) => {
 
-    const {dialogtitle, dialogcontenttext , children, handleClose, actionButtonText, cancelButtonText = 'Cancelar', handleConfirm, open, ...other } = props
+    const {dialogtitle, showCloseButton, dialogcontenttext , children, handleClose, actionButtonText, cancelButtonText = 'Cancelar', handleConfirm, open, ...other } = props
     
 
   return (
     <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>
-            {dialogtitle}
-        </DialogTitle>
+        <div className='flex  items-center'>
+            <DialogTitle>
+                {dialogtitle}
+            </DialogTitle>
+
+           {
+            showCloseButton &&
+            <MdClose className='ml-auto mr-4 cursor-pointer p-4 ' size={60} onClick={handleClose}/>
+           }
+        </div>
         <DialogContent>
             <DialogContentText>
                 {dialogcontenttext}
@@ -21,7 +29,7 @@ const CustomDialog = (props) => {
         </DialogContent>
         <DialogActions>
             {
-                handleClose &&
+                (handleClose && !showCloseButton) &&
                 <Button onClick={handleClose}>{cancelButtonText}</Button>
             }
             {

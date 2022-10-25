@@ -43,23 +43,23 @@ const drawerLinks = [
         action: dispatch => dispatch(changeQuizz('clear'))
     },
     {
-        text: 'Ver quizzes criados por você',
+        text: 'Ver quizes criados por você',
         icon: <IoMdList/>,
         linkTo: '/quizz/list',
         action: dispatch => dispatch(changeQuizz('clear'))
     },
     {
-        text: 'Quizzes pendentes',
+        text: 'Quizes pendentes',
         icon: <MdPendingActions/>,
         linkTo: '/multiplayer?show_pending=true'
     },
     {
-        text: 'Quizzes públicos',
+        text: 'Quizes públicos',
         icon: <MdPublic/>,
         linkTo: '/quizz/public'
     },
     {
-        text: 'Ranking dos quizzes concluídos',
+        text: 'Ranking dos quizes concluídos',
         icon: <BsCardChecklist/>,
         linkTo: '/quizz/finished',
         setDivider: true
@@ -108,7 +108,7 @@ const bottomNavbarLinks = [
         linkTo: '/friends'
     },
     {
-        label: 'Quizzes',
+        label: 'Quizes',
         icon: <BsFillQuestionSquareFill/>,
         linkTo: '/quizz/invitations'
     },

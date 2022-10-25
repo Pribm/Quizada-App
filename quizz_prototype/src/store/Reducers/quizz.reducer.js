@@ -16,6 +16,7 @@ const initialState = {
     question_file: ''
   },
   quizz: [],
+  questions: [],
   quizz_list: {
     current_page: 0,
     data: []
@@ -43,10 +44,13 @@ const quizzReducer = (state = initialState, { type, payload, isLoadMore }) => {
       payload = isLoadMore ? {
         ...payload, data: state.quizz_list.data.concat(payload.data),
       }
-      :
-      payload
+        :
+        payload
 
       return { ...state, quizz_list: payload }
+
+    case actionTypes.SHOW:
+      return { ...state, questions: payload }
 
     case actionTypes.DESTROY:
       return {

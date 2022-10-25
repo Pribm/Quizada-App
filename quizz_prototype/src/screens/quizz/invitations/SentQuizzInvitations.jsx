@@ -24,25 +24,27 @@ const SentQuizzInvitations = () => {
   }
 
   const handleLoadMore = () => {
-    dispatch(quizzToAction({ page: current_page + 1}, true))
+    return dispatch(quizzToAction({ page: current_page + 1}, true))
   }
 
   return (
-    <ListWrapper
-      Component={QuizzCard}
-      className={'min-h-[calc(100vh-120px-120px)] max-h-[calc(100vh-120px-120px)]'}
-      componentData={quizzTo}
-      componentProps={{ dispatch, hideMakeQuizzButton: true, showInvitation: true }}
-      handleLoadMore={handleLoadMore}
-      search={search}
-      setSearch={setSearch}
-      searchHandler={searchHandler}
-      isLoading={isLoading}
-      setLoading={setLoading}
-      searchBoxPlaceholder={'Quizz ou Categoria'}
-      listTitle={'Convites de quizzes enviados'}
-      notFoundList={'Nenhum Quizz foi encontrado'}
-    />
+    <div className='h-[calc(100vh-300px)] bg-slate-500'>
+      <ListWrapper
+        Component={QuizzCard}
+        //className={'min-h-[calc(100vh-120px-120px)] max-h-[calc(100vh-120px-120px)]'}
+        componentData={quizzTo}
+        componentProps={{ dispatch, hideMakeQuizzButton: true, showInvitation: true }}
+        handleLoadMore={handleLoadMore}
+        search={search}
+        setSearch={setSearch}
+        searchHandler={searchHandler}
+        isLoading={isLoading}
+        setLoading={setLoading}
+        searchBoxPlaceholder={'Quiz ou Categoria'}
+        listTitle={'Convites de quizes enviados'}
+        notFoundList={'Nenhum quiz foi encontrado'}
+      />
+    </div>
   )
 }
 

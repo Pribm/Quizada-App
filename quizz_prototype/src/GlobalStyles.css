@@ -11,6 +11,10 @@
     box-sizing: border-box;
 }
 
+table, th, td {
+    border: none !important;
+}
+
 body {
     font-family: 'Dosis', sans-serif;
 }
@@ -65,11 +69,11 @@ th, td {
 
 .scrollbar::-webkit-scrollbar-track {
     border-radius: 100vh;
-    background: #a1d9fa6d;
+    background: #dbdbdb6d;
 }
 
 .scrollbar::-webkit-scrollbar-thumb {
-    background: #e0cbcb;
+    background: #afcbff;
     border-radius: 100vh;
     border: 3px solid #edf2f7;
 }

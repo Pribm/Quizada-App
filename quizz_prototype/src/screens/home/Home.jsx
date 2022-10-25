@@ -16,14 +16,12 @@ import { addFriend, index } from 'store/Actions/friends.action'
 import { cards } from 'components/navigation/links'
 import { getQuizzInvitations } from 'store/Actions/user.action'
 
-import HorizontalQuizzCard from 'components/quizzCard/HorizontalQuizzCard'
 import InfiniteScroll from 'components/infiniteScroll/InfiniteScroll'
 import { RiUserFollowFill } from 'react-icons/ri'
 import { HiUserAdd } from 'react-icons/hi'
 import { FcConferenceCall, FcFolder } from 'react-icons/fc'
 import { SearchBox } from 'components/searchBox/SearchBox'
 import { changeLoading } from 'store/Actions/loading.action'
-import HorizontalQuizzCardLarge from 'components/quizzCard/HorizontalQuizzCardLarge'
 import QuizzCard from 'components/quizzCard/QuizzCard'
 import { getUserThumbnail } from 'utils/getThumbnails'
 
@@ -37,11 +35,12 @@ const Home = () => {
     const { quizz: { quizzCreated } } = useSelector(state => state.gameReducer)
 
     const [loadingFriend, setLoadingFriend] = useState(true)
+    const [loadingQuizzInvitation, setLoadingQuizzInvitation] = useState(true)
     const [friendSearch, setFriendSearch] = useState('')
 
     useEffect(() => {
         dispatch(index({ showUnfollowedUsers: true }, false)).then(() => setLoadingFriend(false))
-        dispatch(getQuizzInvitations({showAcceptedQuizzList: true}, false))
+        dispatch(getQuizzInvitations({showAcceptedQuizzList: true}, false)).then(() => setLoadingQuizzInvitation(false))
     }, [])
 
     useEffect(() => {
@@ -51,7 +50,7 @@ const Home = () => {
     }, [quizzCreated])
 
     const handleLoadMore = () => {
-        dispatch(index({ showUnfollowedUsers: true, page: current_page + 1 }, true))
+        return dispatch(index({ showUnfollowedUsers: true, page: current_page + 1 }, true))
     }
 
     const handleLoadMoreQuizzSolicitations = () => {
@@ -115,11 +114,16 @@ const Home = () => {
                             <InfiniteScroll
                                 className='h-[100%] overflow-y-scroll hideScroll'
                                 handleLoadMore={handleLoadMoreQuizzSolicitations}
-                                title='Quizzes Pendentes'
+                                title='Quizes Pendentes'
                                 current_page={quizzInvitations.current_page}
                                 last_page={quizzInvitations.last_page}
                             >
                                 {
+                                    loadingQuizzInvitation ?
+                                    <div className='flex justify-center mt-8'>
+                                        <CircularProgress/>
+                                    </div>
+                                    :
                                     quizzInvitations.data.length > 0 ?
                                         quizzInvitations.data.map((quizz, i) => (
                                             <div className='p-4' key={'quizz_solicitation' + i}>
@@ -127,16 +131,18 @@ const Home = () => {
                                             </div>
                                         ))
                                         :
-                                        <Paper className='flex flex-col items-center p-4 w-[100%]'>
-                                            <FcFolder size={100} />
-                                            <h1 className='text-center'>Você não possui nenhum quizz pendende, gostaria de criar um e enviar à um amigo?</h1>
-                                            <Button
-                                                onClick={() => navigate('/quizz/create', { replace: true })}
-                                                variant='contained'
-                                                className='mt-2'>
-                                                Sim, por favor!
-                                            </Button>
-                                        </Paper>
+                                        <div className="p-4">
+                                            <Paper className='flex flex-col items-center p-4'>
+                                                <FcFolder size={100} />
+                                                <h1 className='text-center'>Você não possui nenhum quiz pendende, gostaria de criar um e enviar à um amigo?</h1>
+                                                <Button
+                                                    onClick={() => navigate('/quizz/create', { replace: true })}
+                                                    variant='contained'
+                                                    className='mt-2'>
+                                                    Sim, por favor!
+                                                </Button>
+                                            </Paper>
+                                        </div>
                                 }
                             </InfiniteScroll>
                         </div>

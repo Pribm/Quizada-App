@@ -32,15 +32,15 @@ const PublicQuizzList = () => {
     }
 
     const handleLoadMore = () => {
-        dispatch(getPublicQuizz({showAdminQuizzList: true, page: current_page + 1}, true))
+        return dispatch(getPublicQuizz({showAdminQuizzList: true, page: current_page + 1}, true))
     }
 
     return (
-        <div className='p-4 md:w-[30vw] mx-auto'>
+        <div className='h-[calc(100vh-300px)] mx-4 md:mx-auto md:w-[500px]'>
             <ListWrapper
                 Component={QuizzCard}
                 componentProps={{ dispatch, exportQuizzButton: true }}
-                className={'min-h-[calc(100vh-120px-120px)] max-h-[calc(100vh-120px-120px)]'}
+               // className={'min-h-[calc(100vh-120px-120px)] max-h-[calc(100vh-120px-120px)]'}
                 componentData={publicQuizz}
                 handleLoadMore={handleLoadMore}
                 search={search}
@@ -48,9 +48,9 @@ const PublicQuizzList = () => {
                 searchHandler={searchHandler}
                 isLoading={isLoading}
                 setLoading={setLoading}
-                searchBoxPlaceholder={'Quizzes Públicos'}
-                listTitle={'Quizzes de exemplo'}
-                notFoundList={'Nenhum Quizz foi encontrado'}
+                searchBoxPlaceholder={'Quizes Públicos'}
+                listTitle={'Quizes de exemplo'}
+                notFoundList={'Nenhum quiz foi encontrado'}
             />
         </div>
     )

@@ -41,6 +41,9 @@ class QuestionController extends Controller
             ->where(function($q) use ($request) {
                 if($request->search && $request->search !== ''){
                     $q->where('question', 'LIKE', '%'.$request->search.'%')
+                    ->orWhereHas('category', function ($q) use ($request){
+                        $q->where('name', 'LIKE','%'.$request->search.'%');
+                    })
                     ->orWhere('correct_answer', 'LIKE', '%'.$request->search.'%');
                 }
             })
@@ -65,9 +68,20 @@ class QuestionController extends Controller
         return $questions;
     }
 
+    public function show($id)
+    {
+        $question = $this->auth_user->questions()->find($id);
+        if($question){
+            return $question;
+        }
+
+        return response()->json(['error' => 'Quiz Não encontrado'], 404);
+    }
+
 
     public function store(Request $request)
     {
+
         $request->validate(['category_id' => 'required']);
 
         $quizz_image_path = null;
@@ -94,9 +108,9 @@ class QuestionController extends Controller
             $file_questions_array = $this->uploadCSVFile($request);
 
         }
-
         //Se o quizz for criado junto com as questões
-        if($request->createQuizz){
+        if($request->title){
+
             $quizz = Quizz::create([
                 'user_id' => $this->auth_user->id,
                 'image' => $quizz_image_path,
@@ -105,38 +119,43 @@ class QuestionController extends Controller
                 'title' => $request->title,
                 'description' => $request->description,
                 'withTime' => $request->withTime == 'true' ? true : false,
+                'limit_questions' => $request->limit_questions,
                 'time_per_question' => $request->time_per_question,
-                'count_time' => $request->count_time+1,
+                'count_time' => $request->count_time,
                 'shuffle_answers' => $request->shuffle_answers == 'true' ? true : false,
                 'shuffle_questions' => $request->shuffle_questions == 'true' ? true : false,
+                'public_quizz' => $request->public_quizz == 'true' ? true : false,
                 'immediate_show_wrong_answers' => $request->immediate_show_wrong_answers == 'true' ? true : false,
             ]);
         }
 
+        //Lista de questões
         foreach ($file_questions_array as $key => $question) {
 
-            $question_image_path = '';
+            $fileName = '';
             if($request->hasFile('question_image_'.$key)){
-                $path = 'questions/'.$this->auth_user->id.'/images';
-                $image_url = Storage::disk('local')->put($path, $request->file('question_image_'.$key));
-                $question_image_path = basename($image_url);
+                $fileName = md5(uniqid(time())).strchr($request->file('question_image_'.$key)->getClientOriginalName(), '.');
             }
 
             $question_model = new Question();
 
-            $question_model->fill(array_merge($question, ['image' => $question_image_path]));
+            $question_model->fill(array_merge($question, ['image' => $fileName]));
 
             $question = Question::firstOrCreate([
                 'question' => $question['question'],
                 'user_id' => $this->auth_user->id,
             ], $question_model->toArray());
 
+            if($question->id && $question->image){
+                Storage::putFileAs('questions/'.$question->id, $request->file('question_image_'.$key), $question->image);
+            }
+
             DB::table('question_category')->updateOrInsert([
                 'question_id' => $question->id,
                 'category_id' => $request->category_id
             ]);
 
-            if($request->createQuizz){
+            if($request->title){
                 DB::table('quizz_question')->insert([
                     'question_id' => $question->id,
                     'quizz_id' => $quizz->id,
@@ -146,7 +165,7 @@ class QuestionController extends Controller
             }
         }
 
-        if($request->createQuizz){
+        if($request->title){
             return response()->json(['success' => 'Suas questões foram adicionadas com sucesso à base de dados', 'token' => $quizz->token]);
         }
         return response()->json(['success' => 'Suas questões foram adicionadas com sucesso à base de dados']);
@@ -155,7 +174,49 @@ class QuestionController extends Controller
 
     public function update(Request $request, $id)
     {
-    //
+        $rules = [
+            'question' => 'required|min:10',
+            'answer_1' => 'required',
+            'answer_2' => 'required',
+            'answer_3'=> 'required',
+            'answer_4'=> 'required',
+            'answer_5'=> 'required',
+            'correct_answer'=> 'required|same:answer_1',
+            'user_id' => 'required',
+        ];
+
+        $feedback = [
+            'required' => 'Este campo é obrigatório',
+            'question.min' => 'O campo de questões deve possuir no mínimo 10 caracteres'
+        ];
+
+        $request->validate($rules, $feedback);
+
+        $question = $this->auth_user->questions()->find($id);
+        if($question){
+
+            $question->fill($request->all());
+
+            $quizz_image_path = $request->image;
+
+            if ($request->hasFile('image')) {
+                $request->validate(['image' => ['max:512', 'mimes:jpg,jpeg,png']]);
+
+                $path = 'questions/'.$request->id;
+                Storage::deleteDirectory($path);
+                $image_url = Storage::disk('local')->put($path, $request->file('image'));
+                $quizz_image_path = basename($image_url);
+            }
+
+            $question->image = $quizz_image_path;
+
+            if($question->save()){
+                return response()->json(['success' => 'Questão Salva com sucesso']);
+            }
+            return response()->json(['error' => 'Erro ao atualizar questão'], 400);
+        }
+
+        return response()->json(['error' => 'Questão Não encontrada'], 404);
     }
 
 

@@ -11,7 +11,7 @@ const confirmReducer = (state = initialState, { type, payload }) => {
   switch (type) {
 
   case actionTypes.CHANGE:
-    return { ...state, ...payload }
+    return payload === 'clear' ? initialState : { ...state, ...payload }
 
   default:
     return state

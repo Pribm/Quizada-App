@@ -41,7 +41,7 @@ const RankingModal = (props) => {
                 </DialogTitle>
                 <DialogContent dividers >
                     {
-                        ranking.map((el, i) => (
+                        ranking.filter(el => el.pivot.quizz_complete === 1).map((el, i) => (
                             <React.Fragment key={(Math.random() + 1).toString(36).substring(7)+i}>
                                 <div className={`flex md:w-[500px] w-[70vw] justify-between ${el.pivot.user_id === user.id && 'bg-green-200 p-2'}`}>
                                     <div className="flex flex-col">
@@ -57,7 +57,7 @@ const RankingModal = (props) => {
                                         <h6>{el.pivot.score} Pontos</h6>
                                     </div>
                                 </div>
-                                <div className='text-center bg-slate-200'>Quizz Feito em: {new Date(el.pivot.updated_at).toLocaleString('pt-BR')}</div>
+                                <div className='text-center bg-slate-200'>Quiz Feito em: {new Date(el.pivot.updated_at).toLocaleString('pt-BR')}</div>
                                 <hr className='my-4' />
 
                             </React.Fragment>

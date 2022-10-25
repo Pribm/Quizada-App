@@ -103,7 +103,7 @@ const Question = ({ handleAnswer }) => {
                 dispatch(changeConfirm({
                   open: true,
                   title: 'Você deseja desistir?',
-                  msg: 'Você quer parar por aqui? Todo o seu progresso e pontos ganhados neste quizz serão perdidos',
+                  msg: 'Você quer parar por aqui? Todo o seu progresso e pontos ganhados neste quiz serão perdidos',
                   confirmAction: () => {
                     dispatch(change({ quizzComplete: true, answer: '' }))
                   }
@@ -124,7 +124,7 @@ const Question = ({ handleAnswer }) => {
             {
               questions[currentQuestion].image ?
                 <div className='flex justify-center h-[240px] mb-5'>
-                  <img src={getQuestionThumbnail(questions[currentQuestion].image, user_id, 240, 240)} alt="imagem_quizz" className='h-[100%] object-cover' />
+                  <img src={getQuestionThumbnail(questions[currentQuestion].image, questions[currentQuestion].id, 240, 240)} alt="imagem_quizz" className='h-[100%] object-cover' />
                 </div>
                 :
                 <Lottie animationData={QuizzPlaceHolder1} className='h-[250px] md:h-[300px]' />

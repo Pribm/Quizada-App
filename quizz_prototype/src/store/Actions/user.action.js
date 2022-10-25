@@ -66,6 +66,7 @@ export const index = (payload) => dispatch => {
   })
 }
 export const getUsersForAdm = (payload, isLoadMore) => dispatch => {
+
   return HttpAuth.get('user/show-to-adm', {params: payload}).then(res => {
     dispatch(getUsersForAdmResponse(res.data, isLoadMore))
   })

@@ -8,6 +8,7 @@ export const actionTypes = {
     ERROR: 'QUIZZ_ERROR',
     SUCCESS: 'QUIZZ_SUCCESS',
     INDEX: 'QUIZZ_INDEX',
+    SHOW: 'QUIZZ_SHOW',
     CREATE: 'QUIZZ_CREATE',
     DESTROY: 'QUIZZ_DESTROY',
 }
@@ -35,17 +36,27 @@ const indexResponse = (payload, isLoadMore = false) => ({
   isLoadMore
 })
 
-
+const showResponse = payload => ({
+    type: actionTypes.SHOW,
+    payload
+})
 
 export const index = (payload, isLoadMore) => dispatch => {
 
-    if(typeof payload?.search !== 'undefined'){
+    if(typeof payload?.search !== 'undefined' && typeof payload?.page === 'undefined'){
         dispatch(changeLoading({open: true}))
     }
 
     return HttpAuth.get('quizz',  {params: {...payload}}).then(res => {
         dispatch(changeLoading({open: false}))
         dispatch(indexResponse(res.data, isLoadMore))
+    })
+}
+
+export const show = (token, payload) => dispatch => {
+
+    return HttpAuth.get('quizz/'+token,  {params: {...payload}}).then(res => {
+        dispatch(showResponse(res.data.questions))
     })
 }
 
@@ -61,9 +72,8 @@ export const restartInvitations = (token) => dispatch => {
     })
 }
 
-
-
 export const create = payload => dispatch => {
+
     dispatch(changeLoading({open: true}))
 
     HttpAuth.post('quizz', payload).then(res => {
@@ -123,6 +133,7 @@ export const destroy = id => dispatch => {
 }
  
 export const uploadQuizzFile =  (payload) => dispatch => {
+    console.log('payload')
     let formdata = new FormData()
 
     Object.entries(payload).forEach(async (element, i, array) => {

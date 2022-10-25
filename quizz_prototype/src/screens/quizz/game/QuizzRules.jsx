@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import { FormControl, FormControlLabel, FormGroup, FormHelperText, Slider, Switch, Typography } from '@mui/material'
 import Dialog from 'components/dialog/Dialog'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { create, change } from 'store/Actions/game.action'
 
 import { useNavigate } from 'react-router-dom'
@@ -15,18 +15,23 @@ const QuizzRules = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
+    const {category: {id} } = useSelector(state => state.categoriesReducer)
+
     React.useEffect(() => {
         dispatch(changeCategory('clear'))
     }, [])
     
 
     const [rules, setRules] = useState({
-        limit: 10,
+        limit_questions: 10,
         withTime: false,
         time_per_question: 0,
         random_questions: true,
         immediate_show_wrong_answers: 0,
         category_id:0,
+        shuffle_answers: true,
+        shuffle_questions: true,
+        count_time: 'none'
     })
 
     const handleCreateQuizz = () => {
@@ -42,7 +47,7 @@ const QuizzRules = () => {
         <div className='min-w[100vw] min-h-[100vh] bg-sky-600'>
             <Dialog
                 open={true}
-                dialogtitle='Escolha o quizz de acordo com suas preferências'
+                dialogtitle='Escolha o quiz de acordo com suas preferências'
                 dialogcontenttext='Escolha as opções abaixo para a geração do seu quizz'
                 actionButtonText='Confirmar'
                 handleConfirm={handleCreateQuizz}
@@ -71,6 +76,7 @@ const QuizzRules = () => {
                     </Typography>
                    <CategorySelector
                    categorySelectorQuery={{getAdmCategoriesWithQuestions: true}}
+                   category={id}
                    changeHandler={e => setRules({...rules, category_id: e.target.value}) }/>
                     <FormGroup className='mt-4'>
                         <FormControlLabel

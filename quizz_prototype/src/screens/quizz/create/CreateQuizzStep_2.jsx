@@ -1,5 +1,5 @@
 import MenuWrapper from 'components/wrappers/MenuWrapper'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import { FcOpenedFolder, FcIdea,FcCheckmark, FcHighPriority } from 'react-icons/fc'
 import {IoMdReturnLeft} from 'react-icons/io'
@@ -12,10 +12,10 @@ import Lottie from 'lottie-react'
 import { Waiting } from 'assets'
 import { Button } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
+import { changeLoading } from 'store/Actions/loading.action'
 
 
 const CreateQuizzStep_2 = () => {
-
     
     const { newQuizz } = useSelector(state => state.quizzReducer)
     const dispatch = useDispatch()
@@ -29,6 +29,10 @@ const CreateQuizzStep_2 = () => {
         dispatch(change({ newQuizz: { ...newQuizz, createQuizz: true, question_file: URL.createObjectURL(e.target.files[0]) } }))
         setPrepareUpload(true)
     }
+
+    useEffect(() => {
+        return () => dispatch(changeLoading('clear'))
+    }, [])
     
     return (
         <div className='flex flex-col items-center min-h-[75vh] md:w-[30vw] md:mx-auto'>
@@ -65,7 +69,14 @@ const CreateQuizzStep_2 = () => {
                         <Lottie animationData={Waiting}/>
                         <h1 className='text-3xl text-white text-center'>Tem certeza que este é o arquivo correto?</h1>
                         <div
-                            onClick={() => dispatch(uploadQuizzFile(newQuizz))}
+                            onClick={() => {
+
+                                dispatch(changeLoading({open: true, text: 'Importando questões. Aguarde, por favor...'}))
+
+                                dispatch(uploadQuizzFile(newQuizz)).then(() => {
+                                    dispatch(changeLoading({open: false}))
+                                })
+                            }}
                             className='mt-4 md:w-[350px] md:h-[60px] text-sky-500 flex items-center justify-center text-2xl px-4 py-2 bg-white rounded-xl cursor-pointer hover:bg-orange-500 hover:text-white'>
                             <FcCheckmark size={40} className={'mr-4'} />
                             Absoluta!

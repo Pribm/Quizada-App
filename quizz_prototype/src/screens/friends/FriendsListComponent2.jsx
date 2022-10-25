@@ -43,7 +43,7 @@ export const FriendsListComponent2 = ({Component, componentProps}) => {
     }
     
     const handleLoadMore = () => {
-        dispatch(index({showFriendsList: true, page: current_page + 1}, true))
+        return dispatch(index({showFriendsList: true, page: current_page + 1}, true))
     }
     
     

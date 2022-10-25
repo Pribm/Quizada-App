@@ -5,7 +5,7 @@ import FacebookLogin from 'react-fb-social-login'
 import GoogleLogin from 'react-google-login';
 import { gapi } from 'gapi-script';
 
-import { IoLogoFacebook, IoLogoGoogle } from 'react-icons/io'
+import { IoLogoGoogle } from 'react-icons/io'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
 import { bgLogin, logo } from '../../assets'
@@ -148,7 +148,7 @@ const Login = () => {
               </Link>
             </div>
 
-            {/* <div className='text-center'>
+            <div className='text-center'>
               Ou fazer login com
               <div className="flex justify-center items-center mt-5 mb-5 md:mt-0">
                 <GoogleLogin
@@ -161,7 +161,7 @@ const Login = () => {
                   )}
                 />
 
-                <FacebookLogin
+                {/* <FacebookLogin
                   appId={process.env.REACT_APP_FACEBOOK_APP_ID}
                   autoLoad={false}
                   fields="name,email,picture"
@@ -170,11 +170,11 @@ const Login = () => {
                   cssClass="bg-transparent flex items-center p-0"
                   icon={<IoLogoFacebook size={40} className='mx-2 text-blue-600 cursor-pointer' />}
                   textButton=''
-                />
+                /> */}
 
               </div>
               <PrivacyPolicies />
-            </div> */}
+            </div>
           </div>
         </div>
       </div>

@@ -111,6 +111,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(Quizz::class, 'quizz_invitation', 'user_id', 'quizz_id')
         ->withPivot('quizz_complete')
         ->with(['user'])
+        ->where('quizz.user_id','!=',$this->id)
         ->wherePivot('quizz_complete', false)
         ->wherePivot('invitation_accepted', true)
         ->withTimestamps();

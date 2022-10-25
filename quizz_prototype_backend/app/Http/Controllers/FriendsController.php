@@ -18,7 +18,7 @@ class FriendsController extends Controller
     {
 
         if($request->showQuizzRequests){
-            $quizz_requests = $this->auth_user->pendingQuizzFrom()->withCount('questions')->orderBy('updated_at', 'Desc')->paginate(10);
+            $quizz_requests = $this->auth_user->pendingQuizzFrom()->withCount('questions')->orderBy('updated_at', 'Desc')->paginate();
             return $quizz_requests;
         }
 
@@ -31,17 +31,17 @@ class FriendsController extends Controller
                 ->orWhere('nickname', 'LIKE', '%'.$request->search.'%')
                 ->orWhere('email', 'LIKE', '%'.$request->search.'%');
             })
-            ->orderBy('updated_at', 'Desc')->paginate(10);
+            ->orderBy('updated_at', 'Desc')->paginate();
             return $followable_users;
         }
 
         if($request->showFriendshipRequests){
-            $friendship_requests = $this->auth_user->pendingFriendsFrom()->orderBy('updated_at', 'Desc')->paginate(10);
+            $friendship_requests = $this->auth_user->pendingFriendsFrom()->orderBy('updated_at', 'Desc')->paginate();
             return $friendship_requests;
         }
 
         if($request->showUserFriendshipRequests){
-            $friendship_requests = $this->auth_user->pendingFriendsTo()->orderBy('updated_at', 'Desc')->paginate(10);
+            $friendship_requests = $this->auth_user->pendingFriendsTo()->orderBy('updated_at', 'Desc')->paginate();
             return $friendship_requests;
         }
 
@@ -53,7 +53,7 @@ class FriendsController extends Controller
             })
             ->whereHas('friends',function($q){
                 $q->where('id', $this->auth_user->id);
-            })->paginate(10);
+            })->paginate();
 
             return $friends_list;
         }

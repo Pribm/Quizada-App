@@ -37,13 +37,13 @@ const FriendshipInvitations = () => {
     }
     
     const handleLoadMore = () => {
-        dispatch(index({showFriendshipRequests: true, page: current_page + 1}, true))
+        return dispatch(index({showFriendshipRequests: true, page: current_page + 1}, true))
     }
 
     return (
-            <ListWrapper
+            <div className='h-[calc(100vh-300px)] bg-slate-500'>
+                <ListWrapper
                 Component={AcceptFriendCard}
-                className={'min-h-[calc(100vh-120px-120px)] max-h-[calc(100vh-120px-120px)]'}
                 componentData={friendship_requests}
                 handleLoadMore={handleLoadMore}
                 search={search}
@@ -55,6 +55,7 @@ const FriendshipInvitations = () => {
                 listTitle={'Solicitações de Amizade recebidas'}
                 notFoundList={'Você não possui nenhuma solicitação de amizade'}
             />
+            </div>
     )
 }
 

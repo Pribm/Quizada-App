@@ -35,11 +35,11 @@ const FriendQuizz = () => {
   }
 
   const handleLoadMore = () => {
-    dispatch(getQuizzInvitations({showAcceptedQuizzList: true, page: current_page + 1}, true))
+    return dispatch(getQuizzInvitations({showAcceptedQuizzList: true, page: current_page + 1}, true))
   }
 
   return (
-    <div className='p-4 md:w-[30vw] mx-auto'>
+    <div className='h-[calc(100vh-300px)] mx-4 md:m-0 md:w-[500px] md:mx-auto'>
       <ListWrapper
       Component={QuizzCard}
       componentProps={{dispatch,showUser: true}}
@@ -52,8 +52,8 @@ const FriendQuizz = () => {
       isLoading={isLoading}
       setLoading={setLoading}
       searchBoxPlaceholder={'Nome ou categoria'}
-      listTitle={'Quizzes pendentes'}
-      notFoundList={'Nenhum Quizz foi encontrado'}
+      listTitle={'Quizes pendentes'}
+      notFoundList={'Nenhum quiz foi encontrado'}
       />
     </div>
   )

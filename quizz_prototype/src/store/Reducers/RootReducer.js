@@ -12,6 +12,8 @@ import gameReducer from "./game.reducer"
 import timerReducer from "./timer.reducer"
 import friendsReducer from "./friends.reducer"
 import rulesReducer from "./rules.reducer"
+import appReducer from "./app.reducer"
+import modalReducer from "./modal.reducer"
 
 const rootReducer = combineReducers({
     loadingReducer,
@@ -26,7 +28,9 @@ const rootReducer = combineReducers({
     gameReducer,
     timerReducer,
     friendsReducer,
-    rulesReducer
+    rulesReducer,
+    appReducer,
+    modalReducer
 })
 
 export default rootReducer

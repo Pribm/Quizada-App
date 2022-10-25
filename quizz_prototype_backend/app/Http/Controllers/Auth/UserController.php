@@ -102,8 +102,9 @@ class UserController extends Controller
     {
         $notifications_from = $this->auth_user
             ->notificationsFrom()
+            ->where('opened_notification', false)
             ->orderBy('created_at')
-            ->paginate(25);
+            ->paginate();
 
         return compact('notifications_from');
     }
@@ -224,7 +225,7 @@ class UserController extends Controller
         if ($user->save()) {
             return response()->json([
                 'success' => 'Seus dados foram atualizados com sucesso!',
-                'user' => array_merge($user->toArray(),
+                'user' => array_merge($user->where('id', $this->auth_user->id)->with('role')->first()->toArray(),
                 (!$user->password || $user->password === '')
                 ?
                 ['password_is_null' => true]

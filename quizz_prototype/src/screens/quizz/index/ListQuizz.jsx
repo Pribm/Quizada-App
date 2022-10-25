@@ -17,6 +17,7 @@ const IndexQuestions = () => {
   const { quizz: { quizzCreated } } = useSelector(state => state.gameReducer)
 
   const [isLoading, setLoading] = useState(true)
+  
   const [search, setSearch] = useState('')
 
   useEffect(() => {
@@ -31,25 +32,28 @@ const IndexQuestions = () => {
 
   const searchHandler = () => {
     setLoading(true)
-    dispatch(index({ search: search })).then(() => setLoading(false))
+    dispatch(index({ search: search, page: 1})).then(() => setLoading(false))
   }
   
   const handleLoadMore = () => {
-    dispatch(index({ page: current_page + 1}, true))
+    return dispatch(index({ page: current_page + 1, search}, true))
   }
 
   return (
-    <div className='p-4 md:w-[30vw] mx-auto'>
+    <div className='h-[calc(100vh-300px)] w-auto md:w-[500px] md:mx-auto mx-4'>
+      
       <ListWrapper
         Component={QuizzCard}
         componentProps={{dispatch,
           exportQuizzButton: true, 
           deleteQuizzButton: true,
+          editQuizzButton: true,
           quizzToken: true,
           showRanking: true,
-          showRankingReset: true
+          showRankingReset: true,
+          editQuizzQuestionsButton: true,
+          showQuizzInfoButton: true
         }}
-        className={'min-h-[calc(100vh-120px-120px)] max-h-[calc(100vh-120px-120px)]'}
         componentData={quizz_list}
         handleLoadMore={handleLoadMore}
         search={search}
@@ -57,9 +61,9 @@ const IndexQuestions = () => {
         searchHandler={searchHandler}
         isLoading={isLoading}
         setLoading={setLoading}
-        searchBoxPlaceholder={'Seus Quizzes'}
-        listTitle={'Quizzes criados por você'}
-        notFoundList={'Nenhum Quizz foi encontrado'}
+        searchBoxPlaceholder={'Seus Quizes'}
+        listTitle={'Quizes criados por você'}
+        notFoundList={'Nenhum quiz foi encontrado'}
       />
     </div>
   )

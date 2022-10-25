@@ -3,6 +3,7 @@ import { Loading } from './components/loading/Loading'
 import Alert from './components/alert/Alert'
 import Routes from './routes/routes'
 import { Confirm } from 'components/confirm/Confirm'
+import Modal from 'components/modal/Modal'
 
 const App = () => {
 
@@ -21,6 +22,7 @@ const App = () => {
         <div ref={screen}>
             <Confirm />
             <Alert/>
+            <Modal/>
             <Loading/>
             <Routes/>
         </div>

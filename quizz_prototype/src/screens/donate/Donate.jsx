@@ -1,4 +1,4 @@
-import { Button, FormControl, Grid, InputBase, InputLabel, Paper,  Select,  TextField } from '@mui/material'
+import { Button, CircularProgress, FormControl, Grid, InputBase, InputLabel, Paper,  Select,  TextField } from '@mui/material'
 
 import MenuWrapper from 'components/wrappers/MenuWrapper'
 import { HttpAuth } from 'config/Http'
@@ -6,9 +6,43 @@ import React from 'react'
 import { BiCreditCard } from 'react-icons/bi'
 import { HiQrcode } from 'react-icons/hi'
 import { MdQrCode } from 'react-icons/md'
+import NumberFormat from 'react-number-format'
+import { useDispatch, useSelector } from 'react-redux'
+import { changeAlert } from 'store/Actions/alert.action'
+
+const NumberField = React.forwardRef(function NumberField(props, ref) {
+
+    const { onChange, ...other } = props;
+
+    return (
+        <NumberFormat
+            {...other}
+            allowLeadingZeros={false}
+            getInputRef={ref}
+            prefix={'R$'}
+            isNumericString={true}
+            thousandSeparator={'.'}
+            decimalSeparator={','}
+            decimalScale={2}
+            allowedDecimalSeparators={[',','.']}
+
+            onValueChange={(values) => {
+                onChange({
+                    target: {
+                        name: props.name,
+                        value: parseFloat(values.value).toFixed(2),
+                    },
+                });
+            }}
+        />
+    );
+});
 
 
 const Donate = () => {
+
+    const dispatch = useDispatch()
+    const {appData} = useSelector(state => state.appReducer)
 
     React.useEffect(() => {
             const script = document.createElement("script");
@@ -75,14 +109,21 @@ const Donate = () => {
 
   return (
     <div className='container md:w-[60vw] mx-[auto] p-4 flex flex-wrap justify-center'>
-
-
             <Grid container spacing={2} className='bg-slate-50 rounded-md shadow-lg' padding={4}>
                   <Grid item xs={12} md={5} padding={4} component={Paper}>
-                      <h1 className='text-3xl text-blue-600 uppercase mb-2'>Ajude-nos nas melhorias e atualizações do App</h1>
-                      <hr />
-                      <h3 className='text-xl text-blue-400 uppercase mt-2 mb-2'>Contribua para que o projeto melhore à cada dia, qualquer contribuição é bem-vinda!</h3>
-                      <hr />
+                      {
+                        Object.keys(appData).length <= 0 ?
+                        <div className='flex justify-center my-4'>
+                            <CircularProgress/>
+                        </div>
+                        :
+                        <div className='w-[100%]'>
+                            <h1 className='text-3xl text-blue-600 uppercase mb-2'>{appData.payment_title}</h1>
+                            <hr />
+                            <h3 className='text-xl text-blue-400 uppercase mt-2 mb-2 w-[100%]'>{appData.payment_text}</h3>
+                            <hr />
+                        </div>
+                      }
                       <h4 className='mt-4'>Escolha como deseja contribuir</h4>
                       <Button fullWidth variant='contained' className='mt-2' disabled>
                           <BiCreditCard size={20} className='mr-2' />
@@ -162,6 +203,9 @@ const Donate = () => {
                                         onChange={e => setPixForm({...pixForm, amount: e.target.value})}
                                         label='valor'
                                         size='small'
+                                        InputProps={{
+                                            inputComponent: NumberField
+                                        }}
                                         />
                                     </Grid>
                               </Grid>
@@ -176,11 +220,23 @@ const Donate = () => {
                                     </div>
                             </form>
                             
-                    </Paper>
                     {
                         qrCode !== '' ?
-                        <div className='flex flex-col items-center mt-4'>
-                            <img src={`data:image/jpeg;base64,${qrCode}`} className='w-[180px] h-[180px]'/>
+                        <div className='flex flex-col items-center'>
+                            <div className='flex flex-col items-center mt-4'>
+                                <img src={`data:image/jpeg;base64,${qrCode}`} className='w-[180px] h-[180px]'/>
+                            </div>
+                            <TextField value={qrCode} size='small' disabled={true}/>
+                            <Button
+                            onClick={() => {
+                                navigator.clipboard.writeText(qrCode)
+                                dispatch(changeAlert({ open: true, msg: 'Código copiado para a área de transferência', class: 'success' }))
+                            }}
+                            variant='contained'
+                            className='mt-4'
+                            color='secondary'>
+                                Copiar Código
+                            </Button>
                         </div>
                         :
                         <div className='flex flex-col items-center mt-4'>
@@ -188,6 +244,7 @@ const Donate = () => {
                             <MdQrCode size={120}/>
                         </div>
                     }
+                    </Paper>
                   </Grid>
             </Grid>
 

@@ -81,7 +81,7 @@ const Register = () => {
           <div className='mx-auto my-auto'>
             <div className="flex-1 text-center">
               <Typography className='md:text-[2rem] text-[2rem]'>Registre-se no <span className='text-blue-600 font-bold'>Quizada</span></Typography>
-              <Typography className='md:text-[1rem] text-[1rem] mt-4 md:m-0'>E começe a criar seu quizz hoje mesmo!</Typography>
+              <Typography className='md:text-[1rem] text-[1rem] mt-4 md:m-0'>E começe a criar seu quiz hoje mesmo!</Typography>
             </div>
 
             <Grid container spacing={2}>
@@ -206,7 +206,7 @@ const Register = () => {
                 </Link>
             </div>
 
-            {/* <div className='text-center mt-4'>
+            <div className='text-center mt-4'>
               Ou registrar-se atrvés das redes sociais.
               <div className="flex justify-center items-center mt-5 mb-5 md:mt-0">
                 <GoogleLogin
@@ -218,7 +218,7 @@ const Register = () => {
                   <IoLogoGoogle onClick={renderProps.onClick} size={35} className='mx-2 text-red-600 cursor-pointer'/>
                 )}
                 />
-
+{/* 
                 <FacebookLogin
                   appId={process.env.REACT_APP_FACEBOOK_APP_ID}
                   autoLoad={false}
@@ -228,9 +228,9 @@ const Register = () => {
                   cssClass="bg-transparent flex items-center p-0"
                   icon={<IoLogoFacebook size={40} className='mx-2 text-blue-600 cursor-pointer'/>}
                   textButton=''
-                />
+                /> */}
               </div>
-            </div> */}
+            </div>
           </div>
         </div>
       </div>

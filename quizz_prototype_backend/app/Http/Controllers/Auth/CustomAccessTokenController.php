@@ -27,7 +27,7 @@ class CustomAccessTokenController extends Controller
 
             // Perform your validation here
             if(!$user->hasVerifiedEmail()){
-                return response()->json(['message' => 'O seu e-mail ainda não foi ferificado, cheque sua caixa de entrada ou de spam']);
+                return response()->json(['message' => 'O seu e-mail ainda não foi verificado, cheque sua caixa de entrada ou de spam']);
             }
 
             // If the validation is successfull:

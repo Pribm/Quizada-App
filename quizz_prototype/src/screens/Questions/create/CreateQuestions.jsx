@@ -12,6 +12,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { changeAlert } from 'store/Actions/alert.action'
 import { store, success as questionsSuccess } from 'store/Actions/questions.action'
 import { change } from 'store/Actions/quizz.action'
+import { change as changeRules } from 'store/Actions/rules.action'
 
 import { questionFormSchema } from './validation/questionFormValidation'
 
@@ -19,6 +20,7 @@ import Lottie from 'lottie-react'
 import { Waiting } from 'assets'
 import { HttpAuth } from 'config/Http'
 import CategorySelector from 'components/categorySelector/CategorySelector'
+import { changeLoading } from 'store/Actions/loading.action'
 
 const CreateQuestions = () => {
 
@@ -26,6 +28,7 @@ const CreateQuestions = () => {
     const navigate = useNavigate()
     const location = useLocation()
     const { success } = useSelector(state => state.questionsReducer)
+    const { rules } = useSelector(state => state.rulesReducer)
     const { newQuizz: {category: quizzCategory, ...otherNewQuizz}, creatingNewQuizz } = useSelector(state => state.quizzReducer)
     const {category} = useSelector(state => state.categoriesReducer)
 
@@ -58,7 +61,10 @@ const CreateQuestions = () => {
             }
         }
 
-        return () => dispatch(questionsSuccess(false))
+        return () => {
+            dispatch(questionsSuccess(false))
+            dispatch(changeRules('clear'))
+        }
     }, [success])
 
     useEffect(() => {
@@ -67,6 +73,8 @@ const CreateQuestions = () => {
         if (Boolean(urlParams.onlyquestions) === true) {
             setShowQuestionCreateDialog(true)
         }
+
+        return () => dispatch(changeLoading('clear'))
     }, [])
 
     const {
@@ -99,8 +107,8 @@ const CreateQuestions = () => {
         validateOnChange: false,
     })
 
-    const handleSubmitData = () => {
-
+    const handleSubmitData = async () => {
+     
         const formData = new FormData()
         formData.append('createQuizz', createQuizz)
 
@@ -113,13 +121,25 @@ const CreateQuestions = () => {
             formData.append(`questions[${i}]`, JSON.stringify(questionObj))
         })
 
-        Object.keys(otherNewQuizz).forEach((rule) => {
-            formData.append(rule, otherNewQuizz[rule])
-        })
+        if(creatingNewQuizz){
+            let imageFile = await getFileFromBlob(otherNewQuizz.image)
+            let data = {...otherNewQuizz, image: otherNewQuizz.image !== '' ? imageFile :  ''}
+            Object.keys(data).forEach((rule) => {
+                formData.append(rule, data[rule])
+            })
 
-        formData.append('category_id', category.id)
+        }else{
+            Object.entries(rules).forEach(entry => formData.append(entry[0], entry[1]))
+        }
+
         
         dispatch(store(formData))
+    }
+
+    const getFileFromBlob = async (blob) => {
+        let data = await fetch(blob)
+        const blobFile = await data.blob();
+        return blobFile
     }
 
     const handleQuestionList = option => {
@@ -174,19 +194,24 @@ const CreateQuestions = () => {
     }
 
     const handleUploadQuestions = () => {
-
         const fd = new FormData()
         fd.append('question_file', questionFile)
-        fd.append('category_id', category.id)
+        fd.append('category_id', rules.category_id)
 
-        HttpAuth.post('question/upload', fd).then(res => navigate('/success/upload', {state: {
-                questionFileUploadSuccess: true
-            }
-        }))
-    }
+        dispatch(changeLoading({open: true, text: 'Importando questões. Aguarde, por favor...'}))
+        
+        HttpAuth.post('question/upload', fd).then(() => {
+            dispatch(changeLoading({open: false}))
+            navigate('/success/upload', {
+                state: {
+                    questionFileUploadSuccess: true
+                }
+            })
+        })
+}
 
-    return (
-        <div className='container mx-auto p-4 text-center md:w-[60%]'>
+return (
+    <div className='container mx-auto p-4 text-center md:w-[60%]'>
             {
                 !showQuestionCreateDialog &&
                 <>
@@ -416,7 +441,10 @@ const CreateQuestions = () => {
                 }
             }}
             >
-                <CategorySelector/>
+                <CategorySelector
+                category={rules.category_id}
+                changeHandler={e => dispatch(changeRules({rules:{category_id: e.target.value}}))}
+                />
             </CustomDialog>
         </div>
     )

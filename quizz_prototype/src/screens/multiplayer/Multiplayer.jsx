@@ -41,8 +41,8 @@ const Multiplayer = () => {
   return (
     <>
     <CustomDialog
-    dialogtitle='Como você deseja iniciar seu quizz multiplayer?'
-    dialogcontenttext="Você prefere convidar uma lista de amigos para fazer um quizz, ou realizar um quizz para o qual você foi convidado?"
+    dialogtitle='Como você deseja iniciar seu quiz multiplayer?'
+    dialogcontenttext="Você prefere convidar uma lista de amigos para fazer um quizz, ou realizar um quiz para o qual você foi convidado?"
     open={showMultiplayerDialog}
     >
               <div className='flex bg-slate-50 p-4'>
@@ -62,7 +62,7 @@ const Multiplayer = () => {
                       className='p-4 flex shadow-md bg-white flex-col items-center text-blue-500 flex-1 mx-2'>
                       <IoDocumentTextOutline size={30} />
                       <h3>
-                          Fazer um quizz de um Amigo
+                          Fazer um quiz de um Amigo
                       </h3>
                   </Button>
               </div>

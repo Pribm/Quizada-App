@@ -42,14 +42,14 @@ export const FriendsListComponent = () => {
     }
     
     const handleLoadMore = () => {
-        dispatch(index({showFriendsList: true, page: current_page + 1}, true))
+       return dispatch(index({showFriendsList: true, page: current_page + 1}, true))
     }
     
     
     return (
+        <div className='h-[calc(100vh-300px)]'>
             <ListWrapper
                 Component={FriendCardLarge}
-                className={'min-h-[calc(100vh-120px-120px)] max-h-[calc(100vh-120px-120px)]'}
                 componentData={yourFriends}
                 componentProps={{ dispatch }}
                 handleLoadMore={handleLoadMore}
@@ -62,5 +62,6 @@ export const FriendsListComponent = () => {
                 listTitle={'Usuários da plataforma'}
                 notFoundList={'Nenhum Usuário foi encontrado'}
             />
+        </div>
     )
 }

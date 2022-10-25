@@ -67,23 +67,26 @@ const InviteFriend = () => {
 
     return (
         <div className='px-4 relative'>
-            <Fab
-            onClick={() => dispatch(massInvitation({quizzes: selectedQuizzIds, friends: selectedFriendsIds})).then(() => {
-                setSelectedFriendsIds([])
-            })}
-            className='fixed top-[90px] right-5'
-            size='small'
-            color='secondary'>
-                <IoSend/>
-            </Fab>
-            <Paper className='container md:mx-auto bg-slate-50 md:max-w-[60vw] overflow-hidden text-white'>
-                <h1 className='bg-blue-500 p-4 mb-4'>Enviar convite de quizz para amigo</h1>
-                <Grid container spacing={2} className='px-4'>
-                    <Grid item md={6} xs={12}>
-                        <Item className='bg-slate-100 h-[calc(50vh-100px)] overflow-y-scroll'>
+
+            <Paper className='container md:mx-auto bg-slate-50 text-white h-[calc(100vh-150px)]'>
+                <div className='bg-blue-500 relative h-[60px] flex items-center px-4'>
+                    Enviar convite de quiz para amigo
+                    <Fab
+                        onClick={() => dispatch(massInvitation({ quizzes: selectedQuizzIds, friends: selectedFriendsIds })).then(() => {
+                            setSelectedFriendsIds([])
+                        })}
+                        className='absolute right-5 top-[50%] translate-y-[-50%]'
+                        size='small'
+                        color='secondary'>
+                        <IoSend />
+                    </Fab>
+                </div>
+                <Grid container className='w-[100%] h-[calc(100%-60px)] p-4 '>
+                    <Grid item md={6} xs={12} className={'h-[50%] md:h-[100%] pr-0 md:pr-4  mb-2 md:m-0'}>
+                        <Item className='bg-slate-100 h-[100%] overflow-y-scroll'>
                             <div className='bg-slate-400 rounded-md mb-2'>
                                 <SearchBox
-                                    placeholder='Quizz ou categoria'
+                                    placeholder='Quiz ou categoria'
                                     value={searchQuizz}
                                     onChange={e => setSearchQuizz(e.target.value)}
                                     searchHandler={handleSearchQuizz}
@@ -102,7 +105,7 @@ const InviteFriend = () => {
                                         :
                                         <Paper className='flex flex-col items-center p-4 w-[100%]'>
                                             <FcFolder size={100} />
-                                            <h1 className='text-center'>Você ainda não possui nenhum quizz cadastrado, gostaria de criar um?</h1>
+                                            <h1 className='text-center'>Você ainda não possui nenhum quiz cadastrado, gostaria de criar um?</h1>
                                             <Button
                                                 onClick={() => navigate('/quizz/create', { replace: true })}
                                                 variant='contained'
@@ -118,9 +121,9 @@ const InviteFriend = () => {
                             }
                         </Item>
                     </Grid>
-                    <Grid item md={6} xs={12}>
+                    <Grid item md={6} xs={12} className='h-[50%] md:h-[100%] my-2 md:m-0'>
                         <FriendsListComponent2
-                            className='h-[calc(50vh-100px)]'
+                            className='h-[100%]'
                             Component={FriendCardSmall}
                             componentProps={{ handleChange: handleSelectFriend, selectedFriendsIds }} />
                     </Grid>

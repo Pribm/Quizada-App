@@ -8,13 +8,14 @@ const FriendCard = ({ props }) => {
     return (
         <div className='bg-white shadow-md rounded-md h-[100px] flex items-center p-2 mb-4'>
             <Avatar src={props.avatar ? getUserThumbnail(props.avatar, props.id) : ''} alt={props.name} />
-            <div className='px-2 text-start flex-1 text-sm'>
+            <div className='px-2 text-start text-sm'>
                 <h1 className='font-bold text-blue-500'>{props.name}</h1>
                 <h2 className='text-orange-500'>{props.nickname}</h2>
                 <h3>{props.email}</h3>
             </div>
 
             <Button
+            className='text-[10px]'
             fullWidth
             disabled={props.adm_invitation_from.length > 0}
             color={`${props.role.role !== 'user' ? 'error' : 'primary'}`}

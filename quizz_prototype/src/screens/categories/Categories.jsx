@@ -58,7 +58,7 @@ const Categories = () => {
       }
 
     return (
-        <div className='p-4 md:w-[30vw] mx-auto'>
+        <div className='h-[calc(100vh-300px)] mx-4 md:mx-auto md:w-[500px]'>
             <ListWrapper
                 Component={categoryCard}
                 hideSearchBox={true}
